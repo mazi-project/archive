@@ -2,7 +2,6 @@
 
 var express = require('express');
 var _ = require('underscore');
-var htmlspecialchars = require('htmlspecialchars');
 
 var appEvents = r_require('/utils/appEvents.js');
 var Utils = r_require('/utils/utils');
@@ -22,8 +21,6 @@ router.get('/',(req,res) => {
     var options = {}
     if (_.has(req.query,'tag'))
         options.tags = req.query.tag;
-    if (_.has(req.query,'dataset'))
-        options.dataset = req.query.dataset;
 
     // paginate options
     var paginateOptions = {}
@@ -117,7 +114,7 @@ router.delete('/:id', Auth.authentificate, (req, res) => {
 
         if (obj.result.n > 0) {
             print("Interview "+req.params.id+" deleted from database");
-            appEvents.emit('interview:removed',req.params.id)
+            appEvents.emit('interview:removed',{ _id : req.params.id } )
         }
         res.send( {removed: obj.result.n} );
     });

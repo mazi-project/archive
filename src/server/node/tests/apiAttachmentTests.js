@@ -1,15 +1,21 @@
 'use strict';
 
 var assert = require('assert');
+var fs = require('fs-extra')
 var _ = require('underscore');
-
+var request = require('supertest');
 var Interview = r_require('models/interview');
 
 var BASE_URL = "http://localhost:"+Config.port+Config.baseUrl
-var TEST_FILES = ['tests/files/img1.jpg','tests/files/img2.jpg']
-var DST_PATH = 'tests/files/test.jpg'
 
-describe('File upload', function() {
+var TEST_IMAGE_PATH = "tests/files/img1.jpg"
+var TEST_IMAGE_FILE = {
+		path: "tests/files/test.jpg",
+		originalFilename: "img1.jpg",
+		type: "image/jpeg"
+}
+
+describe('API Routes /attachments/', function() {
 
 	before(function(done) {
 		r_require('database/database').connect(done);
@@ -17,82 +23,93 @@ describe('File upload', function() {
 
   	after(function(done) {
 
-		Submission.removeAll(() => {
+		Interview.removeAll(() => {
 			r_require('database/database').disconnect();
 			done();
 		});
     });
 
-    it('should be able to copy file', function(done) {
+    beforeEach(function(done) {
 
-		var fse = require('fs-extra');
+		//copy test file
+		fs.copy(TEST_IMAGE_PATH, TEST_IMAGE_FILE.path, (err) => {
+			if (err) throw(err);
+			done();
+		});
+	});
 
-    	fse.copy(TEST_FILES[0],DST_PATH, (err) => {
-    		if (err) throw err;
-    		done();
-    	});
-    });
+	var postInterview = function(callback) {
+		var data = {
+			text: "unittest_" + require('node-uuid').v4(),
+			author: 'Test Peter'
+		}
+		//create interview
+		request(BASE_URL).post('api/interviews').send(data).expect(200).end(function(err, res) {
+			if (err) throw err;
+			callback(res.body);
+		});
+	}
 
-    it('should be able to remove file', function(done) {
+    var postFile = function(attachmentId,file,callback) {
 
-    	var fse = require('fs-extra');
-
-    	//copy file
-    	fse.copy(TEST_FILES[0],DST_PATH, (err) => {
-    		if (err) throw err;
-
-    		//remove file
-    		fse.remove(DST_PATH, (err) => {
-    			if (err) throw err;
-    			done();
-    		});
-    	});
-    });
-
-    var postFile = function(submissionId,file,callback) {
-
-    	var request = require('supertest');
-    	var fs = require('fs');
-
-    	request(BASE_URL).post('api/file/soundfile/'+submissionId).attach('file', file).end(function(err, res) {
+    	request(BASE_URL).post('api/upload/attachment/'+attachmentId).attach('file', file.path).expect(200).end(function(err, res) {
 			if (err) throw err;
 
-			var submission = res.body;
+			var attachment = res.body;
 
 			//check if file exists
-			fs.access(_.last(submission.files).path, fs.F_OK, (err) => {
+			fs.access(attachment.file.url, fs.F_OK, (err) => {
 				if (err) throw err;
-				callback(submission);
+				callback(attachment);
 			});
 		});
 
     };
 
-	it('should POST a file on api/file/attach/:submissionId', function(done) {
+    it('should POST a new attachment on api/attachments/', function(done) {
+    	postInterview( (interview) => {
+    		var data = {
+				text: "attachment text",
+				tags: ['test1' , 'test2'],
+				interview: interview._id
+			}
 
-		var request = require('supertest');
-		var fs = require('fs');
-
-		var data = {
-			text: "unittest_" + require('node-uuid').v4(),
-			author: 'Test Peter'
-		}
-
-		//create submission
-		request(BASE_URL).post('api/submissions').send(data).end(function(err, res) {
-			if (err)
-    			throw err;
-			var submissionId = res.body._id;
-
-			//attach file
-			postFile(submissionId,TEST_FILES[0], function() {
+			//create attachment
+			request(BASE_URL).post('api/attachments/').send(data).expect(200).end( (err, res) => {
+				if (err) throw err;
 				done();
 			});
-        });
+    	});
+    });
+
+	it('should POST a file on api/upload/attachment/:submissionId', function(done) {
+
+		postInterview( (interview) => {
+    		var data = {
+				text: "attachment text",
+				tags: ['test1' , 'test2'],
+				interview: interview._id
+			}
+			//create attachment
+			request(BASE_URL).post('api/attachments/').send(data).expect(200).end( (err, res) => {
+				if (err) throw err;
+
+				var attachment = res.body;
+				
+				postFile(attachment._id, TEST_IMAGE_FILE, (attachment) => {
+
+					//check if file exists
+					fs.access(attachment.file.url, fs.F_OK, (err) => {
+						if (err) throw err;
+						done();
+					});
+				});
+			});
+    	});
 
 	});
 
-	it('should delete uploaded file on DELETE api/submissions/:submissionId', function(done) {
+	/*it('should delete uploaded file on DELETE api/submissions/:submissionId', function(done) {
 
 		var request = require('supertest');
 		var fs = require('fs');
@@ -188,6 +205,6 @@ describe('File upload', function() {
 				
 			})
 		});	
-	});
+	});*/
 
 });

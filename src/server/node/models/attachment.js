@@ -15,7 +15,7 @@ var Interview = r_require('/models/interview');
 var attachmentSchema = mongoose.Schema({
 
 	_id: { type: String, default: uuid.v4 }, //use uuid
-	interview: { type: String, ref: 'Interview' },
+	interview: { type: String, ref: 'Interview', required: true },
     text : { type: String, required: true, maxlength: '800' },
     tags : [ { type: String, match: /^\w+$/ } ] //only allow numbers and chars and _ without spaces
 }, { timestamps: true });

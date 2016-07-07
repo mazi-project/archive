@@ -48,15 +48,20 @@ module.exports = function (app) {
     // connect to database when accessing api routes
     app.use(Config.baseUrl+'api/',handleDbConnection);
 
-    // submission routes
+    // interview routes
     app.use(Config.baseUrl+'api/interviews', bodyParser.json());
     app.use(Config.baseUrl+'api/interviews', bodyParser.urlencoded({ extended: true }));
     app.use(Config.baseUrl+'api/interviews', require('./interviews'));
+
+    // attachment routes
+    app.use(Config.baseUrl+'api/attachments', bodyParser.json());
+    app.use(Config.baseUrl+'api/attachments', bodyParser.urlencoded({ extended: true }));
+    app.use(Config.baseUrl+'api/attachments', require('./attachments'));
 
     // tags routes
     app.use(Config.baseUrl+'api/tags', require('./tags'));
 
     // file routes
-    app.use(Config.baseUrl+'api/file', bodyParser.json());
-    app.use(Config.baseUrl+'api/file', require('./file'));
+    app.use(Config.baseUrl+'api/upload', bodyParser.json());
+    app.use(Config.baseUrl+'api/upload', require('./upload'));
 };

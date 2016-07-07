@@ -11,15 +11,11 @@ var Utils = r_require('/utils/utils');
 var router = express.Router();
 
 /*
- * GET /api/feedback/scanning
+ * GET /tags/
  */ 
 router.get('/',function(req,res){
-
-    var options = {}
-    if (_.has(req.query,'dataset'))
-        options.dataset = req.query.dataset;
     
-	Interview.find(options, (err, models) => {
+	Interview.find({}, (err, models) => {
 		if (Utils.handleError(err,res))
             return;
 

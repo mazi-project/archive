@@ -5,8 +5,8 @@ var fs = require('fs');
 var _ = require('underscore');
 var async = require('async')
 
-var Submission = r_require('models/submission');
-var Comment = r_require('models/comment');
+var Interview = r_require('models/interview');
+var Attachment = r_require('models/attachment');
 
 var BASE_URL = "http://localhost:"+Config.port+Config.baseUrl;
 var TAGS = ['test','hybrid','letterbox'];
@@ -19,21 +19,21 @@ describe('API Routes /tags/', function(){
 			
 			async.series([
 				(callback) => { 
-					new Submission({
+					new Interview({
 						text: '1',
 						tags : [TAGS[0]],
 						author: 'Test Peter'
 					}).save(callback) 
 				},
 				(callback) => { 
-					new Submission({
+					new Interview({
 						text: '2',
 						tags : [TAGS[0],TAGS[1]],
 						author: 'Test Peter'
 					}).save(callback) 
 				},
 				(callback) => { 
-					new Submission({
+					new Interview({
 						text: '3',
 						tags : [TAGS[0],TAGS[1],TAGS[2]],
 						author: 'Test Peter'
@@ -48,8 +48,7 @@ describe('API Routes /tags/', function(){
 
   	after(function(done) {
   		async.parallel([
-			(callback) => { Submission.removeAll(callback) },
-			(callback) => { Comment.removeAll(callback) }
+			(callback) => { Interview.removeAll(callback) }
 		],() => {
         	r_require('database/database').disconnect();
         	done();
@@ -80,7 +79,7 @@ describe('API Routes /tags/', function(){
         });
 	})
 
-	it('should GET two models on api/submissions/?tag='+TAGS[1], function(done){
+	it('should GET two models on api/interviews/?tag='+TAGS[1], function(done){
 
 		var request = require('supertest');
 
@@ -88,7 +87,7 @@ describe('API Routes /tags/', function(){
 			text: "unittest_" + require('node-uuid').v4()
 		}
 
-		request(BASE_URL).get('api/submissions/?tag='+TAGS[1]).end(function(err, res) {
+		request(BASE_URL).get('api/interviews/?tag='+TAGS[1]).end(function(err, res) {
 			if (err)
     			throw err;
 

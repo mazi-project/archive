@@ -20,29 +20,30 @@ module.exports = function (http) {
 	    
 	    /* ALL NAMESPACES */
 
-	    function submissionAddedHandler(model) {
-		    sio.emit('submission:new', {model: model}, socket.id); // this will send a signal to the interface and central webserver
+	    function interviewAddedHandler(data) {
+	    	print("socket:new");
+		    sio.emit('interview:new', data, socket.id); // this will send a signal to the interface and central webserver
 	    }
-		appEvents.on('submission:new', submissionAddedHandler);
+		appEvents.on('interview:new', interviewAddedHandler);
 
-		function submissionRemovedHandler(id) {
-			sio.emit('submission:removed', {id: id}, socket.id);
+		function interviewRemovedHandler(data) {
+			sio.emit('interview:removed',data, socket.id);
 		}
-		appEvents.on('submission:removed', submissionRemovedHandler);
+		appEvents.on('interview:removed', interviewRemovedHandler);
 
-		function submissionChangedHandler(model) {
-			sio.emit('submission:changed', {model: model}, socket.id);
+		function interviewChangedHandler(data) {
+			sio.emit('interview:changed', data, socket.id);
 		}
-		appEvents.on('submission:changed', submissionChangedHandler);
+		appEvents.on('interview:changed', interviewChangedHandler);
 
 	    // Clean up after disconnect
 	    socket.on('disconnect', function(){
 	        print('Client disconnected','SOCKET');
 
 	        //remove server events
-	        appEvents.removeListener('submission:new',submissionAddedHandler);
-	        appEvents.removeListener('submission:removed',submissionRemovedHandler);
-	        appEvents.removeListener('submission:changed',submissionChangedHandler);
+	        appEvents.removeListener('interview:new',interviewAddedHandler);
+	        appEvents.removeListener('interview:removed',interviewRemovedHandler);
+	        appEvents.removeListener('interview:changed',interviewChangedHandler);
 	    });
 
 	});

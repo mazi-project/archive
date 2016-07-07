@@ -4,8 +4,8 @@ var assert = require('assert');
 var _ = require('underscore');
 var async = require('async');
 
-var Submission = r_require('models/submission');
-var Comment = r_require('models/comment');
+var Interview = r_require('models/interview');
+var Attachment = r_require('models/attachment');
 
 var SOCKET_SERVER_URL = "http://localhost:"+Config.port
 var BASE_URL = "http://localhost:"+Config.port+Config.baseUrl
@@ -32,7 +32,7 @@ describe('Socket Tests', function(){
                   author: 'Test Peter'
                 }
             });
-            Submission.create(array, function(err,models) {
+            Interview.create(array, function(err,models) {
                 done();
             });
         });
@@ -40,8 +40,7 @@ describe('Socket Tests', function(){
 
     after(function(done) {
         async.parallel([
-            (callback) => { Submission.removeAll(callback) },
-            (callback) => { Comment.removeAll(callback) },
+            (callback) => { Interview.removeAll(callback) }
         ],() => {
             r_require('database/database').disconnect();
             done();
@@ -59,70 +58,73 @@ describe('Socket Tests', function(){
         socket.on('disconnect', () => { done(null) });
     });
 
-    it("should receive submission:new message", function(done) {
+    it("should receive interview:new message", function(done) {
 
         var socketIoClient = require('socket.io-client')
         var request = require('supertest');
 
         var socket = socketIoClient.connect(SOCKET_SERVER_URL)
-        socket.on('submission:new', function (data) {
-            assert.equal(randomNumber, data.model.text)
+        socket.on('interview:new', function (model) {
+            assert.equal(randomNumber, model.text)
             socket.disconnect();
         });
         socket.on('disconnect', () => { done(null) });
 
         // post message
-        request(BASE_URL).post('api/submissions').send({ text: randomNumber, author: 'Test Peter' }).end(function(err, res) {
+        request(BASE_URL).post('api/interviews').send({ text: randomNumber, author: 'Test Peter' }).end(function(err, res) {
         	if (err) throw err;
         });
     });
 
-    it("should receive submission:removed message", function(done) {
+    it("should receive interview:removed message", function(done) {
 
         var socketIoClient = require('socket.io-client')
         var request = require('supertest');
 
-        request(BASE_URL).get('api/submissions/').end(function(err, res) {
+        request(BASE_URL).get('api/interviews/').end(function(err, res) {
             if (err) throw err;
 
-            var submissionId = res.body.docs[0]._id;
+            var interviewId = res.body.docs[0]._id;
 
             var socket = socketIoClient.connect(SOCKET_SERVER_URL)
-            socket.on('submission:removed', function (data) {
+            socket.on('interview:removed', function (data) {
 
-               assert.equal(data.id, submissionId)
-               socket.disconnect();
-            });
-            socket.on('disconnect', () => { done(null) });
-
-            // delete submission
-            request(BASE_URL).delete('api/submissions/'+submissionId).auth(Config.authName, Config.authPassword).end(function(err, res) {
-               if (err) throw err;
-            });
-        });
-
-        
-    });
-
-
-    it("should receive submission:changed message on new file post", function(done) {
-        var socketIoClient = require('socket.io-client')
-        var request = require('supertest');
-
-        //create submission
-        request(BASE_URL).get('api/submissions/').end(function(err, res) {
-            if (err) throw err;
-
-            var submissionId = res.body.docs[0]._id;
-
-            var socket = socketIoClient.connect(SOCKET_SERVER_URL)
-            socket.on('submission:changed', function (data) {
-                assert.equal(data.model.files.length, 1);
+                assert.equal(data._id, interviewId)
                 socket.disconnect();
             });
             socket.on('disconnect', () => { done(null) });
 
-            request(BASE_URL).post('api/file/attach/'+submissionId).attach('file', TEST_FILES[0]).end(function(err, res) {
+            // delete submission
+            request(BASE_URL).delete('api/interviews/'+interviewId).auth(Config.authName, Config.authPassword).end(function(err, res) {
+               if (err) throw err;
+            });
+        });
+    });
+
+
+    it("should receive interview:changed message on new attachment", function(done) {
+        var socketIoClient = require('socket.io-client')
+        var request = require('supertest');
+
+        //create submission
+        request(BASE_URL).get('api/interviews/').end(function(err, res) {
+            if (err) throw err;
+
+            var InterviewId = res.body.docs[0]._id;
+
+            var socket = socketIoClient.connect(SOCKET_SERVER_URL)
+            socket.on('interview:changed', function (data) {
+                assert.equal(data._id, InterviewId);
+                socket.disconnect();
+            });
+            socket.on('disconnect', () => { done(null) });
+
+            var data = {
+                text: "Lorem ipsum",
+                interview: InterviewId
+            }
+
+            request(BASE_URL).post('api/attachments/').send(data).expect(200).end(function(err, res) {
                 if (err) throw err;
             });
         });
