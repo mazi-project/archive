@@ -1,0 +1,36 @@
+.button {
+	display:inline-block;
+	border-radius: $border-radius;
+	background: $button-background;
+	color: $button-text-color;
+	cursor: pointer;
+	padding:  $text-margin $button-padding $text-margin $button-padding;
+	margin: $paragraph-padding 0 $paragraph-padding 0;
+	font-size: 80%;
+	@include shadow(1);
+
+	&:hover {
+		background: $button-background-hover;
+	}
+
+	&:active {
+		background: $button-background-clicked;
+		@include shadow(0);
+	}
+}
+
+.button.small {
+	font-size: 70%;
+	padding:  $text-margin;
+}
+
+.close-button {
+	width: 40px;
+	height: 40px;
+
+	background: image-url('close-icon.png') no-repeat;
+	background-size: 40px;
+}
+
+
+

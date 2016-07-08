@@ -20,6 +20,7 @@ var interviewSchema = mongoose.Schema({
     title: { type: String, maxlength: 120 },
     text : { type: String, required: true, maxlength: '1500' },
     author: { type: String, required: true, maxlength: '60' },
+    role: { type: String, maxlength: 100 },
     tags : [ { type: String, match: /^\w+$/ } ], //only allow numbers and chars and _ without spaces
     attachments: [ { type: String, ref: 'Attachment'} ],
     location : { type: String } // [ longitude, latitude ]
@@ -60,6 +61,7 @@ interviewSchema.pre('save', function(next) {
 
     Utils.escapePath(this,'text');
     Utils.escapePath(this,'author');
+    Utils.escapePath(this,'role');
 
     //dont allow false or null tags
     if (this.get('tags') == null || this.get('tags') == false)

@@ -35,7 +35,7 @@ router.get('/',(req,res) => {
     query.sort({'updatedAt': -1});
     query.limit(paginateOptions.limit);
     query.skip(paginateOptions.skip);
-    query.populate('comments');
+    query.populate('attachments');
 
     // execute
     query.exec((err,models) => {

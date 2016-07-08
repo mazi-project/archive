@@ -1,0 +1,351 @@
+/* Welcome to Compass.
+* In this file you should write your main styles. (or centralize your imports)
+* Import this file using the following HTML or equivalent:
+* <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css" /> */
+/* line 4, ../sass/neat/grid/_box-sizing.scss */
+html {
+  box-sizing: border-box;
+}
+
+/* line 9, ../sass/neat/grid/_box-sizing.scss */
+*, *::after, *::before {
+  box-sizing: inherit;
+}
+
+/* MIXINS */
+/* mixin for multiline */
+/* IMPORTS */
+/* Margins & Paddings */
+/* Border */
+/* Colors */
+/* Font sizes */
+/* Button & Inputs */
+/* Responsive */
+/* line 5, ../sass/_header.scss */
+#header .header-bar {
+  position: fixed;
+  width: 100%;
+  background-color: #fff;
+  height: 50px;
+}
+/* line 13, ../sass/_header.scss */
+#header .header-image {
+  width: 100%;
+}
+/* line 16, ../sass/_header.scss */
+#header .header-image img {
+  width: 100%;
+}
+/* line 22, ../sass/_header.scss */
+#header .link-back {
+  position: fixed;
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 0.5em;
+  background-color: #fff;
+  border-bottom: 1px solid #aaa;
+  top: 0;
+  left: 0;
+  right: 0;
+  font-size: 140%;
+}
+
+/* line 1, ../sass/_footer.scss */
+#footer {
+  margin-top: 5em;
+  padding: 2em;
+  clear: both;
+  text-align: center;
+  background-color: #000;
+  color: #ddd;
+  min-height: 200px;
+}
+
+/* fetching spinner */
+/* line 4, ../sass/_spinner.scss */
+#fetch-spinner .spinner {
+  margin: 100px auto 0;
+  width: 50px;
+  text-align: center;
+}
+/* line 10, ../sass/_spinner.scss */
+#fetch-spinner .spinner > div {
+  width: 12px;
+  height: 12px;
+  background-color: #333;
+  border-radius: 100%;
+  display: inline-block;
+  -webkit-animation: sk-bouncedelay 1.4s infinite ease-in-out both;
+  animation: sk-bouncedelay 1.4s infinite ease-in-out both;
+}
+/* line 21, ../sass/_spinner.scss */
+#fetch-spinner .spinner .bounce1 {
+  -webkit-animation-delay: -0.32s;
+  animation-delay: -0.32s;
+}
+/* line 26, ../sass/_spinner.scss */
+#fetch-spinner .spinner .bounce2 {
+  -webkit-animation-delay: -0.16s;
+  animation-delay: -0.16s;
+}
+@-webkit-keyframes sk-bouncedelay {
+  0%, 80%, 100% {
+    -webkit-transform: scale(0);
+  }
+  40% {
+    -webkit-transform: scale(1);
+  }
+}
+@keyframes sk-bouncedelay {
+  0%, 80%, 100% {
+    -webkit-transform: scale(0);
+    transform: scale(0);
+  }
+  40% {
+    -webkit-transform: scale(1);
+    transform: scale(1);
+  }
+}
+/* scanning bar */
+/* line 49, ../sass/_spinner.scss */
+#scan-spinner {
+  padding: 0.5em;
+  margin: 0.5em;
+}
+/* line 54, ../sass/_spinner.scss */
+#scan-spinner h2 {
+  font-weight: normal;
+  text-align: center;
+}
+/* line 59, ../sass/_spinner.scss */
+#scan-spinner .spinner {
+  width: 60px;
+  height: 60px;
+  position: relative;
+  margin: 0.5em auto;
+}
+/* line 67, ../sass/_spinner.scss */
+#scan-spinner .double-bounce1, #scan-spinner .double-bounce2 {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-color: #333;
+  opacity: 0.6;
+  position: absolute;
+  top: 0;
+  left: 0;
+  -webkit-animation: sk-bounce 2.0s infinite ease-in-out;
+  animation: sk-bounce 2.0s infinite ease-in-out;
+}
+/* line 81, ../sass/_spinner.scss */
+#scan-spinner .double-bounce2 {
+  -webkit-animation-delay: -1.0s;
+  animation-delay: -1.0s;
+}
+@-webkit-keyframes sk-bounce {
+  0%, 100% {
+    -webkit-transform: scale(0);
+  }
+  50% {
+    -webkit-transform: scale(1);
+  }
+}
+@keyframes sk-bounce {
+  0%, 100% {
+    transform: scale(0);
+    -webkit-transform: scale(0);
+  }
+  50% {
+    transform: scale(1);
+    -webkit-transform: scale(1);
+  }
+}
+/* FONTS */
+@font-face {
+  font-family: "tititllium";
+  font-style: normal;
+  font-weight: normal;
+  src: url("/fonts/TitilliumWeb-Regular.ttf") format("truetype");
+}
+@font-face {
+  font-family: "tititllium";
+  font-style: normal;
+  font-weight: 400;
+  src: url("/fonts/TitilliumWeb-SemiBold.ttf") format("truetype");
+}
+@font-face {
+  font-family: "tititllium";
+  font-style: normal;
+  font-weight: bold;
+  src: url("/fonts/TitilliumWeb-Bold.ttf") format("truetype");
+}
+/* ELEMENT STYLES */
+/* line 32, ../sass/screen.scss */
+body {
+  font-family: "tititllium";
+  color: #444;
+  background-color: #eaeaed;
+  margin: 0;
+  padding: 0;
+  font-size: 12pt;
+}
+
+/* line 41, ../sass/screen.scss */
+h4 {
+  margin: 0;
+}
+
+/* line 45, ../sass/screen.scss */
+h3 {
+  text-align: center;
+  font-size: 100%;
+  padding: 0;
+  margin: 0.5em 0 0 0;
+  font-weight: normal;
+}
+
+/* line 53, ../sass/screen.scss */
+h2 {
+  margin: 0.2em;
+  font-size: 180%;
+}
+
+/* line 58, ../sass/screen.scss */
+h1 {
+  text-align: center;
+  font-size: 260%;
+  margin: 0.5em;
+  padding: 0;
+}
+
+/* line 65, ../sass/screen.scss */
+p {
+  margin: 0.2em 0 0.2em 0;
+}
+
+/* line 69, ../sass/screen.scss */
+a {
+  color: #000;
+  text-decoration: none;
+}
+
+/* line 74, ../sass/screen.scss */
+a.link {
+  font-family: 'tititllium';
+  font-size: 80%;
+}
+/* line 78, ../sass/screen.scss */
+a.link:hover {
+  text-decoration: underline;
+}
+
+/* line 83, ../sass/screen.scss */
+input[type="color"], input[type="date"], input[type="datetime"], input[type="datetime-local"], input[type="email"], input[type="month"], input[type="number"], input[type="password"], input[type="search"], input[type="tel"], input[type="text"], input[type="time"], input[type="url"], input[type="week"], input:not([type]), textarea {
+  font-family: 'tititllium';
+  font-size: 130%;
+  width: 100%;
+  padding: 0.5em;
+  outline: none;
+  border: 0;
+  background-color: transparent;
+  color: #000;
+  text-align: center;
+}
+/* line 4, ../sass/bourbon/css3/_placeholder.scss */
+input[type="color"]::-webkit-input-placeholder, input[type="date"]::-webkit-input-placeholder, input[type="datetime"]::-webkit-input-placeholder, input[type="datetime-local"]::-webkit-input-placeholder, input[type="email"]::-webkit-input-placeholder, input[type="month"]::-webkit-input-placeholder, input[type="number"]::-webkit-input-placeholder, input[type="password"]::-webkit-input-placeholder, input[type="search"]::-webkit-input-placeholder, input[type="tel"]::-webkit-input-placeholder, input[type="text"]::-webkit-input-placeholder, input[type="time"]::-webkit-input-placeholder, input[type="url"]::-webkit-input-placeholder, input[type="week"]::-webkit-input-placeholder, input:not([type])::-webkit-input-placeholder, textarea::-webkit-input-placeholder {
+  color: #ccc;
+}
+/* line 4, ../sass/bourbon/css3/_placeholder.scss */
+input[type="color"]::-moz-placeholder, input[type="date"]::-moz-placeholder, input[type="datetime"]::-moz-placeholder, input[type="datetime-local"]::-moz-placeholder, input[type="email"]::-moz-placeholder, input[type="month"]::-moz-placeholder, input[type="number"]::-moz-placeholder, input[type="password"]::-moz-placeholder, input[type="search"]::-moz-placeholder, input[type="tel"]::-moz-placeholder, input[type="text"]::-moz-placeholder, input[type="time"]::-moz-placeholder, input[type="url"]::-moz-placeholder, input[type="week"]::-moz-placeholder, input:not([type])::-moz-placeholder, textarea::-moz-placeholder {
+  color: #ccc;
+}
+/* line 4, ../sass/bourbon/css3/_placeholder.scss */
+input[type="color"]:-moz-placeholder, input[type="date"]:-moz-placeholder, input[type="datetime"]:-moz-placeholder, input[type="datetime-local"]:-moz-placeholder, input[type="email"]:-moz-placeholder, input[type="month"]:-moz-placeholder, input[type="number"]:-moz-placeholder, input[type="password"]:-moz-placeholder, input[type="search"]:-moz-placeholder, input[type="tel"]:-moz-placeholder, input[type="text"]:-moz-placeholder, input[type="time"]:-moz-placeholder, input[type="url"]:-moz-placeholder, input[type="week"]:-moz-placeholder, input:not([type]):-moz-placeholder, textarea:-moz-placeholder {
+  color: #ccc;
+}
+/* line 4, ../sass/bourbon/css3/_placeholder.scss */
+input[type="color"]:-ms-input-placeholder, input[type="date"]:-ms-input-placeholder, input[type="datetime"]:-ms-input-placeholder, input[type="datetime-local"]:-ms-input-placeholder, input[type="email"]:-ms-input-placeholder, input[type="month"]:-ms-input-placeholder, input[type="number"]:-ms-input-placeholder, input[type="password"]:-ms-input-placeholder, input[type="search"]:-ms-input-placeholder, input[type="tel"]:-ms-input-placeholder, input[type="text"]:-ms-input-placeholder, input[type="time"]:-ms-input-placeholder, input[type="url"]:-ms-input-placeholder, input[type="week"]:-ms-input-placeholder, input:not([type]):-ms-input-placeholder, textarea:-ms-input-placeholder {
+  color: #ccc;
+}
+
+/* line 100, ../sass/screen.scss */
+textarea {
+  resize: none;
+  overflow: auto;
+  text-align: center;
+  font-size: 160%;
+  font-weight: bold;
+}
+@media screen and (max-width: 600px) {
+  /* line 100, ../sass/screen.scss */
+  textarea {
+    font-size: 120%;
+  }
+}
+
+/* MAIN STYLES */
+/* line 114, ../sass/screen.scss */
+.hidden {
+  display: none !important;
+}
+
+/* line 118, ../sass/screen.scss */
+.tag-list {
+  list-style: none;
+  padding: 0;
+  display: inline-block;
+  margin: 1em;
+}
+/* line 124, ../sass/screen.scss */
+.tag-list li {
+  float: left;
+  padding: 0;
+}
+
+/* line 130, ../sass/screen.scss */
+.badge {
+  font-family: "tititllium";
+  border-radius: 3px;
+  display: inline-block;
+  line-height: 1;
+  padding: 0.4em 1.2em;
+  margin: 0.5em;
+  font-weight: 400;
+  border: 1px solid #aaa;
+}
+/* line 140, ../sass/screen.scss */
+.badge.selected {
+  background-color: #FF7043 !important;
+}
+
+/* line 145, ../sass/screen.scss */
+.badge.with-hash::before {
+  content: "#";
+}
+
+/* line 149, ../sass/screen.scss */
+.spacer {
+  display: block;
+  width: 100%;
+  height: 1px;
+}
+
+/* line 155, ../sass/screen.scss */
+.line-horizontal {
+  width: 100%;
+  border-bottom: 1px solid #aaa;
+  display: block;
+}
+
+/* line 161, ../sass/screen.scss */
+.column {
+  max-width: 1080px;
+  width: 100%;
+  margin: auto;
+}
+
+/* line 167, ../sass/screen.scss */
+#content {
+  min-height: 500px;
+}

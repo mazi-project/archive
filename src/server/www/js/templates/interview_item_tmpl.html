@@ -1,0 +1,34 @@
+<div class="inner-card">
+	<div class="card-header">
+		<% if (tags.length > 0) { %>
+		<ul class="tag-list">
+			<% _.each(tags, function(tag) { %>
+			<li><span class="badge with-hash"><%= tag %></span></li>
+			<% }) %>
+		</ul>
+		<% } %>
+	</div>
+	<% if (image) { %>
+	<div class="card-image">
+		<img src="<%= filesUrl+image.name %>">
+	</div>
+	<% } else { %>
+	<div class="card-text">
+		<p><%= text_truncated %></p>
+	</div>
+	<% } %>
+	<div class="card-bottom">
+		<p class="author">by <%= author %></p>
+		<p class="date"><%= fromNow(createdAt) %></p>
+		<% if (attachments.length > 0) { %>
+		<ul class="attachment-list">
+			<% _.each(attachments, function(attachment) { %>
+			<li>
+				<span class="button play-button" data-id="<%= attachment._id %>">Play</span>
+				<span><%= attachment.text %></span>
+			</li>
+			<% }) %>
+		</ul>
+		<% } %>
+	</div>
+</div>

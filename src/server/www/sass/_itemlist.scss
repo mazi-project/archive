@@ -1,0 +1,26 @@
+.list-view {
+
+	.inner-card {
+		background-color: $card-background;
+		margin: $element-margin;
+		padding: $text-margin;
+	}
+
+	.card-image {
+
+		text-align: center;
+
+		img {
+
+			height:200px;
+		}
+	}
+
+	.tag-list {
+
+		li {
+			float:left;
+		}
+
+	}
+}

@@ -1,0 +1,8 @@
+<p><%= text %><p>
+<% if (file) { %>
+<audio autoplay="autoplay" controls>
+  <source src="<%= filesUrl+file.name %>" type="audio/wav">
+	Your browser does not support the audio element.
+</audio>
+<!--<span id="playButton" class="button">Play</span>-->
+<% } %>
