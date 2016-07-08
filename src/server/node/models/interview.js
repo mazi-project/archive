@@ -17,11 +17,9 @@ var interviewSchema = mongoose.Schema({
 
 	_id: { type: String, default: uuid.v4 }, //use uuid
 
-    title: { type: String, maxlength: 120 },
     text : { type: String, required: true, maxlength: '1500' },
-    author: { type: String, required: true, maxlength: '60' },
+    name: { type: String, required: true, maxlength: 60 },
     role: { type: String, maxlength: 100 },
-    tags : [ { type: String, match: /^\w+$/ } ], //only allow numbers and chars and _ without spaces
     attachments: [ { type: String, ref: 'Attachment'} ],
     location : { type: String } // [ longitude, latitude ]
 

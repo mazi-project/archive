@@ -1,15 +1,22 @@
 package com.drl.mazi.mazirecorder;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.EditText;
+
+import com.drl.mazi.mazirecorder.datatypes.Interview;
 
 public class MainActivity extends AppCompatActivity {
+
+    private static final String TAG = "MAZI-APP";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,14 +25,9 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+        Interview interview = new Interview();
+        interview.load(getApplicationContext());
+
     }
 
     @Override
@@ -48,5 +50,37 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    // open dialog to input name
+    public void openNewInterviewDialog(View view) {
+        final EditText interviewAuthorInput = new EditText(this);
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle("Add a new Interview")
+                .setMessage("Name of the interviewed person")
+                .setView(interviewAuthorInput)
+                .setPositiveButton("Add", new DialogInterface.OnClickListener() {
+                    // on add clicked
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Interview interview = new Interview();
+                        interview.setAuthor(interviewAuthorInput.getText().toString());
+                        interview.save(getApplicationContext());
+                        startQuestionActivity(interview);
+
+                        //Snackbar.make(view, "Interview for "+interview.author+" created", Snackbar.LENGTH_LONG)
+                        //        .setAction("Action", null).show();
+                    }
+                })
+                .setNegativeButton("Cancel", null)
+                .create();
+        dialog.show();
+    }
+
+    public void startQuestionActivity(Interview interview) {
+
+        Intent intent = new Intent(this, QuestionActivity.class);
+        intent.putExtra("interview", interview);
+        startActivity(intent);
     }
 }
