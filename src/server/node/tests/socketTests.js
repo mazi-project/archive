@@ -29,10 +29,11 @@ describe('Socket Tests', function(){
             var array = _.map(_.range(size), function(i) {
                 return {
                   text: 'model'+i,
-                  author: 'Test Peter'
+                  name: 'Test Peter'
                 }
             });
             Interview.create(array, function(err,models) {
+                if (err) throw err;
                 done();
             });
         });
@@ -71,7 +72,7 @@ describe('Socket Tests', function(){
         socket.on('disconnect', () => { done(null) });
 
         // post message
-        request(BASE_URL).post('api/interviews').send({ text: randomNumber, author: 'Test Peter' }).end(function(err, res) {
+        request(BASE_URL).post('api/interviews').send({ text: randomNumber, name: 'Test Peter' }).end(function(err, res) {
         	if (err) throw err;
         });
     });

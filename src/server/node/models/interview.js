@@ -58,7 +58,7 @@ interviewSchema.pre('remove', function(next) {
 interviewSchema.pre('save', function(next) {
 
     Utils.escapePath(this,'text');
-    Utils.escapePath(this,'author');
+    Utils.escapePath(this,'name');
     Utils.escapePath(this,'role');
 
     //dont allow false or null tags

@@ -46,7 +46,7 @@ describe('Create Test Database', function(){
 	it('should add one interview', function(done){
 
 		var interview = new Interview({
-			author : "Letterbox",
+			name : "Letterbox",
 			tags : [ 'tag_1', 'tag_2'],
 			text : 'Test Nachricht',
 		})
@@ -60,7 +60,7 @@ describe('Create Test Database', function(){
 	it('should add one interview and attach an image', function(done){
 
 		var interview = new Interview({
-			author : "Letterbox",
+			name : "Letterbox",
 			tags : [ 'tag_1', 'tag_2'],
 			text : 'Test Nachricht',
 		})
@@ -187,7 +187,7 @@ describe('Create Test Database', function(){
 	it('should add another interview and attach an image', function(done){
 
 		var interview = new Interview({
-			author : "Peter",
+			name : "Peter",
 			tags : [ 'tag_1', 'tag_2'],
 			text : 'Lorem ipsum',
 		})

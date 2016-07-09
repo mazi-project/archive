@@ -27,7 +27,7 @@ describe('API Routes /submissions/', function(){
 			var array = _.map(_.range(size), function(i) {
 				return {
 					text: 'model'+i,
-					author: 'Test Peter'
+					name: 'Test Peter'
 				}
 			});
 			Interview.create(array, function(err,models) {
@@ -52,7 +52,7 @@ describe('API Routes /submissions/', function(){
     var addInterview = function(callback) {
     	var data = {
 			text: "unittest_" + require('node-uuid').v4(),
-			author: 'Test Peter'
+			name: 'Test Peter'
 		}
 
 		request(BASE_URL).post('api/interviews').send(data).end(function(err, res) {
@@ -66,7 +66,7 @@ describe('API Routes /submissions/', function(){
 
 		var data = {
 			text: "unittest_" + require('node-uuid').v4(),
-			author: 'Test Peter'
+			name: 'Test Peter'
 		}
 
 		request(BASE_URL).post('api/interviews').send(data).end(function(err, res) {
@@ -81,7 +81,7 @@ describe('API Routes /submissions/', function(){
 
 		var data = {
 			text: "unittest_" + require('node-uuid').v4(),
-			author: 'Test Peter'
+			name: 'Test Peter'
 		}
 
 		request(BASE_URL).post('api/interviews').send(data).end(function(err, res) {
@@ -162,14 +162,12 @@ describe('API Routes /submissions/', function(){
 
 		var data1 = {
 			text: "text1",
-			tags: ['tag1','tag2'],
-			author: 'Test Peter'
+			name: 'Test Peter'
 		}
 
 		var data2 = {
 			text: "text2",
-			tags: ['tag1','tag2','tag3'],
-			author: 'Test Peter'
+			name: 'Test Peter'
 		}
 
 		//insert submission
@@ -179,7 +177,6 @@ describe('API Routes /submissions/', function(){
 
     		var submissionId = res.body._id;
 
-			assert.equal(res.body.tags.length, data1.tags.length);
 			assert.equal(res.body.text, data1.text);
 
 			//update submission
@@ -187,7 +184,6 @@ describe('API Routes /submissions/', function(){
 				if (err)
 	    			throw err;
 	    		
-				assert.equal(res.body.tags.length, data2.tags.length);
 				assert.equal(res.body.text, data2.text);
 				done()
 	        });
@@ -200,12 +196,12 @@ describe('API Routes /submissions/', function(){
 
 		var data1 = {
 			text: "text1",
-			tags: ['tag1','tag2']
+			name: "Test Peter"
 		}
 
 		var data2 = {
 			text: "text2",
-			tags: ['tag1','tag2','tag3']
+			name: "Test Peter"
 		}
 
 		//insert submission
@@ -228,8 +224,7 @@ describe('API Routes /submissions/', function(){
 		var request = require('supertest');
 
 		var data = {
-			author : "<$%0921ß30></br>",
-			tags : [ 'tag1', 'tag2'],
+			name : "<$%0921ß30></br>",
 			text : 'Test Nachricht<p>',
 			location : "Berlin"
 		}
@@ -238,8 +233,7 @@ describe('API Routes /submissions/', function(){
 			if (err)
     			throw err;
 
-    		assert.notEqual(res.body.author, data.author);
-			assert.equal(res.body.tags.join(), data.tags.join());
+    		assert.notEqual(res.body.name, data.name);
 			assert.notEqual(res.body.text, data.text);
 			done();
         });

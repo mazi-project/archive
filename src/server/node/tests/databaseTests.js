@@ -59,7 +59,7 @@ describe('Database Interview Test', function(){
 	it('should create a database file and add one interview', function(done){
 
 		var interview = new Interview({
-			author : "Letterbox",
+			name : "Letterbox",
 			tags : [ 'tag_1', 'tag_2'],
 			text : 'Test Nachricht',
 		})
@@ -73,7 +73,7 @@ describe('Database Interview Test', function(){
 	it('should add one interview and attach an image', function(done){
 
 		var interview = new Interview({
-			author : "Letterbox",
+			name : "Letterbox",
 			tags : [ 'tag_1', 'tag_2'],
 			text : 'Test Nachricht',
 		})
@@ -107,7 +107,7 @@ describe('Database Interview Test', function(){
 
 		var interview = new Interview({
 			text: message,
-			author: 'test'
+			name: 'test'
 		});
 
 		interview.save(function(err, model) {
@@ -131,7 +131,7 @@ describe('Database Interview Test', function(){
 		var array = _.map(_.range(size), function(i) {
 			return {
 				text: 'model'+i,
-				author: 'test'
+				name: 'test'
 			}
 		});
 
@@ -149,7 +149,7 @@ describe('Database Interview Test', function(){
 		var array = _.map(_.range(size), function(i) {
 			return {
 				text: 'model'+i,
-				author: 'test'
+				name: 'test'
 			}
 		});
 
@@ -169,7 +169,7 @@ describe('Database Interview Test', function(){
 		var array = _.map(_.range(size), function(i) {
 			return {
 				text: 'model'+i,
-				author: 'test'
+				name: 'test'
 			}
 		});
 
@@ -193,7 +193,7 @@ describe('Database Attachment Test', function(){
   		r_require('database/database').connect(() => {
   			//add interview
 	  		var interview = new Interview({
-				author : "Letterbox",
+				name : "Letterbox",
 				tags : [ 'tag_1', 'tag_2'],
 				text : 'Test Nachricht',
 			})
