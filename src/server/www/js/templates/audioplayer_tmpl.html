@@ -1,8 +1,16 @@
-<p><%= text %><p>
-<% if (file) { %>
-<audio autoplay="autoplay" controls>
-  <source src="<%= filesUrl+file.name %>" type="audio/wav">
-	Your browser does not support the audio element.
-</audio>
-<!--<span id="playButton" class="button">Play</span>-->
-<% } %>
+<div class="audio-seek-control">
+</div>
+<div class="audio-player-controls">
+	<div class="audio-player-progress">
+	  <div class="audio-player-progress-bar"></div>
+	</div>
+	<div class="audio-player-text">
+		<h3><%= interview.name %></h3>
+		<p><%= text %></p>
+		
+	</div>
+	<div class="play-button">
+	</div>
+	<div id="time-remaining">
+	</div>
+</div>

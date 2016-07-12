@@ -1,26 +1,52 @@
 .list-view {
 
+	.card {
+		margin: $element-margin 0;
+
+		color: #fff;
+		cursor: pointer;
+	}
+
+	
+
 	.inner-card {
+		position: relative;
 		background-color: $card-background;
-		margin: $element-margin;
-		padding: $text-margin;
-	}
+		background-repeat: none;
+		background-position: center;
+		background-size: cover;
 
-	.card-image {
+		width: 100%;
+		height: 20em;
 
-		text-align: center;
+		@include media($mobile) {
+			height: 15em;
+		}
 
-		img {
-
-			height:200px;
+		&:before {
+		    content: '';
+			position: absolute;
+			top: 0;
+			right: 0;
+			bottom: 60%;
+			left: 0;
+			background-image: linear-gradient(to bottom,rgba(0,0,0,0.7),rgba(0,0,0,0));
 		}
 	}
 
-	.tag-list {
+	.card-content {
+		position: absolute;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		padding: $card-padding;
+	}
 
-		li {
-			float:left;
-		}
 
+
+	.card-bottom {
+		position: absolute;
+   		bottom: 0;
 	}
 }

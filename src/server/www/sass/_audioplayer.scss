@@ -5,14 +5,71 @@
 		bottom: 0px;
 		left:0px;
 		right:0px;
-		background-color: #fff;
-		height: 100px;
-		text-align:center;
+		background-color: #000;
+		color: #fff;
+		height: 70px;
 		border-top: $border-style;
 
-		/*audio {
+		audio {
 			display: none;
-		}*/
+		}
+
+		.audio-player-controls {
+		}
+
+		.play-button {
+			position: absolute;
+			top:0;
+			left:0;
+			padding: $card-padding;
+			margin-top: $text-margin;
+			background-image: image-url('play-button-active.png');
+
+			&.playing {
+				background-image: image-url('pause-button.png');
+			}	
+		}
+
+		
+
+		.audio-player-text {
+			padding: $text-margin;
+			margin-left: 60px;
+		}
+
+		p {
+			margin: 0;
+		}
+
+		h3 {
+			color: $highlight-color;
+		}
+
+		#time-remaining {
+			position: absolute;
+			top:0;
+			right:0;
+			padding: $card-padding;
+			pointer-events:none;
+		}
+
+		.audio-player-progress {
+			height:5px;
+			pointer-events:none;
+
+			.audio-player-progress-bar {
+				background-color: $highlight-color;
+				height:5px;
+				width: 0%;
+			}
+		}
+		.audio-seek-control {
+		    position: absolute;
+		    top: -25px;
+		    height: 40px;
+		    width: 100%;
+		}
+   
 	}
 }
 

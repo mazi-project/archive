@@ -4,15 +4,19 @@ $text-margin: .5em;
 $paragraph-padding: 1em;
 $button-padding: 2em;
 $element-margin: .5em;
+$card-padding: 1em;
+$tab-menu-padding: .3em;
 
 /* Border */
-$border-radius:3px;
-$border-style: 1px solid #dadada;
+$border-radius:5px;
+$border-style: 1px solid #000000;
+$border-style-thick: 2px solid #000000;
 
 /* Colors */
 
 $body-background: #ffffff;
 $card-background: #eaeaed;
+$highlight-color: #FFFF00;
 
 $button-background: #000000;
 $button-text-color: #cacad3;
@@ -22,14 +26,15 @@ $button-background-clicked: #3c3c3c;
 $input-background-color: transparent;
 $input-text-color: #000;
 
+
 /* Font sizes */
 $small-font-size: 80%;
 
 /* Button & Inputs */
 
 /* Responsive */
-$max-width-outer: 1080px;
-$max-width-inner: 900px;
+$max-width-outer: 600px;
+$max-width-inner: 600px;
 
 $mobile: new-breakpoint(max-width 600px 4);
 $tablet: new-breakpoint(max-width 900px 4);

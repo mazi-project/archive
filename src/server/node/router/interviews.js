@@ -56,7 +56,7 @@ router.get('/',(req,res) => {
  * GET /api/submissions/:id
  */ 
 router.get('/:id',(req,res) => {
-    Interview.findOne({ _id: req.params.id}).populate('comments').exec((err,model) => {
+    Interview.findOne({ _id: req.params.id}).populate('attachments').exec((err,model) => {
         if (Utils.handleError(err,res)) return;
 
         res.send(model);

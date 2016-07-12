@@ -23,17 +23,19 @@
 @import "itemlist"; 
 @import "buttons";
 @import "audioplayer";
+@import "menu";
+@import "singleview";
 
 /* FONTS */
 
-@include font-face("tititllium", "/fonts/TitilliumWeb-Regular", $file-formats: ttf);
-@include font-face("tititllium", "/fonts/TitilliumWeb-SemiBold", 400, $file-formats: ttf);
-@include font-face("tititllium", "/fonts/TitilliumWeb-Bold", bold, $file-formats: ttf);
+@include font-face("nimbus", "/fonts/nimbus-sans-d-light", normal, $file-formats: ttf);
+@include font-face("nimbus", "/fonts/nimbus-sans-novus-medium", 400, $file-formats: ttf);
+@include font-face("nimbus", "/fonts/nimbus-sans-novus-bold", bold, $file-formats: ttf);
 
 /* ELEMENT STYLES */
 
 body {
-	font-family: "tititllium";
+	font-family: "nimbus";
 	color: #444;
 	background-color: $body-background;
 	margin:0;
@@ -46,27 +48,21 @@ h4 {
 }
 
 h3 {
-	text-align: center;
 	font-size: 100%;
-	padding: 0;
 	margin: $text-margin 0 0 0;
-	font-weight: normal;
+	font-weight: bold;
 }
 
 h2 {
-	margin: 0.2em;
-	font-size: 120%;
+	margin: 0;
+	font-size: 160%;
 }
 
 h1 {
-	text-align:center;
-	font-size: 140%;
-	margin: $text-margin;
+	line-height: 90%;
+    font-size: 16pt;
+	margin: $paragraph-padding;
 	padding: 0;
-}
-
-p {
-	margin: 0.2em 0 0.2em 0
 }
 
 a {
@@ -75,7 +71,7 @@ a {
 }
 
 a.link {
-	font-family: 'tititllium';
+	font-family: 'nimbus';
 	font-size: 80%;
 
 	&:hover {
@@ -84,7 +80,7 @@ a.link {
 }
 
 #{$all-text-inputs} {
-	font-family: 'tititllium';
+	font-family: 'nimbus';
 	font-size:130%;
 	width: 100%;
 	padding: $text-margin;
@@ -130,15 +126,16 @@ ul {
 }
 
 .badge {
-	font-family: "tititllium";
+	font-family: "nimbus";
 	border-radius: $border-radius;
 	display: inline-block;
 	line-height: 1;
-	padding: 0.4em 1.2em;
-	margin : $text-margin;
+	padding: 0.6em 1.2em 0.4em 1.2em;
+	margin : 0.2em 0.4em 0.2em 0;
 	font-weight: 400;
-	border: $border-style;
 	font-size: 80%;
+	color: #000;
+	background-color: $highlight-color;
 
 	&.selected {
 		background-color: #FF7043 !important; 
@@ -155,6 +152,10 @@ ul {
 	height:1px;
 }
 
+.tag-list li {
+	float:left;	
+}
+
 .line-horizontal {
 	width:100%;
 	border-bottom: $border-style;
@@ -162,14 +163,24 @@ ul {
 }
 
 .column {
-	max-width: $max-width-outer;
+	max-width: $max-width-inner;
 	width: 100%;
+	margin: auto;
+}
+
+#container {
+	max-width: $max-width-outer;
 	margin: auto;
 }
 
 #content {
 	min-height: 500px;
-	margin-top: 65px;
 	margin-bottom: 120px;
+}
+
+.more {
+	max-height: 0;
+	@include transition(max-height 0.3s);
+	overflow: hidden;
 }
 

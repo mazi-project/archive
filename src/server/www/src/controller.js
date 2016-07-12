@@ -4,7 +4,7 @@
 * @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 * @Date:   2016-05-04 11:38:41
 * @Last Modified by:   lutzer
-* @Last Modified time: 2016-07-08 01:07:58
+* @Last Modified time: 2016-07-11 23:53:24
 */
 
 import Backbone from 'backbone';
@@ -14,8 +14,8 @@ import Config from 'config';
 
 import MainView from 'views/main_view';
 import InterviewListView from 'views/interview_list_view';
-import TagListView from 'views/tag_list_view';
-//import InterviewView from 'views/interview_view';
+import InterviewView from 'views/interview_view';
+import MenuView from 'views/menu_view'
 import AudioPlayerView from 'views/audioplayer_view';
 
 import headerTemplate from 'text!templates/header_tmpl.html';
@@ -61,16 +61,16 @@ class Controller extends Marionette.Controller {
 			this.mainView.headerRegion.show(new Marionette.ItemView({
 				template: _.template(headerTemplate)
 			}));
-
-			//update list view
+			this.mainView.menuRegion.show(new MenuView({ highlight: '#link1' }))
 			this.mainView.contentRegion.show(new InterviewListView({ tag: tag }));
 		}
 
 		showInterview(id) {
-			// this.mainView.headerRegion.show(new Marionette.ItemView({
-			// 	template: _.template(headerTemplate)
-			// }));
-			// this.mainView.contentRegion.show(new InterviewView({ id: id }));
+			this.mainView.headerRegion.show(new Marionette.ItemView({
+			 	template: _.template(headerTemplate)
+			}));
+			this.mainView.menuRegion.show(new MenuView())
+			this.mainView.contentRegion.show(new InterviewView({ id: id }));
 		}
 
 		/* AUDIO PLAYER */

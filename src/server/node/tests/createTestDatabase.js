@@ -7,13 +7,13 @@ var async = require('async')
 var Interview = r_require('models/interview');
 var Attachment = r_require('models/attachment');
 
-var TEST_IMAGE_PATH = "tests/files/img1.jpg"
+var TEST_IMAGE_PATH = "tests/files/img2.jpg"
 var TEST_IMAGE_FILE = {
 		path: "tests/files/test.jpg",
 		originalFilename: "test.jpg",
 		type: "image/jpeg"
 }
-var TEST_AUDIO_PATH = "tests/files/audio1.wav"
+var TEST_AUDIO_PATH = "tests/files/audio2.wav"
 var TEST_AUDIO_FILE = {
 		path: "tests/files/test.wav",
 		originalFilename: "test.wav",
@@ -46,9 +46,9 @@ describe('Create Test Database', function(){
 	it('should add one interview', function(done){
 
 		var interview = new Interview({
-			name : "Letterbox",
-			tags : [ 'tag_1', 'tag_2'],
-			text : 'Test Nachricht',
+			name : "Ludwig Mayer",
+			role : "Urban Designer",
+			text : 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sit amet convallis arcu. Mauris feugiat diam sit amet nunc ullamcorper, in malesuada ligula porta. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Suspendisse sit amet neque convallis urna malesuada consectetur.',
 		})
 
 		interview.save(function(err, model) {
@@ -61,8 +61,8 @@ describe('Create Test Database', function(){
 
 		var interview = new Interview({
 			name : "Letterbox",
-			tags : [ 'tag_1', 'tag_2'],
-			text : 'Test Nachricht',
+			role : "Super cool girl",
+			text : 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sit amet convallis arcu. Mauris feugiat diam sit amet nunc ullamcorper, in malesuada ligula porta. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Suspendisse sit amet neque convallis urna malesuada consectetur.',
 		})
 
 		// save interview
@@ -93,8 +93,8 @@ describe('Create Test Database', function(){
 		Interview.find({}, (err, models) => {
 
 			var attachment = new Attachment({
-				tags : [ "test1", "test2" ],
-				text : "lorem ipsum"
+				tags : [ "gentrification", "urban_gardening" ],
+				text : "Was läuft gut in der Stadt?"
 			});
 
 			models[0].addAttachment(attachment, (err, model) => {
@@ -111,8 +111,8 @@ describe('Create Test Database', function(){
 		Interview.find({}, (err, models) => {
 
 			var attachment = new Attachment({
-				tags : [ "test1", "test2" ],
-				text : "Audio File 1"
+				tags : [ "recht_auf_stadt", "bullshit" ],
+				text : "Wo willst du mitbestimmen?"
 			});
 
 			models[0].addAttachment(attachment, (err, model) => {
@@ -168,6 +168,32 @@ describe('Create Test Database', function(){
 			});
 
 			models[0].addAttachment(attachment, (err, model) => {
+				if (err) throw err;
+
+				model.attach('file', { path: TEST_AUDIO_FILE.path, dir: model.interview }, (err) => {
+					
+					model.save((err, model) => {
+						//check if file exists
+						fs.access(model.file.url, fs.F_OK, (err) => {
+							if (err) throw err;
+							done();
+						});
+					});
+				});
+			});
+		});
+	});
+
+	it('should add an attachment to second model', function(done){
+
+		Interview.find({}, (err, models) => {
+
+			var attachment = new Attachment({
+				tags : [ "test1", "test2" ],
+				text : "Audio File 3"
+			});
+
+			models[1].addAttachment(attachment, (err, model) => {
 				if (err) throw err;
 
 				model.attach('file', { path: TEST_AUDIO_FILE.path, dir: model.interview }, (err) => {

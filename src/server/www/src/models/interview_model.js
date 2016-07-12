@@ -4,7 +4,7 @@
 * @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 * @Date:   2016-05-04 11:38:41
 * @Last Modified by:   lutzer
-* @Last Modified time: 2016-07-07 22:55:54
+* @Last Modified time: 2016-07-11 19:01:22
 */
 
 import Backbone from 'backbone';
@@ -20,9 +20,10 @@ class InterviewModel extends Backbone.Model {
 		return {
 	    	image: false,
 	    	text: '',
-	    	tags: [],
-	    	author: '',
-	    	role: ''
+	    	name: '',
+	    	role: '',
+	    	attachments: [],
+	    	createdAt: 0
 		}
 	}
 }

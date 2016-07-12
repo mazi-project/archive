@@ -1,0 +1,42 @@
+.menu {
+	width: 100%;
+	padding: 0 $element-margin 0 $element-margin;
+	margin-bottom: 24px;
+}
+
+.tab-menu {
+
+	padding: 0;
+	width:100%;
+	border-radius: $border-radius;
+	background-color: $card-background;
+	//border-top: $border-style-thick;
+	//border-bottom: $border-style-thick;
+	
+	overflow: hidden;
+
+	li {
+		font-weight: 400;
+		padding: $tab-menu-padding;
+		padding-top: .5em;
+		float: left;
+		width: 33%;
+		text-align: center;
+		border-left: 3px solid #fff;
+
+		a {
+			display: block;
+		}
+	}
+
+	li:first-child {
+		border-left: none;
+	}
+
+	li.selected {
+		background-color: $highlight-color;
+	}
+}
+
+
+

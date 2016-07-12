@@ -4,7 +4,7 @@
 * @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 * @Date:   2016-05-04 11:38:41
 * @Last Modified by:   lutzer
-* @Last Modified time: 2016-07-07 22:58:19
+* @Last Modified time: 2016-07-11 18:21:47
 */
 
 import Marionette from 'marionette';
@@ -56,9 +56,9 @@ class SubmissionListView extends Marionette.CompositeView {
         this.listenTo(this.collection,'sync',this.hideSpinner);
         this.listenTo(this.collection,'fetching',this.showSpinner);
 
-        this.listenTo(Backbone,'submission:changed', this.onSubmissionChanged);
-        this.listenTo(Backbone,'submission:new', this.onSubmissionAdded);
-        this.listenTo(Backbone,'submission:removed', this.onSubmissionRemoved);
+        this.listenTo(Backbone,'interview:changed', this.onSubmissionChanged);
+        this.listenTo(Backbone,'interview:new', this.onSubmissionAdded);
+        this.listenTo(Backbone,'interview:removed', this.onSubmissionRemoved);
 
         this.collection.getFirstPage(this.fetchParams);
 	}

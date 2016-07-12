@@ -2,7 +2,7 @@
 * @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 * @Date:   2016-07-07 10:47:10
 * @Last Modified by:   lutzer
-* @Last Modified time: 2016-07-08 00:56:08
+* @Last Modified time: 2016-07-12 15:07:08
 */
 
 'use strict';
@@ -66,7 +66,7 @@ router.post('/', (req, res) => {
  * GET /api/attachments/:id
  */ 
 router.get('/:id',(req,res) => {
-    Attachment.findOne({ _id: req.params.id}).exec((err,model) => {
+    Attachment.findOne({ _id: req.params.id}).populate('interview').exec((err,model) => {
         if (Utils.handleError(err,res)) return;
 
         res.send(model);
