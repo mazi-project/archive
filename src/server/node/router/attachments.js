@@ -9,7 +9,6 @@
 
 var express = require('express');
 var _ = require('underscore');
-var htmlspecialchars = require('htmlspecialchars');
 
 var appEvents = r_require('/utils/appEvents.js');
 var Utils = r_require('/utils/utils');
