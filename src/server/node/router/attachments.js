@@ -2,14 +2,13 @@
 * @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 * @Date:   2016-07-07 10:47:10
 * @Last Modified by:   lutzer
-* @Last Modified time: 2016-07-12 15:07:08
+* @Last Modified time: 2016-07-13 14:39:05
 */
 
 'use strict';
 
 var express = require('express');
 var _ = require('underscore');
-var htmlspecialchars = require('htmlspecialchars');
 
 var appEvents = r_require('/utils/appEvents.js');
 var Utils = r_require('/utils/utils');

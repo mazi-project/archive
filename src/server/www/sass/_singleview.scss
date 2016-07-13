@@ -51,6 +51,7 @@
 			.text {
 				margin-left: 30px;
 				pointer-events: none;
+				margin-right: 50px;
 			}
 
 			.expand-button {
@@ -77,11 +78,8 @@
 
 			&.expand .more {
 				display: block;
-				max-height: 80px;
+				max-height: 60px;
 			}
-
-
-			
 		}
 
 		p {
