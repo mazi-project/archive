@@ -4,7 +4,7 @@
 * @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 * @Date:   2016-05-04 11:38:41
 * @Last Modified by:   lutzer
-* @Last Modified time: 2016-07-11 18:21:47
+* @Last Modified time: 2016-07-12 19:48:06
 */
 
 import Marionette from 'marionette';
@@ -56,9 +56,9 @@ class SubmissionListView extends Marionette.CompositeView {
         this.listenTo(this.collection,'sync',this.hideSpinner);
         this.listenTo(this.collection,'fetching',this.showSpinner);
 
-        this.listenTo(Backbone,'interview:changed', this.onSubmissionChanged);
-        this.listenTo(Backbone,'interview:new', this.onSubmissionAdded);
-        this.listenTo(Backbone,'interview:removed', this.onSubmissionRemoved);
+        this.listenTo(Backbone,'interview:changed', this.onInterviewChanged);
+        this.listenTo(Backbone,'interview:new', this.onInterviewAdded);
+        this.listenTo(Backbone,'interview:removed', this.OnInterviewRemoved);
 
         this.collection.getFirstPage(this.fetchParams);
 	}
@@ -78,21 +78,21 @@ class SubmissionListView extends Marionette.CompositeView {
 
 
 	// update model on data change
-    onSubmissionChanged(data) {
+    onInterviewChanged(data) {
     	var model = this.collection.get(data.model._id);
     	if (model)
     		model.fetch();
     }
 
-    onSubmissionAdded(data) {
+    onInterviewAdded(data) {
         //console.log(data);
-    	var submission = new InterviewModel(data.model);
-    	submission.fetch();
+    	var interview = new InterviewModel(data.model);
+    	interview.fetch();
     	 // add to front of collection
-		this.collection.add(submission, { at: 0});
+		this.collection.add(interview, { at: 0});
     }
 
-    onSubmissionRemoved(data) {
+    onInterviewRemoved(data) {
         //console.log(data);
         this.collection.remove(data);
     }

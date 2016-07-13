@@ -17,7 +17,7 @@ var TEST_AUDIO_PATH = "tests/files/audio2.wav"
 var TEST_AUDIO_FILE = {
 		path: "tests/files/test.wav",
 		originalFilename: "test.wav",
-		type: "image/jpeg"
+		type: "audio/wav"
 }
 
 describe('Create Test Database', function(){

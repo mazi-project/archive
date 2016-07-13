@@ -4,7 +4,7 @@
 * @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 * @Date:   2016-05-04 11:38:41
 * @Last Modified by:   lutzer
-* @Last Modified time: 2016-07-12 10:17:48
+* @Last Modified time: 2016-07-12 18:40:44
 */
 
 import Marionette from 'marionette';
@@ -55,7 +55,7 @@ class SubmissionItemView extends Marionette.ItemView {
         if (!this.model.get('image'))
             return "";
         else
-            return "style=\"background-image: url('"+filesUrl+this.model.get('image').name+"'\"";
+            return "style=\"background-image: url('"+filesUrl+this.model.get('image').name+"')\"";
     }
 
     onClick(event) {

@@ -10,8 +10,9 @@ var Config = {
 	/* FILE UPLOAD */
 	uploadDirTmp: '_tmp/',
 	fileDir: __dirname + '/files/',
-	maxFileSize: 1024*1024*2, //allowed file size for attached files
-	allowedFileTypes: ['image/jpeg','image/jpg','image/png','image/gif'],
+	maxFileSize: 1024*1024*200, //allowed file size for attached files
+	allowedImageFileTypes: ['image/jpeg','image/jpg','image/png','image/gif'],
+	allowedAudioFileTypes: ['audio/wav','audio/x-wav','audio/mpeg3','audio/x-mpeg3','audio/wave'],
 
 	/* SERVER CONFIG */
 	baseUrl : '/', // with trailing /

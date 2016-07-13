@@ -61,6 +61,9 @@ module.exports = function (app) {
     // tags routes
     app.use(Config.baseUrl+'api/tags', require('./tags'));
 
+    // question routes
+    app.use(Config.baseUrl+'api/questions', require('./questions'));
+
     // file routes
     app.use(Config.baseUrl+'api/upload', bodyParser.json());
     app.use(Config.baseUrl+'api/upload', require('./upload'));

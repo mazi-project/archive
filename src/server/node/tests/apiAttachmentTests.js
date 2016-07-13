@@ -14,6 +14,12 @@ var TEST_IMAGE_FILE = {
 		originalFilename: "img1.jpg",
 		type: "image/jpeg"
 }
+var TEST_AUDIO_PATH = "tests/files/audio2.wav"
+var TEST_AUDIO_FILE = {
+		path: "tests/files/test.wav",
+		originalFilename: "test.wav",
+		type: "audio/wav"
+}
 
 describe('API Routes /attachments/', function() {
 
@@ -34,7 +40,10 @@ describe('API Routes /attachments/', function() {
 		//copy test file
 		fs.copy(TEST_IMAGE_PATH, TEST_IMAGE_FILE.path, (err) => {
 			if (err) throw(err);
-			done();
+			fs.copy(TEST_AUDIO_PATH, TEST_AUDIO_FILE.path, (err) => {
+				if (err) throw(err);
+				done();
+			});
 		});
 	});
 
@@ -96,7 +105,7 @@ describe('API Routes /attachments/', function() {
 
 				var attachment = res.body;
 				
-				postFile(attachment._id, TEST_IMAGE_FILE, (attachment) => {
+				postFile(attachment._id, TEST_AUDIO_FILE, (attachment) => {
 
 					//check if file exists
 					fs.access(attachment.file.url, fs.F_OK, (err) => {

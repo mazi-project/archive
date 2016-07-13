@@ -4,7 +4,7 @@
 * @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 * @Date:   2016-05-04 11:38:41
 * @Last Modified by:   lutzer
-* @Last Modified time: 2016-07-12 10:18:11
+* @Last Modified time: 2016-07-12 22:31:17
 */
 
 import Backbone from 'backbone';
@@ -17,7 +17,7 @@ import InterviewModel from 'models/interview_model';
 
 import template from 'text!templates/interview_tmpl.html';
 
-class SubmissionView extends Marionette.LayoutView {
+class InterviewView extends Marionette.LayoutView {
 
 	/* properties */
    	get template() { return _.template(template) }
@@ -53,7 +53,7 @@ class SubmissionView extends Marionette.LayoutView {
       $(event.target).toggleClass("expand");
     }
 
-      onPlayButtonClicked(e) {
+    onPlayButtonClicked(e) {
         var attachmentId = e.target.attributes['data-id'].value
         Backbone.trigger('show:audioplayer',attachmentId);
     }
@@ -61,4 +61,4 @@ class SubmissionView extends Marionette.LayoutView {
     
 }
 
-export default SubmissionView
+export default InterviewView

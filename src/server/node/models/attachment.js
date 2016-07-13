@@ -37,7 +37,7 @@ attachmentSchema.plugin(crate, {
 
 attachmentSchema.pre('save', function(next) {
 
-    Utils.escapePath(this,'text');
+    //Utils.escapePath(this,'text');
     return next();
 
 });

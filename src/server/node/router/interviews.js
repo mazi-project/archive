@@ -69,6 +69,8 @@ router.get('/:id',(req,res) => {
 router.post('/', (req, res) => {
 
     var interview = new Interview(req.body);
+
+    console.log(interview);
     
     //only allow new comments
     delete interview['_id'];

@@ -50,8 +50,8 @@ router.post('/attachment/:attachmentId', fileUploader, function(req,res){
         }
 
         //check extension
-        if (!(_.contains(Config.allowedFileTypes,file.type))) {
-            Utils.handleError({ message: 'Only jpg,gif and png images are allowed for upload. File is '+file.type },res);
+        if (!(_.contains(Config.allowedAudioFileTypes,file.type))) {
+            Utils.handleError({ message: 'Only wav and mp3 files are allowed for upload. File is '+file.type },res);
             fse.remove(file.path);
             return;
         }
@@ -102,7 +102,7 @@ router.post('/image/:interviewId', fileUploader, function(req,res){
         }
 
         //check extension
-        if (!(_.contains(Config.allowedFileTypes,file.type))) {
+        if (!(_.contains(Config.allowedImageFileTypes,file.type))) {
             Utils.handleError({ message: 'Only jpg,gif and png images are allowed for upload. File is '+file.type },res);
             fse.remove(file.path);
             return;
