@@ -138,7 +138,7 @@ describe('Create Test Database', function(){
 
 			var attachment = new Attachment({
 				tags : [ "test1", "test2" ],
-				text : "Audio File 2"
+				text : "Describe a recent conversionation you had with someone that you found inspiring and unexpected?"
 			});
 
 			models[0].addAttachment(attachment, (err, model) => {

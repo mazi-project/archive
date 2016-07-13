@@ -4,13 +4,14 @@
 * @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 * @Date:   2016-05-04 11:38:41
 * @Last Modified by:   lutzer
-* @Last Modified time: 2016-07-12 17:44:54
+* @Last Modified time: 2016-07-13 15:05:34
 */
 
 import Marionette from 'marionette'
 import _ from 'underscore'
 import Config from 'config';
 import AttachmentModel from 'models/attachment_model';
+import _str from 'underscoreString';
 
 import template from 'text!templates/audioplayer_tmpl.html';
 
@@ -35,6 +36,14 @@ class AudioPlayerView extends Marionette.ItemView {
         return {
             'click .play-button' : 'onPlayButtonClicked',
             'mouseup .audio-seek-control' : 'onAudioSeek'
+        }
+    }
+
+    get templateHelpers() {
+        return {
+            truncate : function(string) {
+                return _str.truncate(string,Config.stringTruncateShort)
+            }
         }
     }
 

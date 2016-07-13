@@ -4,7 +4,7 @@
 * @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 * @Date:   2016-05-04 11:38:41
 * @Last Modified by:   lutzer
-* @Last Modified time: 2016-07-12 22:31:17
+* @Last Modified time: 2016-07-13 15:03:34
 */
 
 import Backbone from 'backbone';
@@ -14,6 +14,7 @@ import Moment from 'moment';
 import 'moment_en_gb';
 import Config from 'config';
 import InterviewModel from 'models/interview_model';
+import _str from 'underscoreString';
 
 import template from 'text!templates/interview_tmpl.html';
 
@@ -29,6 +30,9 @@ class InterviewView extends Marionette.LayoutView {
 		    filesUrl : Config.files_url + this.model.get('_id') + '/',
         formatDate : function(date) {
           return Moment(date).format("D.M.YYYY");
+        },
+        truncate : function(string) {
+          return _str.truncate(string,Config.stringTruncateShort)
         }
       }
     }
