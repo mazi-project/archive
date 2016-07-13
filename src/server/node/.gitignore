@@ -1,5 +1,5 @@
 node_modules/*
 files/*
 _tmp/
-_tmp/.keep
+!_tmp/.keep
 !files/.keep
