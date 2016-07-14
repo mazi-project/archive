@@ -4,7 +4,7 @@
 * @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 * @Date:   2016-05-04 11:38:41
 * @Last Modified by:   lutzer
-* @Last Modified time: 2016-07-12 19:48:06
+* @Last Modified time: 2016-07-14 12:00:04
 */
 
 import Marionette from 'marionette';
@@ -79,14 +79,14 @@ class SubmissionListView extends Marionette.CompositeView {
 
 	// update model on data change
     onInterviewChanged(data) {
-    	var model = this.collection.get(data.model._id);
+    	var model = this.collection.get(data._id);
     	if (model)
     		model.fetch();
     }
 
     onInterviewAdded(data) {
         //console.log(data);
-    	var interview = new InterviewModel(data.model);
+    	var interview = new InterviewModel(data);
     	interview.fetch();
     	 // add to front of collection
 		this.collection.add(interview, { at: 0});
