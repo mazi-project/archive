@@ -4,51 +4,41 @@
 * @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 * @Date:   2016-05-04 11:38:41
 * @Last Modified by:   lutzer
-* @Last Modified time: 2016-05-17 11:17:50
+* @Last Modified time: 2016-07-15 00:15:18
 */
 
 import Marionette from 'marionette';
 import _ from 'underscore';
 import TagCollection from 'models/tag_collection';
-import TagItemView from 'views/tag_item_view'
 
-class TagListView extends Marionette.CollectionView {
+import template from 'text!templates/tag_list_tmpl.html';
+import itemTemplate from 'text!templates/tag_item_tmpl.html';
+
+class TagListView extends Marionette.CompositeView {
 
 	/* properties */
 
-    get className() { return 'tag-list' }
+    get className() { return 'tags-page' }
 
-    get tagName() { return 'ul' }
+    get tagName() { return 'div' }
 
-    get childView() { return TagItemView }
+    get childView() { 
+        return Marionette.ItemView.extend({
+            template: _.template(itemTemplate)
+        }); 
+    }
 
+    get template() {
+        return _.template(template)
+    }
+
+    get childViewContainer() { return '#tags' }
 
     /* methods */
     initialize(options) {
 
         this.collection = new TagCollection();
         this.collection.fetch();
-
-        // setup collection events
-        this.listenTo(this.collection,'sync',this.onCollectionLoaded)
-
-        if (_.has(options,'tag')) {
-            this.setTag(options.tag);
-        }
-    }
-
-    setTag(tag) {
-    	this.tag = tag;
-    	this.children.each( (childView) => {
-    		if (childView.model.get('name') == this.tag)
-    			childView.setSelected(true);
-    		else
-    			childView.setSelected(false);
-    	});
-    }
-
-    onCollectionLoaded() {
-    	this.setTag(this.tag)
     }
 }
 

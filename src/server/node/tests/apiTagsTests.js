@@ -21,22 +21,19 @@ describe('API Routes /tags/', function(){
 				(callback) => { 
 					new Interview({
 						text: '1',
-						tags : [TAGS[0]],
-						author: 'Test Peter'
+						name: 'Test Peter'
 					}).save(callback) 
 				},
 				(callback) => { 
 					new Interview({
 						text: '2',
-						tags : [TAGS[0],TAGS[1]],
-						author: 'Test Peter'
+						name: 'Test Peter'
 					}).save(callback) 
 				},
 				(callback) => { 
 					new Interview({
 						text: '3',
-						tags : [TAGS[0],TAGS[1],TAGS[2]],
-						author: 'Test Peter'
+						name: 'Test Peter'
 					}).save(callback) 
 				}
 			],() => {

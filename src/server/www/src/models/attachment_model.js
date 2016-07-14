@@ -4,7 +4,7 @@
 * @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 * @Date:   2016-05-04 11:38:41
 * @Last Modified by:   lutzer
-* @Last Modified time: 2016-07-12 15:13:13
+* @Last Modified time: 2016-07-15 00:26:37
 */
 
 import Backbone from 'backbone';
@@ -18,6 +18,7 @@ class AttachmentModel extends Backbone.Model {
 
 	get defaults() { 
 		return {
+	    	_id: false,
 	    	file: false,
 	    	text: '',
 	    	tags: [],

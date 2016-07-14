@@ -5,7 +5,7 @@ var _ = require('underscore');
 
 var appEvents = r_require('/utils/appEvents.js');
 
-var Interview = r_require('/models/interview');
+var Attachment = r_require('/models/attachment');
 var Utils = r_require('/utils/utils');
 
 var router = express.Router();
@@ -15,7 +15,7 @@ var router = express.Router();
  */ 
 router.get('/',function(req,res){
     
-	Interview.find({}, (err, models) => {
+	Attachment.find({}, (err, models) => {
 		if (Utils.handleError(err,res))
             return;
 

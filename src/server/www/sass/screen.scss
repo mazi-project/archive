@@ -25,6 +25,9 @@
 @import "audioplayer";
 @import "menu";
 @import "singleview";
+@import "tagslist";
+@import "tracklist";
+@import "attachment";
 
 /* FONTS */
 
@@ -48,9 +51,8 @@ h4 {
 }
 
 h3 {
-	font-size: 100%;
-	margin: $text-margin 0 0 0;
-	font-weight: bold;
+	font-size: 120%;
+	margin: 0 0 $text-margin 0;
 }
 
 h2 {

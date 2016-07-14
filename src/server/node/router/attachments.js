@@ -2,7 +2,7 @@
 * @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 * @Date:   2016-07-07 10:47:10
 * @Last Modified by:   lutzer
-* @Last Modified time: 2016-07-13 14:39:05
+* @Last Modified time: 2016-07-15 00:09:27
 */
 
 'use strict';
@@ -19,6 +19,27 @@ var Interview = r_require('/models/interview');
 var Auth = r_require('/router/_authentification');
 
 var router = express.Router();
+
+/*
+ * GET /api/attachments/
+ */ 
+router.get('/',(req,res) => {
+
+    //get qury options
+    var options = {}
+    if (_.has(req.query,'tag'))
+        options.tags = req.query.tag;
+
+    // build query
+    var query = Attachment.find(options);
+    query.sort({'updatedAt': -1});
+    query.populate('interview');
+
+    // execute
+    query.exec((err,models) => {
+        res.send(models);
+    });
+});
 
 /*
  * POST /api/attachments/

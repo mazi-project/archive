@@ -1,0 +1,16 @@
+.tags-page {
+	border-top: $border-style-thick;
+	padding: $paragraph-padding;
+	background-color: $highlight-color;
+	min-height: 500px;
+
+	h2 {
+		font-size: 120%;
+		margin: 0 0 $text-margin 0;
+	}
+
+	.badge {
+		background-color: $card-background;
+		font-size: 100%;
+	}
+}

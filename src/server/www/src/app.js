@@ -4,7 +4,7 @@
 * @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 * @Date:   2016-05-04 11:38:41
 * @Last Modified by:   lutzer
-* @Last Modified time: 2016-07-07 19:08:35
+* @Last Modified time: 2016-07-15 00:15:39
 */
 
 import $ from 'jquery';
@@ -34,8 +34,9 @@ class App extends Backbone.Marionette.Application {
 		this.Router = new Marionette.AppRouter({
 			controller: new Controller(this),
 			appRoutes: {
-				'tag/:tag' : 'showInterviewList',
 				'interview/:id' : 'showInterview',
+				'tags' : 'showTagList',
+				'tags/:tag' : 'showTrackList',
 				'*actions': 'showInterviewList'
 			}
 		});
