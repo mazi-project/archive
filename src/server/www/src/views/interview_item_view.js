@@ -4,7 +4,7 @@
 * @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 * @Date:   2016-05-04 11:38:41
 * @Last Modified by:   lutzer
-* @Last Modified time: 2016-07-12 18:40:44
+* @Last Modified time: 2016-07-15 14:44:41
 */
 
 import Marionette from 'marionette';
@@ -27,7 +27,10 @@ class SubmissionItemView extends Marionette.ItemView {
 		return {
             text_truncated : _str.truncate(this.model.get('text'),Config.stringTruncateShort,'...'),
             tags : _.unique(_.flatten(_.pluck(this.model.get('attachments'),"tags"))),
-            backgroundImage : this.getBackgroundImageString()
+            backgroundImage : this.getBackgroundImageString(),
+            first : function(array,n) {
+                return _.first(array,n) 
+            }
 		}
     }
 

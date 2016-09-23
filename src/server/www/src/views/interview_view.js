@@ -4,7 +4,7 @@
 * @Author: Lutz Reiter, Design Research Lab, Universität der Künste Berlin
 * @Date:   2016-05-04 11:38:41
 * @Last Modified by:   lutzer
-* @Last Modified time: 2016-07-13 15:03:34
+* @Last Modified time: 2016-07-15 14:44:32
 */
 
 import Backbone from 'backbone';

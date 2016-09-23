@@ -9,7 +9,7 @@
 		<div class="card-bottom">
 			<% if (tags.length > 0) { %>
 			<ul class="tag-list">
-				<% _.each(tags, function(tag) { %>
+				<% _.each(first(tags,8), function(tag) { %>
 				<li><span class="badge with-hash"><%= tag %></span></li>
 				<% }) %>
 			</ul>
