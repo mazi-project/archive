@@ -1,145 +1,162 @@
 'use strict';
 
 var _ = require('underscore')
-var mongoose = require('mongoose');
 var uuid = require('node-uuid');
-var fse = require('fs-extra');
+var fs = require('fs-extra');
 var async = require('async');
-var crate = require('mongoose-crate');
-var LocalFS = require('mongoose-crate-localfs');
 var path = require('path');
 
-var Utils = r_require('/utils/utils');
-var Attachment = r_require('/models/attachment');
+var Database = r_require('models/database');
 
 // Define Model Schema
-var interviewSchema = mongoose.Schema({
+var Interview = {
 
-	_id: { type: String, default: uuid.v4 }, //use uuid
+    create : function(data, callback) {
+        Database.connect();
+        var db = Database.db;
 
-    text : { type: String, required: true, maxlength: '1500' },
-    name: { type: String, required: true, maxlength: 60 },
-    role: { type: String, maxlength: 100 },
-    attachments: [ { type: String, ref: 'Attachment'} ],
-    location : { type: String } // [ longitude, latitude ]
+        _.each(data, function(element) {
 
-}, { timestamps: true });
-
-interviewSchema.plugin(crate, {
-    storage: new LocalFS({
-        directory: Config.fileDir,
-        path: (attachment) => {
-            var dir = "";
-            if (_.has(attachment,'dir'))
-                dir = attachment.dir + '/'
-            return '/' + dir + path.basename(attachment.path);
-        }
-    }),
-    fields: {
-        image: {}
-    }
-})
-
-interviewSchema.pre('remove', function(next) {
-
-    // also remove all the assigned attachments
-    Attachment.remove({ interview: this._id }, (err) => {
-        if (err)
-            next(err);
-
-        //remove file directory
-        var dir = Config.fileDir + '/' + this._id + '/';
-        fse.remove(dir, (err) => {
-            next(err);
+            // create fields
+            data._id = uuid.v4();
+            data.attachments = [];
         });
-    });
-});
 
-interviewSchema.pre('save', function(next) {
+        db.interviews.insert(data, callback);
+    },
 
-    //Utils.escapePath(this,'text');
-    //Utils.escapePath(this,'name');
-    //Utils.escapePath(this,'role');
+    get : function(id, callback) {
+        Database.connect();
+        var db = Database.db;
 
-    //dont allow false or null tags
-    if (this.get('tags') == null || this.get('tags') == false)
-        this.set('tags',[]);
+        db.interviews.findOne({ _id : id }, callback);
+    },
 
-    //create attachment dir, if it doesnt exist
-    var dir = Config.fileDir + this._id + '/'
-    fse.ensureDir(dir, (err) => {
-        if (err) {
-            next(err)
-            return;
-        }
+    list : function(callback) {
+        Database.connect();
+        var db = Database.db;
 
-        return next();
-    });
+        db.interviews.find({}).toArray(callback);
+    },
 
-});
+    remove : function(id, callback) {
+        Database.connect();
+        var db = Database.db;
 
-// Remove All entries
-interviewSchema.statics.removeAll = function(callback) {
-    this.remove({},callback);
-};
+        db.interviews.remove({ _id : id}, function(err) {
 
-interviewSchema.statics.remove = function(query,callback) {
-	this.find(query, function(err,models) {
-        if (err) {
-            callback(err);
-            return;
-        }
+            //TODO: remove attachments
 
-        async.each(models, (model,done) => {
-            model.remove(done);
-        }, (err) => {
-            callback(err,{ result: {n: models.length }});
+            //remove file directory
+            var dir = Config.fileDir + '/' + id + '/';
+            fs.remove(dir, callback);
         });
-    });
-};
+    },
 
-interviewSchema.methods.addAttachment = function(attachment, callback) {
+    validate : function(data) {
+        //dont allow false or null tags
+        if (data.tags == null || data.tags == false)
+            data.tags = [];
+    },
 
-    attachment.interview = this._id;
+    removeAll : function(callback) {
+        Database.connect();
+        var db = Database.db;
 
-    //save attachment
-    attachment.save((err,attachment) => {
-        if (err) {
-            callback(err)
-            return;
-        }
+        var self = this;
+        db.interviews.find().toArray(function(err, models) {
+            async.each(models, function(model, cb) {
+                self.remove(model._id, cb);
+            }, callback);
+        });
+    },
 
-        //add ref to model
-        this.attachments.push(attachment._id);
-        
-        this.save((err) => {
+    count : function(callback) {
+        Database.connect();
+        var db = Database.db;
+
+        db.interviews.find({}).count(callback);
+    },
+
+    addImage : function(id, image, callback) {
+        Database.connect();
+        var db = Database.db;
+
+        //get interview
+        db.interviews.findOne({ _id : id }, function(err,doc) {
+            if (err) callback(err);
+            if (_.isNull(doc)) callback(new Error("No document found"));
+
+            var fileurl = Config.fileDir + id + '/' + image.originalFilename;
+
+            //copy image
+            fs.move(image.path, fileurl, (err) => {
+                if (err) throw(err);
+
+                doc.image = image;
+                doc.image.url = fileurl
+
+                // save interview
+                db.interviews.update({ _id : id}, doc, function(err) {
+                    callback(err,doc);
+                });
+            });
+
+        });
+    },
+
+    addAttachment : function(id, attachment, callback) {
+        Database.connect();
+        var db = Database.db;
+
+        // get interview
+        db.interviews.findOne({ _id : id }, function(err,doc) {
+            if (err) callback(err);
+
+        });
+
+        /*attachment.interview = id;
+
+        //save attachment
+        attachment.save((err,attachment) => {
             if (err) {
                 callback(err)
                 return;
-            } 
-            callback(null,attachment);
-        });
-    });
+            }
+
+            //add ref to model
+            this.attachments.push(attachment._id);
+            
+            this.save((err) => {
+                if (err) {
+                    callback(err)
+                    return;
+                } 
+                callback(null,attachment);
+            });
+        });*/
+    },
+
+    removeAttachment : function(attachment_id, callback) {
+        Database.connect();
+        var db = Database.db;
+
+        // first remove comment from database
+        /*Attachment.remove({ _id : attachment_id}, function(err) {
+            if (err) {
+                callback(err)
+                return;
+            }
+
+            // remove attachment ref from model
+            self.attachments = _.reject(self.attachments, function(attachment) {
+                return attachment == attachment_id;
+            });
+
+            //save model
+            self.save(callback)
+        });*/
+    }
 }
 
-interviewSchema.methods.removeAttachment = function(attachment_id,callback) {
-    var self = this;
-
-    // first remove comment from database
-    Attachment.remove({ _id : attachment_id}, function(err) {
-        if (err) {
-            callback(err)
-            return;
-        }
-
-        // remove attachment ref from model
-        self.attachments = _.reject(self.attachments, function(attachment) {
-            return attachment == attachment_id;
-        });
-
-        //save model
-        self.save(callback)
-    });
-}
-
-module.exports = mongoose.model('Interview', interviewSchema, Config.interviewCollection);
+module.exports = Interview;

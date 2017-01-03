@@ -18,11 +18,15 @@ describe('Database Connection Test', function() {
 
 	it('should connect to mongoDB', function(done) {
 
-		var Database = r_require('database/database')
+		var Database = r_require('models/database')
 
-		Database.connect((err) => {
-			if (err)
-				throw err;
+		Database.connect();
+
+		// check if collections were created
+		var db = Database.db;
+		db.collectionNames( function(err,names) {
+			if (err) throw err;
+			
 			Database.disconnect();
 			done();
 		});
@@ -30,98 +34,93 @@ describe('Database Connection Test', function() {
 
 });
 
-/* SUBMISSION TESTS */
+/* INTERVIEW TESTS */
 
 describe('Database Interview Test', function(){
 
   	beforeEach(function(done) {
 
-  		r_require('database/database').connect(() => {
-
-			//copy test file
-			fs.copy(TEST_IMAGE_PATH, TEST_IMAGE_FILE.path, (err) => {
-				if (err) throw(err);
-				done();
-			});
-  		});
+		//copy test file
+		fs.copy(TEST_IMAGE_PATH, TEST_IMAGE_FILE.path, (err) => {
+			if (err) throw(err);
+			done();
+		});
   	});
 
   	afterEach(function(done) {
-  		async.parallel([
-			(callback) => { Interview.removeAll(callback) },
-			(callback) => { Attachment.removeAll(callback) },
-		],() => {
-        	r_require('database/database').disconnect();
-        	done();
-        }); 
+
+  		var db = r_require('models/database');
+  		db.connect();
+  		Interview.removeAll(function(err) {
+  			if (err) throw(err);
+  			db.disconnect();
+  			done();
+  		});
     });
 
 	it('should create a database file and add one interview', function(done){
 
-		var interview = new Interview({
+		var data = {
 			name : "Letterbox",
 			tags : [ 'tag_1', 'tag_2'],
 			text : 'Test Nachricht',
-		})
+		}
 
-		interview.save(function(err, model) {
+		Interview.create(data, function(err, model) {
 			if (err) throw err;
 			done();
 		});
 	})
 
+	it('should add a interview and return it', function(done){
+
+		var message = require('node-uuid').v4()
+
+		var data = {
+			text: message,
+			name: 'test'
+		};
+
+		Interview.create(data, function(err, models) {
+			if (err) throw err;
+			var objectId = models[0]._id;
+
+			// check if model exists
+			Interview.get(objectId, function(err, model) {
+				if (err) throw err;
+	        	assert.equal(message,model.text)
+	        	done();
+			});
+
+		});
+	})
+
 	it('should add one interview and attach an image', function(done){
 
-		var interview = new Interview({
+		var data = {
 			name : "Letterbox",
 			tags : [ 'tag_1', 'tag_2'],
 			text : 'Test Nachricht',
-		})
+		};
 
 		// save interview
-		interview.save(function(err, model) {
+		Interview.create(data, function(err, model) {
 			if (err) throw err;
 
 			// attach image
-			model.attach('image', { path: TEST_IMAGE_FILE.path, dir: model._id }, (err) => {
+			Interview.addImage(model[0]._id, TEST_IMAGE_FILE, (err,model) => {
 				if (err) throw err;
 
-				// save interview
-				model.save(function(err, model) {
+				//check if file exists
+				fs.access(model.image.url, fs.F_OK, (err) => {
 					if (err) throw err;
-
-					//check if file exists
-					fs.access(model.image.url, fs.F_OK, (err) => {
-						if (err) throw err;
-						done();
-					});
+					done();
 				});
 
 			});
 		});
 	});
 
-	it('should add a interview and return it', function(done){
-
-		var message = require('node-uuid').v4()
-
-		var interview = new Interview({
-			text: message,
-			name: 'test'
-		});
-
-		interview.save(function(err, model) {
-			if (err) throw err;
-			var objectId = model._id;
-
-			// check if model exists
-			Interview.find({ _id: objectId} , function(err, models) {
-	        	assert.equal(message,models[0].text)
-	        	done();
-			});
-
-		});
-	})
 
 	it('should match the correct submission count', function(done) {
 
@@ -135,8 +134,11 @@ describe('Database Interview Test', function(){
 			}
 		});
 
-		Interview.create(array, function(err,models) {
-			Interview.count({}, function(err, count) {
+		async.each(array, function(element, cb) {
+			Interview.create(element, cb);
+		}, function(err) {
+			if (err) throw err;
+			Interview.count(function(err, count) {
 				assert.equal(count,size) // check correct size
 				done();
 			});
@@ -153,9 +155,11 @@ describe('Database Interview Test', function(){
 			}
 		});
 
+
+
 		Interview.create(array, function(err,models) {
 			Interview.remove({ _id: models[0]._id} , function(err) {
-				Interview.count({}, function(err,count) {
+				Interview.count(function(err,count) {
 					assert.equal(count,size-1) // check if one item was removed
 					done();
 				});
@@ -174,7 +178,7 @@ describe('Database Interview Test', function(){
 		});
 
 		Interview.create(array, function(err) {
-			Interview.find({}, function(err,models) {
+			Interview.list(function(err,models) {
 				assert.equal(models.length,size)
 				done();
 			})
@@ -185,7 +189,7 @@ describe('Database Interview Test', function(){
 
 /* ATTACHMENT TESTS */
 
-describe('Database Attachment Test', function(){
+/*describe('Database Attachment Test', function(){
 
 
   	beforeEach(function(done) {
@@ -265,4 +269,4 @@ describe('Database Attachment Test', function(){
 			});
 		});
 	});
-});
+});*/

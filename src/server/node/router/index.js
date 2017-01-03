@@ -9,17 +9,13 @@ module.exports = function (app) {
 
     var handleDbConnection = function(req, res, next) {
 
-        var db = r_require('/database/database')
-        db.connect();
-
         // action after response
         var afterResponse = function() {
+            var db = r_require('/models/database')
             db.disconnect();
         }
 
-        //res.on('finish', afterResponse);
         res.on('close', afterResponse);
-
         next();
     };
 

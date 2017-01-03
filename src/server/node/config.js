@@ -3,9 +3,9 @@
 var Config = {
 
 	/* DATABASE */
-	database: "mongodb://localhost/princess",
-	interviewCollection: "interviews",
-	attachmentCollection: "attachments",
+	databaseDirectory: __dirname + "/data",
+	interviewCollection: "interviews.db",
+	attachmentCollection: "attachments.db",
 
 	/* FILE UPLOAD */
 	uploadDirTmp: '_tmp/',
@@ -25,8 +25,9 @@ var Config = {
 	authPassword: 'password',
 
 	/* TEST CONFIG */
-	testDatabase :"mongodb://localhost/princess_test",
-	testPort: '8881'
+	testPort: '8881',
+	testInterviewCollection: "interviews-test.db",
+	testAttachmentCollection: "attachments-test.db",
 
 };
 
