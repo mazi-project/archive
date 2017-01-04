@@ -7,8 +7,9 @@ var async = require('async');
 
 var Utils = r_require('/utils/utils');
 
-var Database = r_require('models/database');
-var BaseModel = r_require('models/baseModel');
+var Database = r_require('/models/database');
+var Interview = r_require('/models/interview')
+var BaseModel = r_require('/models/baseModel');
 
 // Define Model Schema
 class Attachment extends BaseModel {
@@ -25,10 +26,16 @@ class Attachment extends BaseModel {
         data.text = _.has(data,'text') ? data.text : "" ;
         data.file = _.has(data,'file') ? data.file : false ;
 
+        // create new date
+        data.createdAt = _.has(data,'createdAt') ? data.createdAt : new Date();
+
         return data;
     }
 
     attachFile(file, callback) {
+        if (!this.id)
+            throw new Error("Need to save model first");
+
         var db = this.getDb();
 
         var fileurl = Config.fileDir + this.data.interview + '/' + file.originalFilename;

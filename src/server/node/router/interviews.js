@@ -17,7 +17,20 @@ var router = express.Router();
  */ 
 router.get('/',(req,res) => {
 
-    //get qury options
+    Interview.list((err,models) => {
+        if (Utils.handleError(err,res)) return;
+
+        Interview.count( (err, count) => {
+            if (Utils.handleError(err,res)) return;
+
+            res.send({
+                docs : models,
+                total_records : count
+            });
+        });
+    });
+
+    /*//get qury options
     var options = {}
     if (_.has(req.query,'tag'))
         options.tags = req.query.tag;
@@ -49,14 +62,15 @@ router.get('/',(req,res) => {
                 total_records : count
             });
         });
-    });
+    });*/
 });
 
 /*
  * GET /api/submissions/:id
  */ 
 router.get('/:id',(req,res) => {
-    Interview.findOne({ _id: req.params.id}).populate('attachments').exec((err,model) => {
+    //TODO: add populate
+    Interview.get(req.params.id, (err,model) => {
         if (Utils.handleError(err,res)) return;
 
         res.send(model);
@@ -69,10 +83,8 @@ router.get('/:id',(req,res) => {
 router.post('/', (req, res) => {
 
     var interview = new Interview(req.body);
-
-    console.log(interview);
     
-    //only allow new comments
+    //only allow new interview
     delete interview['_id'];
 
     //insert data
@@ -96,7 +108,7 @@ router.put('/:id', Auth.authentificate, (req, res) => {
     var data = req.body;
 
     //insert data
-    Interview.findOneAndUpdate({ _id : req.params.id }, data, {new: true}, (err, model) => {
+    Interview.update(data, (err, model) => {
         if (Utils.handleError(err,res)) return;
 
         print('Interview changed in database');
@@ -111,14 +123,15 @@ router.put('/:id', Auth.authentificate, (req, res) => {
  * DELETE /api/submissions/:id with AUTH
  */
 router.delete('/:id', Auth.authentificate, (req, res) => {
-    Interview.remove({ _id: req.params.id }, (err, obj) => {
+
+    Interview.remove({ _id: req.params.id }, (err, result) => {
         if (Utils.handleError(err,res)) return;
 
-        if (obj.result.n > 0) {
+        if (result > 0) {
             print("Interview "+req.params.id+" deleted from database");
             appEvents.emit('interview:removed',{ _id : req.params.id } )
         }
-        res.send( {removed: obj.result.n} );
+        res.send( {removed: result} );
     });
 });
 

@@ -76,13 +76,11 @@ router.post('/attachment/:attachmentId', fileUploader, function(req,res){
  * POST /api/upload/image/:interviewId
  */ 
 router.post('/image/:interviewId', fileUploader, function(req,res){
-    Interview.findOne({ _id: req.params.interviewId }, (err, interview) => {
-        if (Utils.handleError(err,res)) return;
 
-        if (!interview) {
-            Utils.handleError({ message: 'Id not found.' },res);
-            return;
-        }
+    var interview = new Interview({ _id: req.params.interviewId });
+
+    interview.fetch( (err) => {
+        if (Utils.handleError(err,res)) return;
 
         var file = false;
 
@@ -109,17 +107,13 @@ router.post('/image/:interviewId', fileUploader, function(req,res){
         }
 
         // save file to interview folder
-        interview.attach('image', {path: file.path, dir: interview._id }, (err) => {
+        interview.attachImage(file, (err) => {
             if (Utils.handleError(err,res)) return;
             print('Uploaded file'+file.originalFilename+' for Interview: '+req.params.interviewId);
                     
-            // save changes
-            interview.save( (err, model) => {
-                if (Utils.handleError(err,res)) return;
 
-                appEvents.emit('interview:changed',{ _id: interview._id });
-                res.send(model);
-            });
+            appEvents.emit('interview:changed',{ _id: interview.id });
+            res.send(interview.data);
         });
     });
 });

@@ -15,7 +15,7 @@ var router = express.Router();
  */ 
 router.get('/',function(req,res){
     
-	Attachment.find({}, (err, models) => {
+	Attachment.list((err, models) => {
 		if (Utils.handleError(err,res))
             return;
 

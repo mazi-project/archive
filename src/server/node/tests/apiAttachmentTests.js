@@ -24,13 +24,13 @@ var TEST_AUDIO_FILE = {
 describe('API Routes /attachments/', function() {
 
 	before(function(done) {
-		r_require('database/database').connect(done);
+		r_require('/database/database').connect(done);
   	});
 
   	after(function(done) {
 
 		Interview.removeAll(() => {
-			r_require('database/database').disconnect();
+			r_require('/database/database').disconnect();
 			done();
 		});
     });

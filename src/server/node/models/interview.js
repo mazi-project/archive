@@ -5,8 +5,8 @@ var uuid = require('node-uuid');
 var fs = require('fs-extra');
 var async = require('async');
 
-var BaseModel = r_require('models/baseModel');
-var Database = r_require('models/database');
+var BaseModel = r_require('/models/baseModel');
+var Database = r_require('/models/database');
 
 
 class Interview extends BaseModel {
@@ -15,15 +15,24 @@ class Interview extends BaseModel {
         return 'interviews';
     }
 
+    get references() {
+        return [];
+    }
+
     static validate(data) {
-        //dont allow false or null tags
-        if (data.tags == null || data.tags == false)
-            data.tags = [];
 
         data.attachments = _.has(data,'attachments') ? data.attachments : [];
         data.text = _.has(data,'text') ? data.text : "";
         data.name = _.has(data,'name') ? data.name : "";
         data.role = _.has(data,'role') ? data.role : "";
+
+        // create new date
+        data.createdAt = _.has(data,'createdAt') ? data.createdAt : new Date();
+
+        // escape html chars
+        data.text = _.escape(data.text);
+        data.name = _.escape(data.name);
+        data.role = _.escape(data.role);
 
         return data;
     }
@@ -31,15 +40,19 @@ class Interview extends BaseModel {
     static remove(id, callback) {
         var db = this.getDb()
 
-        db[this.collection].remove({ _id : id}, function(err) {
+        db[this.collection].remove({ _id : id}, function(err, result) {
+            callback(err,result);
 
             //remove file directory
             var dir = Config.fileDir + '/' + id + '/';
-            fs.remove(dir, callback);
+            fs.remove(dir);
         });
     }
 
     attachImage(image, callback) {
+        if (!this.id)
+            throw new Error("Need to save model first");
+
         var db = this.getDb()
 
         var fileurl = Config.fileDir + this.data._id + '/' + image.originalFilename;

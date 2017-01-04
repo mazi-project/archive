@@ -19,34 +19,35 @@ var TEST_IMAGE_FILE = {
 describe('API Routes /submissions/', function(){
 
   	beforeEach(function(done) {
-
-  		r_require('database/database').connect((err) => {
 			
-			// Add some Models
-			var size = Math.floor(5 + Math.random() * 10)
-			var array = _.map(_.range(size), function(i) {
-				return {
-					text: 'model'+i,
-					name: 'Test Peter'
-				}
+		// Add some Models
+		var size = Math.floor(5 + Math.random() * 10)
+		var array = _.map(_.range(size), function(i) {
+			return {
+				text: 'model'+i,
+				name: 'Test Peter'
+			}
+		});
+
+		Interview.create(array, function(err,models) {
+			//copy test file
+			fs.copy(TEST_IMAGE_PATH, TEST_IMAGE_FILE.path, (err) => {
+				if (err) throw(err);
+				done();
 			});
-			Interview.create(array, function(err,models) {
-				//copy test file
-				fs.copy(TEST_IMAGE_PATH, TEST_IMAGE_FILE.path, (err) => {
-					if (err) throw(err);
-					done();
-				});
-			});
-  		});
+		});
   	});
 
   	afterEach(function(done) {
-  		async.parallel([
-			(callback) => { Interview.removeAll(callback) }
-		],() => {
-        	r_require('database/database').disconnect();
-        	done();
-        }); 
+
+  		var db = r_require('models/database');
+
+  		// remove all interviews
+  		Interview.removeAll(function(err) {
+  			if (err) throw(err);
+  			db.disconnect();
+  			done();
+  		});
     });
 
     var addInterview = function(callback) {

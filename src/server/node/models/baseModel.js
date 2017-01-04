@@ -4,7 +4,7 @@ var uuid = require('node-uuid');
 var _ = require('underscore')
 var async = require('async');
 
-var Database = r_require('models/database');
+var Database = r_require('/models/database');
 
 class BaseModel {
 
@@ -14,14 +14,6 @@ class BaseModel {
 			throw new Error("Need to specify collection.");
 
 		this.data = data;
-
-	}
-
-	get scheme() {
-		return {
-			_id : 'id',
-			createdAt : 'now'
-		}
 	}
 
 	static get collection() {
@@ -36,6 +28,9 @@ class BaseModel {
 		return this.constructor.collection;
 	}
 
+	get id() {
+		return this.data._id;
+	}
 
 	save(callback) {
 		var db = this.getDb();
@@ -70,7 +65,14 @@ class BaseModel {
                 callback(err);
                 return;
             }
+
+            if (_.isEmpty(doc)) {
+            	callback(new Error("Id not found"));
+            	return;
+            }
+
 			this.data = doc;
+
 			callback(err,doc);
 		});
 	}
@@ -102,14 +104,12 @@ class BaseModel {
 
     	_.each(data, (element) => {
 
+	        // validate fields
+	        element = self.validate(element);
+
 	        // create new id
 	        element._id = uuid.v4();
 
-	        // create new date
-	        element.createdAt = new Date();
-
-	        // validate fields
-	        element = self.validate(element);
 	    });
 
 	    db[this.collection].insert(data, callback);
@@ -122,7 +122,7 @@ class BaseModel {
 	    data = this.validate(data);
 
         db[this.collection].update({ _id : data._id}, data, function(err) {
-            callback(err,data);
+            callback(err, data);
         });
     }
 
