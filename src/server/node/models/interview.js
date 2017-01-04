@@ -71,17 +71,9 @@ var Interview = {
 
         db.interviews.remove({ _id : id}, function(err) {
 
-            // remove attachments
-            db.attachments.remove({ interview: id }, (err) => {
-                if (err) {
-                    callback(err);
-                    return;
-                }
-
-                //remove file directory
-                var dir = Config.fileDir + '/' + id + '/';
-                fs.remove(dir, callback);
-            })
+            //remove file directory
+            var dir = Config.fileDir + '/' + id + '/';
+            fs.remove(dir, callback);
         });
     },
 

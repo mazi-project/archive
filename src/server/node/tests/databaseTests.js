@@ -65,13 +65,15 @@ describe('Database Interview Test', function(){
 			text : 'Test Nachricht',
 		}
 
+		console.log(Interview)
+
 		Interview.create(data, function(err, model) {
 			if (err) throw err;
 			done();
 		});
 	})
 
-	it('should add a interview and return it', function(done){
+	it.skip('should add a interview and return it', function(done){
 
 		var message = require('node-uuid').v4()
 
@@ -94,7 +96,7 @@ describe('Database Interview Test', function(){
 		});
 	})
 
-	it('should add one interview and attach an image', function(done){
+	it.skip('should add one interview and attach an image', function(done){
 
 		var data = {
 			name : "Letterbox",
@@ -121,7 +123,7 @@ describe('Database Interview Test', function(){
 	});
 
 
-	it('should match the correct submission count', function(done) {
+	it.skip('should match the correct submission count', function(done) {
 
 		// insert some models
 		
@@ -144,7 +146,7 @@ describe('Database Interview Test', function(){
 		});
 	})
 
-	it('should be able to remove an item', function(done) {
+	it.skip('should be able to remove an item', function(done) {
 
 		var size = Math.floor(2 + Math.random() * 10)
 		var array = _.map(_.range(size), function(i) {
@@ -166,7 +168,7 @@ describe('Database Interview Test', function(){
 		});
 	})
 
-	it('should list all models', function(done) {
+	it.skip('should list all models', function(done) {
 
 		var size = Math.floor(2 + Math.random() * 10)
 		var array = _.map(_.range(size), function(i) {
@@ -259,7 +261,6 @@ describe('Database Attachment Test', function(){
 			Attachment.create(attachment, (err, attachment) => {
 				if (err) throw err;
 
-
 				Interview.addAttachment(models[0]._id, attachment[0]._id, (err, interview) => {
 					if (err) throw err;
 					
@@ -281,7 +282,7 @@ describe('Database Attachment Test', function(){
 		})
 	});
 
-	/*it('should create an attachment with a file', function(done){
+	it('should create an attachment with a file', function(done){
 
 		Interview.list((err, models) => {
 
@@ -295,7 +296,9 @@ describe('Database Attachment Test', function(){
 				Interview.addAttachment(models[0]._id, attachment._id, (err, interview) => {
 					if (err) throw err;
 
-					Attachment.attachFile(attachment._id, TEST_IMAGE_FILE, (err,attachment) => {
+					Attachment.attachFile(attachment[0]._id, TEST_IMAGE_FILE, (err,attachment) => {
+						if (err) throw err;
+
 						// check if file exists
 						fs.access(attachment.file.url, fs.F_OK, (err) => {
 							if (err) throw err;
@@ -305,5 +308,5 @@ describe('Database Attachment Test', function(){
 				});
 			});
 		});
-	});*/
+	});
 });

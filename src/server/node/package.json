@@ -20,7 +20,7 @@
   "scripts": {
     "start": "node main.js",
     "test-server": "node main.js test",
-    "test": "./node_modules/.bin/mocha tests/main.js --reporter spec"
+    "test": "./node_modules/.bin/mocha tests/main.js --reporter spec --harmony"
   },
   "author": "Lutz Reiter, Design Research Lab, University of Arts Berlin",
   "devDependencies": {}

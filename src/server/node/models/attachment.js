@@ -10,6 +10,17 @@ var Utils = r_require('/utils/utils');
 var Database = r_require('models/database');
 var Interview = r_require('models/interview');
 
+function validate(data) {
+    //dont allow false or null tags
+    if (data.tags == null || data.tags == false)
+        data.tags = [];
+
+    data.text = _.has(data,'text') ? data.text : "" ;
+    data.file = _.has(data,'file') ? data.file : false ;
+
+    return data;
+};
+
 // Define Model Schema
 var Attachment = {
 
@@ -19,6 +30,7 @@ var Attachment = {
 
         data._id = uuid.v4();
         data.createdAt = new Date();
+        data = validate(data);
 
         db.attachments.insert(data, callback);
 
@@ -36,6 +48,15 @@ var Attachment = {
         var db = Database.db;
 
 
+    },
+
+    update: function(data, callback) {
+        Database.connect();
+        var db = Database.db;
+
+        db.attachments.update({ _id : data._id}, data, function(err) {
+            callback(err,data);
+        });
     },
 
     remove : function(id, callback) {
@@ -57,7 +78,7 @@ var Attachment = {
 
                  // remove file
                 if (model.file) {
-                    fs.remove(model.file, callback);
+                    fs.remove(model.file.path, callback);
                 } else {
                     callback();
                 }
@@ -84,21 +105,23 @@ var Attachment = {
     },
 
     attachFile : function(id, file, callback) {
-        callback();
+        Database.connect();
+        var db = Database.db;
 
         var self = this;
         //get interview
-        db.attachments.findOne({ _id : id }, function(err,attachment) {
+        self.get(id, function(err,attachment) {
             if (err) {
                 callback(err);
                 return;
             }
-            if (_.isNull(doc)) {
+            if (_.isNull(attachment)) {
                 callback(new Error("No document found"));
                 return;
             }
 
             var fileurl = Config.fileDir + attachment.interview + '/' + file.originalFilename;
+
 
             //copy image
             fs.move(file.path, fileurl, (err) => {
@@ -107,12 +130,12 @@ var Attachment = {
                     return;
                 }
 
-                doc.image = image;
-                doc.image.url = fileurl
+                attachment.file = file;
+                attachment.file.url = fileurl
 
                 // save interview
-                self.update(doc, function(err) {
-                    callback(err,doc);
+                self.update(attachment, function(err) {
+                    callback(err,attachment);
                 });
             });
 
