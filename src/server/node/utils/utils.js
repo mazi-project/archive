@@ -29,11 +29,5 @@ module.exports = {
             doc.set(path, _.map(elements,_.escape))
         else    
             doc.set(path, _.escape(elements));
-    },
-
-    // inherits a class
-    extends : function (parent, child) {
-	    child.prototype = Object.create(parent.prototype);
-	    return child;
-	}
+    }
 }
