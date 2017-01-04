@@ -50,7 +50,6 @@ describe('Database Interview Test', function(){
   	afterEach(function(done) {
 
   		var db = r_require('models/database');
-  		db.connect();
   		Interview.removeAll(function(err) {
   			if (err) throw(err);
   			db.disconnect();
@@ -108,7 +107,7 @@ describe('Database Interview Test', function(){
 			if (err) throw err;
 
 			// attach image
-			Interview.addImage(model[0]._id, TEST_IMAGE_FILE, (err,model) => {
+			Interview.attachImage(model[0]._id, TEST_IMAGE_FILE, (err,model) => {
 				if (err) throw err;
 
 				//check if file exists
@@ -189,37 +188,35 @@ describe('Database Interview Test', function(){
 
 /* ATTACHMENT TESTS */
 
-/*describe('Database Attachment Test', function(){
+describe('Database Attachment Test', function(){
 
 
   	beforeEach(function(done) {
 
-  		r_require('database/database').connect(() => {
-  			//add interview
-	  		var interview = new Interview({
-				name : "Letterbox",
-				tags : [ 'tag_1', 'tag_2'],
-				text : 'Test Nachricht',
-			})
+  		var data = {
+			name : "Letterbox",
+			tags : [ 'tag_1', 'tag_2'],
+			text : 'Test Nachricht',
+		}
 
-			interview.save(function(err, model) {
-				if (err) throw err;
-				
-				//copy test file
-				fs.copy(TEST_IMAGE_PATH, TEST_IMAGE_FILE.path, (err) => {
-					if (err) throw(err);
-					done();
-				});
+		Interview.create(data, function(err, model) {
+			if (err) throw err;
+			
+			//copy test file
+			fs.copy(TEST_IMAGE_PATH, TEST_IMAGE_FILE.path, (err) => {
+				if (err) throw(err);
+				done();
 			});
-  		});
+		});
   	});
 
   	afterEach(function(done) {
+  		var db = r_require('models/database');
   		async.parallel([
 			(callback) => { Interview.removeAll(callback) },
 			(callback) => { Attachment.removeAll(callback) },
 		],() => {
-        	r_require('database/database').disconnect();
+        	db.disconnect();
         	done();
         }); 
     });
@@ -228,45 +225,85 @@ describe('Database Interview Test', function(){
 
 	it('should create an attachment without file', function(done){
 
-		Interview.find({}, (err, models) => {
+		Interview.list((err, models) => {
 
-			var attachment = new Attachment({
+			var attachment = {
 				tags : [ "test1", "test2" ],
-				text : "lorem ipsum"
-			});
+				text : "lorem ipsum",
+				interview : models[0]._id
+			}
 
-			models[0].addAttachment(attachment, (err, model) => {
-				if (err) throw err;
-				assert.equal(models[0]._id,model.interview);
-				done();
-			});
+			Attachment.create(attachment, (err, attachment) => {
+				Interview.addAttachment(models[0]._id, attachment._id, (err, interview) => {
+					if (err) throw err;
+					assert.equal(attachment._id, interview.attachments[0]);
+					done();
+				});
+			})
+
+			
 
 		})
 	});
 
-	it('should create an attachment with a file', function(done){
+	it('should create an attachment and delete it', function(done){
 
-		Interview.find({}, (err, models) => {
+		Interview.list((err, models) => {
 
-			var attachment = new Attachment({
+			var attachment = {
 				tags : [ "test1", "test2" ],
-				text : "lorem ipsum"
-			});
+				text : "lorem ipsum",
+				interview : models[0]._id
+			}
 
-			models[0].addAttachment(attachment, (err, model) => {
+			Attachment.create(attachment, (err, attachment) => {
 				if (err) throw err;
 
-				model.attach('file', { path: TEST_IMAGE_FILE.path, dir: model.interview }, (err) => {
+
+				Interview.addAttachment(models[0]._id, attachment[0]._id, (err, interview) => {
+					if (err) throw err;
 					
-					model.save((err, model) => {
-						//check if file exists
-						fs.access(model.file.url, fs.F_OK, (err) => {
+					Attachment.remove(attachment[0]._id, (err) => {
+						if (err) throw err;
+
+						Attachment.get(attachment[0]._id, (err, model) => {
+							if (err) throw err;
+
+							assert.equal(null,model);
+
+							done();
+						})
+
+					});
+				});
+			})
+
+		})
+	});
+
+	/*it('should create an attachment with a file', function(done){
+
+		Interview.list((err, models) => {
+
+			var attachmentData = {
+				tags : [ "test1", "test2" ],
+				text : "lorem ipsum",
+				interview : models[0]._id
+			};
+
+			Attachment.create(attachmentData, (err, attachment) => {
+				Interview.addAttachment(models[0]._id, attachment._id, (err, interview) => {
+					if (err) throw err;
+
+					Attachment.attachFile(attachment._id, TEST_IMAGE_FILE, (err,attachment) => {
+						// check if file exists
+						fs.access(attachment.file.url, fs.F_OK, (err) => {
 							if (err) throw err;
 							done();
 						});
-					});
+					})
 				});
 			});
 		});
-	});
-});*/
+	});*/
+});

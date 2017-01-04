@@ -1,59 +1,123 @@
 'use strict';
 
 var _ = require('underscore')
-var mongoose = require('mongoose');
 var uuid = require('node-uuid');
-var fse = require('fs-extra');
-var crate = require('mongoose-crate');
-var LocalFS = require('mongoose-crate-localfs');
-var path = require('path');
+var fs = require('fs-extra');
+var async = require('async');
 
 var Utils = r_require('/utils/utils');
-var Interview = r_require('/models/interview');
+
+var Database = r_require('models/database');
+var Interview = r_require('models/interview');
 
 // Define Model Schema
-var attachmentSchema = mongoose.Schema({
+var Attachment = {
 
-	_id: { type: String, default: uuid.v4 }, //use uuid
-	interview: { type: String, ref: 'Interview', required: true },
-    text : { type: String, required: true, maxlength: '800' },
-    tags : [ { type: String, match: /^\w+$/ } ] //only allow numbers and chars and _ without spaces
-}, { timestamps: true });
+    create: function(data, callback) {
+        Database.connect();
+        var db = Database.db;
 
-attachmentSchema.plugin(crate, {
-    storage: new LocalFS({
-        directory: Config.fileDir,
-        path: (attachment) => {
-            var dir = "";
-            if (_.has(attachment,'dir'))
-                dir = attachment.dir + '/'
-            return '/' + dir + path.basename(attachment.path);
-        }
-    }),
-    fields: {
-        file: {}
+        data._id = uuid.v4();
+        data.createdAt = new Date();
+
+        db.attachments.insert(data, callback);
+
+    },
+
+    get: function(id, callback) {
+        Database.connect();
+        var db = Database.db;
+
+        db.attachments.findOne({ _id : id }, callback);
+    },
+
+    list: function(callback) {
+        Database.connect();
+        var db = Database.db;
+
+
+    },
+
+    remove : function(id, callback) {
+        Database.connect();
+        var db = Database.db;
+
+        this.get(id, (err, model) => {
+            if (err) { 
+                callback(err);
+                return;
+            }
+
+            // remove attachment
+            db.attachments.remove({ _id : id }, (err) => {
+                if (err) { 
+                    callback(err);
+                    return;
+                }
+
+                 // remove file
+                if (model.file) {
+                    fs.remove(model.file, callback);
+                } else {
+                    callback();
+                }
+            });
+        });
+    },
+
+    // Remove All entries
+    removeAll : function(callback) {
+    	Database.connect();
+        var db = Database.db;
+
+        var self = this;
+        db.attachments.find().toArray(function(err, models) {
+            if (err) {
+                callback(err);
+                return;
+            }
+
+            async.each(models, function(model, cb) {
+                self.remove(model._id, cb);
+            }, callback);
+        });
+    },
+
+    attachFile : function(id, file, callback) {
+        callback();
+
+        var self = this;
+        //get interview
+        db.attachments.findOne({ _id : id }, function(err,attachment) {
+            if (err) {
+                callback(err);
+                return;
+            }
+            if (_.isNull(doc)) {
+                callback(new Error("No document found"));
+                return;
+            }
+
+            var fileurl = Config.fileDir + attachment.interview + '/' + file.originalFilename;
+
+            //copy image
+            fs.move(file.path, fileurl, (err) => {
+                if (err) {
+                    callback(err);
+                    return;
+                }
+
+                doc.image = image;
+                doc.image.url = fileurl
+
+                // save interview
+                self.update(doc, function(err) {
+                    callback(err,doc);
+                });
+            });
+
+        });
     }
-})
+}
 
-attachmentSchema.pre('save', function(next) {
-
-    //Utils.escapePath(this,'text');
-    return next();
-
-});
-
-attachmentSchema.pre('remove', function(next) {
-
-    //remove file
-    if (this.file)
-	    fse.remove(this.file, (err) => {
-	        next(err);
-	    });
-});
-
-// Remove All entries
-attachmentSchema.statics.removeAll = function(callback) {
-	this.remove({}, callback);
-};
-
-module.exports = mongoose.model('Attachment', attachmentSchema, Config.attachmentCollection);
+module.exports = Attachment;
