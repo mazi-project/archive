@@ -25,11 +25,37 @@ class Attachment extends BaseModel {
 
         data.text = _.has(data,'text') ? data.text : "" ;
         data.file = _.has(data,'file') ? data.file : false ;
+        data.interview = _.has(data,'interview') ? data.interview : false ;
 
         // create new date
         data.createdAt = _.has(data,'createdAt') ? data.createdAt : new Date();
 
         return data;
+    }
+
+    static remove(id, callback) {
+        var db = this.getDb();
+
+        this.get(id, (err,model) => {
+            if (err) {
+                callback(err);
+                return;
+            }
+
+            //remove file
+            if (model.file) {
+                fs.remove(model.file.url, (err) => {
+                    if (err) {
+                        callback(err);
+                        return;
+                    }
+                    db[this.collection].remove({ _id : id}, callback);
+                });
+            } else {
+                db[this.collection].remove({ _id : id}, callback);
+            }
+
+        });
     }
 
     attachFile(file, callback) {

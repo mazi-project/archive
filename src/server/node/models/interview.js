@@ -41,11 +41,16 @@ class Interview extends BaseModel {
         var db = this.getDb()
 
         db[this.collection].remove({ _id : id}, function(err, result) {
-            callback(err,result);
+            if (err) {
+                callback(err);
+                return;
+            }
 
             //remove file directory
             var dir = Config.fileDir + '/' + id + '/';
-            fs.remove(dir);
+            fs.remove(dir, (err) => {
+                callback(err,result);
+            });
         });
     }
 

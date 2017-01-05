@@ -15,7 +15,7 @@ module.exports = function (app) {
             db.disconnect();
         }
 
-        res.on('close', afterResponse);
+        res.on('finish', afterResponse);
         next();
     };
 

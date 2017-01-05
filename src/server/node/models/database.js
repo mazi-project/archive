@@ -23,10 +23,12 @@ module.exports = {
 		}
 	},
 
-	disconnect: function() {
+	disconnect: function(callback) {
 		if (this.db) {
-			this.db.close();
+			this.db.close(callback);
 			this.db = false;
+		} else {
+			if (callback) callback();
 		}
 	}
 }

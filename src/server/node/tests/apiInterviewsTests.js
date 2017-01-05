@@ -2,8 +2,8 @@
 
 var assert = require('assert');
 var _ = require('underscore');
-var fs = require('fs-extra')
-var async = require('async')
+var fs = require('fs-extra');
+var async = require('async');
 var request = require('supertest');
 
 var Interview = r_require('models/interview');
@@ -16,7 +16,7 @@ var TEST_IMAGE_FILE = {
 		type: "image/jpeg"
 }
 
-describe('API Routes /submissions/', function(){
+describe('API Routes /interviews/', function(){
 
   	beforeEach(function(done) {
 			
@@ -33,7 +33,9 @@ describe('API Routes /submissions/', function(){
 			//copy test file
 			fs.copy(TEST_IMAGE_PATH, TEST_IMAGE_FILE.path, (err) => {
 				if (err) throw(err);
-				done();
+
+				var db = r_require('models/database');
+				db.disconnect(done);
 			});
 		});
   	});
@@ -41,13 +43,14 @@ describe('API Routes /submissions/', function(){
   	afterEach(function(done) {
 
   		var db = r_require('models/database');
+  		db.connect();
 
-  		// remove all interviews
+		// remove all interviews
   		Interview.removeAll(function(err) {
   			if (err) throw(err);
-  			db.disconnect();
-  			done();
+  			db.disconnect(done);
   		});
+  		
     });
 
     var addInterview = function(callback) {

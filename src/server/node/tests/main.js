@@ -25,9 +25,9 @@ Config.port = Config.testPort;
 
 require("./databaseTests.js");
 require("./apiInterviewsTests.js");
-// require("./apiAttachmentTests.js");
 require("./apiTagsTests.js");
-// require("./socketTests.js");
+require("./apiAttachmentTests.js");
+require("./socketTests.js");
 
 //add test database
-// require("./createTestDatabase.js");
+//require("./createTestDatabase.js");

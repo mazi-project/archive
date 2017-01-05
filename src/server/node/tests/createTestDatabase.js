@@ -37,8 +37,7 @@ describe('Create Test Database', function(){
 
   	afterEach(function(done) {
     	var db = r_require('models/database');
-		db.disconnect();
-		done();
+		db.disconnect(done);
     });
 
 	it('should add one interview', function(done){

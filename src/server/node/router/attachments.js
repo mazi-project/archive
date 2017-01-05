@@ -25,20 +25,24 @@ var router = express.Router();
  */ 
 router.get('/',(req,res) => {
 
-    //get qury options
-    var options = {}
-    if (_.has(req.query,'tag'))
-        options.tags = req.query.tag;
+    // //get qury options
+    // var options = {}
+    // if (_.has(req.query,'tag'))
+    //     options.tags = req.query.tag;
 
-    // build query
-    var query = Attachment.find(options);
-    query.sort({'updatedAt': -1});
-    query.populate('interview');
+    // // build query
+    // var query = Attachment.find(options);
+    // query.sort({'updatedAt': -1});
+    // query.populate('interview');
 
-    // execute
-    query.exec((err,models) => {
-        res.send(models);
-    });
+    // // execute
+    // query.exec((err,models) => {
+    //     res.send(models);
+    // });
+    Attachment.list((err, docs) => {
+        if (Utils.handleError(err,res)) return;
+        res.send(docs);
+    })
 });
 
 /*
@@ -46,40 +50,35 @@ router.get('/',(req,res) => {
  */ 
 router.post('/', (req, res) => {
 
-
     var attachment = new Attachment(req.body);
-    
-    //only allow new attachments
-    delete attachment['_id'];
 
     //check for id
-    if (!attachment.interview) {
+    if (!attachment.data.interview) {
     	Utils.handleError({ message: 'No interview id supplied.' },res);
     	return;
     }
 
     // find interview
-    Interview.findOne({ _id : attachment.interview}, (err, interview) => {
+    var interview = new Interview({ _id : attachment.data.interview});
+
+    interview.fetch((err) => {
     	if (Utils.handleError(err,res)) return;
 
-    	if (!interview) {
-            Utils.handleError({ message: 'interview Id not found.' },res);
-        	return;
-        }
+        // save attachment
+        attachment.save( (err) => {
 
-        // add attachment
-        interview.addAttachment(attachment, (err, model) => {
-        	if (Utils.handleError(err,res)) return;
+            // add attachment to interview
+            interview.addAttachment(attachment.id, (err) => {
+                if (Utils.handleError(err,res)) return;
 
-        	print('Attachment added to database');
+                print('Attachment added to database width id: '+attachment.id);
 
-        	// trigger socket event and send message to web app
-        	appEvents.emit('interview:changed',{ _id: attachment.interview })
-        	res.send(model);
-        });
-
+                // trigger socket event and send message to web app
+                appEvents.emit('interview:changed',{ _id: interview.id })
+                res.send(attachment.data);
+            });
+        })  
     })
-
 });
 
 /*

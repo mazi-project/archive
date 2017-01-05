@@ -27,8 +27,7 @@ describe('Database Connection Test', function() {
 		db.collectionNames( function(err,names) {
 			if (err) throw err;
 			
-			Database.disconnect();
-			done();
+			Database.disconnect(done);
 		});
 	});
 
@@ -54,8 +53,7 @@ describe('Database Interview Test', function(){
   		// remove all interviews
   		Interview.removeAll(function(err) {
   			if (err) throw(err);
-  			db.disconnect();
-  			done();
+  			db.disconnect(done);
   		});
     });
 
@@ -253,7 +251,9 @@ describe('Database Attachment Test', function(){
 			//copy test file
 			fs.copy(TEST_IMAGE_PATH, TEST_IMAGE_FILE.path, (err) => {
 				if (err) throw(err);
-				done();
+				
+				var db = r_require('models/database');
+				db.disconnect(done);
 			});
 		});
   	});
@@ -264,8 +264,7 @@ describe('Database Attachment Test', function(){
 			(callback) => { Interview.removeAll(callback) },
 			(callback) => { Attachment.removeAll(callback) },
 		],() => {
-        	db.disconnect();
-        	done();
+        	db.disconnect(done);
         }); 
     });
 

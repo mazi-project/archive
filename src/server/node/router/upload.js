@@ -23,14 +23,10 @@ var fileUploader = multipart({
  */ 
 router.post('/attachment/:attachmentId', fileUploader, function(req,res){
 
+    var attachment = new Attachment({ _id: req.params.attachmentId });
 
-	Attachment.findOne({ _id: req.params.attachmentId }, (err, attachment) => {
+	attachment.fetch( (err) => {
         if (Utils.handleError(err,res)) return;
-
-        if (!attachment) {
-            Utils.handleError({ message: 'Id not found.' },res);
-        	return;
-        }
 
         var file = false;
 
@@ -57,7 +53,7 @@ router.post('/attachment/:attachmentId', fileUploader, function(req,res){
         }
 
         // save file to submission folder
-        attachment.attach('file', {path: file.path, dir: attachment.interview }, (err) => {
+        attachment.attachFile(file, (err) => {
             if (Utils.handleError(err,res)) return;
             print('Uploaded file'+file.originalFilename+' for Attachment: '+req.params.attachmentId);
                     

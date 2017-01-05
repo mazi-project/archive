@@ -83,20 +83,17 @@ router.get('/:id',(req,res) => {
 router.post('/', (req, res) => {
 
     var interview = new Interview(req.body);
-    
-    //only allow new interview
-    delete interview['_id'];
 
     //insert data
-    interview.save((err, model) => {
+    interview.save((err) => {
         if (Utils.handleError(err,res))
             return;
 
-        print('Interview added to database');
+        print('Interview added to database with id: '+interview.id);
 
         // trigger socket event and send message to web app
-        appEvents.emit('interview:new',model)
-        res.send(model);
+        appEvents.emit('interview:new',interview.data)
+        res.send(interview.data);
     });
 });
 
