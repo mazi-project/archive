@@ -15,8 +15,8 @@ class Interview extends BaseModel {
         return 'interviews';
     }
 
-    get references() {
-        return [];
+    static get reference() {
+        return { field : 'attachments', collection: 'attachments' };
     }
 
     static validate(data) {
@@ -70,7 +70,8 @@ class Interview extends BaseModel {
             }
 
             this.data.image = image;
-            this.data.image.url = fileurl
+            this.data.image.url = fileurl;
+            this.data.image.name = image.originalFilename;
 
             // save interview
             this.save(callback);

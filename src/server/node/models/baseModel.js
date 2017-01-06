@@ -20,10 +20,15 @@ class BaseModel {
 		return false;
 	}
 
+	static get reference() {
+		return false;
+	}
+
 	static validate(data) {
 		return data;
 	}
 
+	
 	get collection() {
 		return this.constructor.collection;
 	}
@@ -78,9 +83,19 @@ class BaseModel {
 	}
 
 	delete(callback) {
-		var db = this.getDb();
-
 		this.constructor.remove(this.data._id,callback);
+	}
+
+	populate(callback) {
+		this.constructor.populate([this.data], (err,docs) => {
+			if (err) {
+				callback(err)
+				return;
+			}
+
+			this.data = docs[0];
+			callback(err,this.data)
+		});
 	}
 
 	static getDb() {
@@ -163,6 +178,38 @@ class BaseModel {
             async.each(models, (model, cb) => {
                 self.remove(model._id, cb);
             }, callback);
+        });
+    }
+
+    static populate(docs,callback) {
+    	var db = this.getDb();
+
+    	async.each(docs, (doc, asyncb) => {
+    		// find populate ids
+            var ids = doc[this.reference.field]
+
+            // populate single element
+            if (!_.isArray(ids)) {
+            	db[this.reference.collection].findOne( { _id : ids }, (err, element) => {
+            		if (!err)
+            			doc[this.reference.field] = element;
+	            	asyncb(err)
+            	})
+            // populate list
+            } else {
+            	db[this.reference.collection].find( { _id : { $in: ids}} ).toArray( (err, elements) => {
+            		if (!err && !_.isUndefined(elements))
+            			doc[this.reference.field] = elements;
+            		asyncb(err)
+            	});
+            }
+        }, (err) => {
+        	if (err) {
+        		//console.log(err);
+                callback(err);
+            } else {
+           		callback(null,docs);
+            }
         });
     }
 

@@ -18,11 +18,16 @@ class Attachment extends BaseModel {
         return 'attachments';
     }
 
+    static get reference() {
+        return { field : 'interview', collection: 'interviews' };
+    }
+
     static validate(data) {
         //dont allow false or null tags
         if (data.tags == null || data.tags == false)
             data.tags = [];
 
+        data.interview = _.has(data,'interview') ? data.interview : false ;
         data.text = _.has(data,'text') ? data.text : "" ;
         data.file = _.has(data,'file') ? data.file : false ;
         data.interview = _.has(data,'interview') ? data.interview : false ;
@@ -75,6 +80,7 @@ class Attachment extends BaseModel {
 
             this.data.file = file;
             this.data.file.url = fileurl
+            this.data.file.name = file.originalFilename;
 
             // save attachment
             this.save(callback);

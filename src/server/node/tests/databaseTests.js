@@ -297,16 +297,16 @@ describe('Database Attachment Test', function(){
 				interview : models[0]._id
 			});
 
-			attachment.save((err, attachment) => {
+			attachment.save((err) => {
 				if (err) throw err;
 
 				var interview = new Interview(models[0]);
 
-				interview.addAttachment( attachment._id, (err, interview) => {
+				interview.addAttachment( attachment.id, (err, interview) => {
 					if (err) throw err;
 
 					Interview.get(models[0]._id, (err, model) => {
-						assert.equal(attachment._id, model.attachments[0]);
+						assert.equal(attachment.id, model.attachments[0]);
 						done();
 					});
 				});
@@ -380,5 +380,152 @@ describe('Database Attachment Test', function(){
 				});
 			});
 		});
+	});
+});
+
+describe('Database Populate Test', function(){
+
+
+  	beforeEach(function(done) {
+
+  		var data = [
+	  		{
+				name : "Letterbox",
+				tags : [ 'tag_1', 'tag_2'],
+				text : 'Test Nachricht',
+			},
+			{
+				name : "Letterbox2",
+				tags : [ 'tag_3'],
+				text : 'Test Nachricht 2',
+			}
+		]
+
+		Interview.create(data, function(err) {
+			if (err) throw err;
+			
+			//copy test file
+			fs.copy(TEST_IMAGE_PATH, TEST_IMAGE_FILE.path, (err) => {
+				if (err) throw(err);
+				
+				var db = r_require('models/database');
+				db.disconnect(done);
+			});
+		});
+  	});
+
+  	afterEach(function(done) {
+  		var db = r_require('models/database');
+  		async.parallel([
+			(callback) => { Interview.removeAll(callback) },
+			(callback) => { Attachment.removeAll(callback) },
+		],() => {
+        	db.disconnect(done);
+        }); 
+    });
+
+
+
+	it('should create an attachment and populate attachment (static)', function(done){
+
+		Interview.list((err, models) => {
+
+			var attachment = new Attachment({
+				tags : [ "test1", "test2" ],
+				text : "lorem ipsum",
+				interview : models[0]._id
+			});
+
+			attachment.save((err) => {
+				if (err) throw err;
+
+				Attachment.populate([attachment.data], (err) => {
+					if (err) throw err;
+					assert.equal(models[0].text,attachment.data.interview.text)
+					done();
+				})
+
+				
+			})
+		})
+	});
+
+	it('should create an attachment and populate attachment (non static)', function(done){
+
+		Interview.list((err, models) => {
+
+			var attachment = new Attachment({
+				tags : [ "test1", "test2" ],
+				text : "lorem ipsum",
+				interview : models[0]._id
+			});
+
+			attachment.save((err) => {
+				if (err) throw err;
+
+				attachment.populate((err) => {
+					if (err) throw err;
+					assert.equal(models[0].text,attachment.data.interview.text)
+					done();
+				})
+
+				
+			})
+		})
+	});
+
+	it('should add several attachments to interview and populate interview ', function(done){
+
+		Interview.list((err, models) => {
+
+			var attachment = new Attachment({
+				tags : [ "test1", "test2" ],
+				text : "lorem ipsum",
+				interview : models[0]._id
+			});
+
+			attachment.save((err) => {
+				if (err) throw err;
+
+				var interview = new Interview(models[0]);
+
+				interview.addAttachment(attachment.id, (err) => {
+
+					interview.populate((err) => {
+						if (err) throw err;
+						assert.equal(interview.data.attachments[0]._id,attachment.id)
+						done();
+					})
+				});
+			})
+		})
+	});
+
+	it('should add several attachments to several interviews and populate interviews ', function(done){
+
+		Interview.list((err, models) => {
+
+			async.each(models, (model,asyncCb) => {
+				var attachment = new Attachment({
+					tags : [ "test1", "test2" ],
+					text : "lorem ipsum",
+					interview : models[0]._id
+				});
+				attachment.save((err) => {
+					if (err) throw err;
+
+					var interview = new Interview(model);
+					interview.addAttachment(attachment.id, asyncCb);
+				});
+			}, (err) => {
+				if (err) throw err;
+
+				Interview.populate(models, (err, populatedModels) => {
+					assert.equal(typeof populatedModels[0].attachments[0],'object');
+					assert.equal(typeof populatedModels[1].attachments[0],'object');
+					done();
+				})
+			})
+		})
 	});
 });

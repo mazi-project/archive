@@ -1,5 +1,6 @@
 var fs = require('fs');
 var _ = require('underscore');
+var extend = require('util')._extend;
 
 module.exports = {
 
@@ -29,5 +30,13 @@ module.exports = {
             doc.set(path, _.map(elements,_.escape))
         else    
             doc.set(path, _.escape(elements));
+    },
+
+    // clones an json object
+    clone : function(obj) {
+    	if (_.isArray(obj))
+    		return extend([],obj);
+    	else
+    		return extend({},obj);
     }
 }
