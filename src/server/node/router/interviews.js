@@ -17,17 +17,18 @@ var router = express.Router();
  */ 
 router.get('/',(req,res) => {
 
-    Interview.list((err,models) => {
-        if (Utils.handleError(err,res)) return;
+    var interviews = null;
 
-        Interview.count( (err, count) => {
-            if (Utils.handleError(err,res)) return;
-
-            res.send({
-                docs : models,
-                total_records : count
-            });
+    Interview.list(). then( (docs) => {
+        interviews = docs;
+        return Interview.count();
+    }).then( count => {
+        res.send({
+            docs : interviews,
+            total_records : count
         });
+    }).catch( (err) => {
+        Utils.handleError(err,res);
     });
 
     /*//get qury options
@@ -70,10 +71,10 @@ router.get('/',(req,res) => {
  */ 
 router.get('/:id',(req,res) => {
     //TODO: add populate
-    Interview.get(req.params.id, (err,model) => {
-        if (Utils.handleError(err,res)) return;
-
-        res.send(model);
+    Interview.get(req.params.id).then( (doc) => {
+        res.send(doc);
+    }).catch( (err) => {
+        Utils.handleError(err,res);
     });
 });
 
@@ -85,15 +86,13 @@ router.post('/', (req, res) => {
     var interview = new Interview(req.body);
 
     //insert data
-    interview.save((err) => {
-        if (Utils.handleError(err,res))
-            return;
-
+    interview.save().then( () => {
         print('Interview added to database with id: '+interview.id);
-
         // trigger socket event and send message to web app
         appEvents.emit('interview:new',interview.data)
         res.send(interview.data);
+    }).catch( (err) => {
+        Utils.handleError(err,res);
     });
 });
 
@@ -105,14 +104,15 @@ router.put('/:id', Auth.authentificate, (req, res) => {
     var data = req.body;
 
     //insert data
-    Interview.update(data, (err, model) => {
-        if (Utils.handleError(err,res)) return;
+    Interview.update(data).then( doc => {
 
         print('Interview changed in database');
 
         // trigger socket event and send message to web app
-        appEvents.emit('interview:changed',model)
-        res.send(model);
+        appEvents.emit('interview:changed',doc)
+        res.send(doc);
+    }).catch( (err) => {
+        Utils.handleError(err,res);
     });
 });
 
@@ -121,14 +121,14 @@ router.put('/:id', Auth.authentificate, (req, res) => {
  */
 router.delete('/:id', Auth.authentificate, (req, res) => {
 
-    Interview.remove({ _id: req.params.id }, (err, result) => {
-        if (Utils.handleError(err,res)) return;
-
+    Interview.remove({ _id: req.params.id }).then( result => {
         if (result > 0) {
             print("Interview "+req.params.id+" deleted from database");
             appEvents.emit('interview:removed',{ _id : req.params.id } )
         }
         res.send( {removed: result} );
+    }).catch( (err) => {
+        Utils.handleError(err,res);
     });
 });
 

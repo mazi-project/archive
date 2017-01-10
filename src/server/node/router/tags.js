@@ -15,19 +15,16 @@ var router = express.Router();
  */ 
 router.get('/',function(req,res){
     
-	Attachment.list((err, models) => {
-		if (Utils.handleError(err,res))
-            return;
-
+	Attachment.list().then( docs => {
         // extract all tags, remove duplicates
-        var tags = _.unique(_.flatten(_.pluck(models,'tags')));
-        
+        var tags = _.unique(_.flatten(_.pluck(docs,'tags')));
         tags = _.map(tags, function(tag) {
         	return { name: tag }
-        })
-
+        });
         res.send(tags);
-	});
+	}).catch( (err) => {
+        Utils.handleError(err,res);
+    });
 
 });
 

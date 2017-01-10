@@ -14,28 +14,22 @@ describe('API Routes /tags/', function(){
 
   	before(function(done) {
 			
-		async.series([
-			(callback) => { 
-				new Attachment({
-					tags: TAGS[0],
-					name: 'Test Peter'
-				}).save(callback) 
-			},
-			(callback) => { 
-				new Attachment({
-					tags: TAGS,
-					name: 'Test Peter'
-				}).save(callback) 
-			},
-			(callback) => { 
-				new Attachment({
-					tags: TAGS,
-					name: 'Test Peter'
-				}).save(callback) 
-			}
-		],() => {
-        	done();
-        });
+		Promise.all([
+			new Attachment({
+				tags: TAGS[0],
+				name: 'Test Peter'
+			}).save(),
+			new Attachment({
+				tags: TAGS,
+				name: 'Test Peter'
+			}).save(),
+			new Attachment({
+				tags: TAGS,
+				name: 'Test Peter'
+			}).save()
+		]).then( () => {
+			done();
+		}).catch(done);
 			
   	});
 
@@ -43,12 +37,10 @@ describe('API Routes /tags/', function(){
 
   		var db = r_require('models/database');
 
-  		// remove all interviews
-  		Attachment.removeAll(function(err) {
-  			if (err) throw(err);
-  			db.disconnect();
-  			done();
-  		});
+  		Attachment.removeAll()
+  		.then( () => {
+  			db.disconnect(done);
+  		}).catch(done);
     });
 
 	it('should GET 3 tags on api/tags', function(done){

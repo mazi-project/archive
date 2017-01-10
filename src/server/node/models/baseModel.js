@@ -152,21 +152,13 @@ class BaseModel {
         var db = this.getDb()
 
         return new Promise( (resolve, reject) => {
-        	db[this.collection].find({}).toArray( (err, docs) => {
+        	db[this.collection].find().toArray( (err, docs) => {
         		if (err) {
         			reject(err);
         		} else {
         			resolve(docs);
         		}
         	});
-        });
-    }
-
-    static listPopulated(callback) {
-    	var db = this.getDb()
-
-        db[this.collection].find({}).toArray( (err, docs) => {
-        	
         });
     }
 

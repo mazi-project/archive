@@ -39,12 +39,16 @@ router.get('/',(req,res) => {
     // query.exec((err,models) => {
     //     res.send(models);
     // });
-    Attachment.list((err, docs) => {
-        if (Utils.handleError(err,res)) return;
-        Attachment.populate(docs, (err) => {
-            if (Utils.handleError(err,res)) return;
-            res.send(docs);
-        })
+
+    Attachment.list().then( (docs) => {
+        if (_.isEmpty(docs))
+            return Promise.resolve(docs);
+        else
+            return Attachment.populate(docs);
+    }).then( (docs) => {
+        res.send(docs);
+    }).catch( (err) => {
+        Utils.handleError(err,res);
     })
 });
 
@@ -64,23 +68,19 @@ router.post('/', (req, res) => {
     // find interview
     var interview = new Interview({ _id : attachment.data.interview});
 
-    interview.fetch((err) => {
-    	if (Utils.handleError(err,res)) return;
-
+    interview.fetch().then( () => {
         // save attachment
-        attachment.save( (err) => {
-
-            // add attachment to interview
-            interview.addAttachment(attachment.id, (err) => {
-                if (Utils.handleError(err,res)) return;
-
-                print('Attachment added to database width id: '+attachment.id);
-
-                // trigger socket event and send message to web app
-                appEvents.emit('interview:changed',{ _id: interview.id })
-                res.send(attachment.data);
-            });
-        })  
+        return attachment.save();
+    }).then( () => {
+        // add attachment to interview
+        return interview.addAttachment(attachment.id);
+    }).then( () => {
+        print('Attachment added to database width id: '+attachment.id);
+        // trigger socket event and send message to web app
+        appEvents.emit('interview:changed',{ _id: interview.id })
+        res.send(attachment.data);
+    }).catch( (err) => {
+        Utils.handleError(err,res);
     })
 });
 
@@ -88,13 +88,16 @@ router.post('/', (req, res) => {
  * GET /api/attachments/:id
  */ 
 router.get('/:id',(req,res) => {
-    Attachment.get(req.params.id, (err,doc) => {
-        if (Utils.handleError(err,res)) return;
-        Attachment.populate([doc], (err) => {
-            if (Utils.handleError(err,res)) return;
-            res.send(doc);
-        })
-    });
+    Attachment.get(req.params.id).then( (doc) => {
+        if (_.isEmpty(doc))
+            return Promise.resolve(doc);
+        else
+            return Attachment.populate([doc]);
+    }).then( (doc) => {
+        res.send(doc[0]);
+    }).catch( (err) => {
+        Utils.handleError(err,res);
+    })
 });
 
 module.exports = router;

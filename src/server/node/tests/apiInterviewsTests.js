@@ -29,27 +29,28 @@ describe('API Routes /interviews/', function(){
 			}
 		});
 
-		Interview.create(array, function(err,models) {
+		Interview.create(array).then( () => {
 			//copy test file
 			fs.copy(TEST_IMAGE_PATH, TEST_IMAGE_FILE.path, (err) => {
-				if (err) throw(err);
-
+				if (err) {
+					done(err);
+					return;
+				}
+				
 				var db = r_require('models/database');
 				db.disconnect(done);
 			});
-		});
+		}).catch(done);
   	});
 
   	afterEach(function(done) {
 
   		var db = r_require('models/database');
-  		db.connect();
 
-		// remove all interviews
-  		Interview.removeAll(function(err) {
-  			if (err) throw(err);
+  		Interview.removeAll()
+  		.then( () => {
   			db.disconnect(done);
-  		});
+  		}).catch(done);
   		
     });
 

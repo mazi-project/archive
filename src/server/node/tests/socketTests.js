@@ -30,21 +30,22 @@ describe('Socket Tests', function(){
             }
         });
 
-        Interview.create(array, function(err,models) {
+        Interview.create(array).then( () => {
             var db = r_require('models/database');
             db.disconnect(done);
-        });
+        }).catch(done);
     });
 
     after(function(done) {
 
         var db = r_require('models/database');
-        async.parallel([
-            (callback) => { Interview.removeAll(callback) },
-            (callback) => { Attachment.removeAll(callback) },
-        ],() => {
+        
+        Interview.removeAll()
+        .then( () => {
+            return Attachment.removeAll()
+        }).then( () => {
             db.disconnect(done);
-        }); 
+        }).catch(done);
         
     });
 

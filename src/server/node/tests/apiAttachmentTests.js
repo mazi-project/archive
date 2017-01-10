@@ -30,6 +30,17 @@ describe('API Routes /attachments/', function() {
 		done();
   	});
 
+  	after(function(done) {
+  		var db = r_require('models/database');
+
+  		Interview.removeAll()
+  		.then( () => {
+  			return Attachment.removeAll()
+  		}).then( () => {
+  			db.disconnect(done);
+  		}).catch(done);
+    });
+
     beforeEach(function(done) {
 
 		//copy test file

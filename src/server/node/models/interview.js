@@ -88,10 +88,6 @@ class Interview extends BaseModel {
             });
 
         });
-        
-
-
-        
     }
 
     // adds attachment reference
