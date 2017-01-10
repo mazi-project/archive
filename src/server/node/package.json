@@ -8,6 +8,7 @@
     "events": "^1.0.2",
     "express": "^4.0.0",
     "fs-extra": "^0.30.0",
+    "fs-promise": "^1.0.0",
     "http-auth": "^2.3.3",
     "mocha": "^2.4.5",
     "node-uuid": "^1.4.7",
@@ -21,7 +22,7 @@
     "start": "node main.js",
     "test-server": "node main.js test",
     "test": "./node_modules/.bin/mocha tests/main.js --reporter spec",
-    "test-debug":"./node_modules/.bin/mocha debug tests/main.js -R spec"
+    "test-debug": "./node_modules/.bin/mocha debug tests/main.js -R spec"
   },
   "author": "Lutz Reiter, Design Research Lab, University of Arts Berlin",
   "devDependencies": {}

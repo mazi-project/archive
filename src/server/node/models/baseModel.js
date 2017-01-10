@@ -40,61 +40,34 @@ class BaseModel {
 	save(callback) {
 		var db = this.getDb();
 
-		// update
 		if (_.has(this.data,'_id')) {
-			this.constructor.update(this.data, (err, doc) => {
-				if (err) {
-	                callback(err);
-	                return;
-	            }
-	            callback(err,doc);
-	        });
-
-		// create new entry
+			return this.constructor.update(this.data)
 		} else {
-			this.constructor.create(this.data, (err,docs) => {
-				if (err) {
-	                callback(err);
-	                return;
-	            }
-				callback(err, docs[0]);
-			});
+			return this.constructor.create(this.data);
 		}
 	}
 
-	fetch(callback) {
-		var db = this.getDb();
-
-		this.constructor.get( this.data._id, (err, doc) => {
-			if (err) {
-                callback(err);
-                return;
-            }
-
-            if (_.isEmpty(doc)) {
-            	callback(new Error("Id not found"));
-            	return;
-            }
-
-			this.data = doc;
-
-			callback(err,doc);
+	fetch() {
+		return new Promise( (resolve, reject) => {
+			this.constructor.get(this.data._id).then( doc => {
+				this.data = doc;
+				resolve(doc);
+			}).catch( error => {	
+				reject(err);
+			});
 		});
 	}
 
-	delete(callback) {
-		this.constructor.remove(this.data._id,callback);
+	delete() {
+		return this.constructor.remove(this.data._id);
 	}
 
-	populate(callback) {
-		this.constructor.populate([this.data], (err,docs) => {
-			if (err) {
-				callback(err)
-				return;
-			}
-
-			this.data = docs[0];
-			callback(err,this.data)
+	populate() {
+		return new Promise( (resolve, reject) => {
+			this.constructor.populate([this.data]).then( (populatedData) => {
+				this.data = populatedData[0];
+				resolve(this.data);
+			}).catch(reject);
 		});
 	}
 
@@ -107,7 +80,7 @@ class BaseModel {
 		return this.constructor.getDb();
 	}
 
-	static create(data, callback) {
+	static create(data) {
 	    var db = this.getDb()
 
 	    var self = this;
@@ -127,7 +100,15 @@ class BaseModel {
 
 	    });
 
-	    db[this.collection].insert(data, callback);
+	    return new Promise( (resolve, reject) => {
+        	db[this.collection].insert(data, (err, doc) => {
+        		if (err) {
+        			reject(err);
+        		} else {
+        			resolve(doc);
+        		}
+        	});
+        });
 	}
 
 	static update(data, callback) {
@@ -136,8 +117,14 @@ class BaseModel {
         // validate fields
 	    data = this.validate(data);
 
-        db[this.collection].update({ _id : data._id}, data, function(err) {
-            callback(err, data);
+	    return new Promise( (resolve, reject) => {
+        	db[this.collection].update({ _id : data._id}, data, (err) => {
+        		if (err) {
+        			reject(err);
+        		} else {
+        			resolve(data);
+        		}
+        	});
         });
     }
 
@@ -147,72 +134,113 @@ class BaseModel {
 		db[this.collection].remove({ _id : id}, callback);
 	}
 
-	static get(id, callback) {
+	static get(id) {
         var db = this.getDb();
 
-        db[this.collection].findOne({ _id : id }, callback);
+        return new Promise( (resolve, reject) => {
+        	db[this.collection].findOne({ _id : id }, (err, doc) => {
+        		if (err) {
+        			reject(err);
+        		} else {
+        			resolve(doc);
+        		}
+        	});
+        });
     }
 
-	static list(callback) {
+	static list() {
         var db = this.getDb()
 
-        db[this.collection].find({}).toArray(callback);
+        return new Promise( (resolve, reject) => {
+        	db[this.collection].find({}).toArray( (err, docs) => {
+        		if (err) {
+        			reject(err);
+        		} else {
+        			resolve(docs);
+        		}
+        	});
+        });
+    }
+
+    static listPopulated(callback) {
+    	var db = this.getDb()
+
+        db[this.collection].find({}).toArray( (err, docs) => {
+        	
+        });
     }
 
     static count(callback) {
         var db = this.getDb()
 
-        db.interviews.find({}).count(callback);
+        return new Promise( (resolve, reject) => {
+        	db[this.collection].count( (err, count) => {
+        		if (err) {
+        			reject(err);
+        		} else {
+        			resolve(count);
+        		}
+        	});
+        });
     }
 
     static removeAll(callback) {
         var db = this.getDb();
 
-        var self = this;
-        db[this.collection].find().toArray( (err, models) => {
-            if (err) {
-                callback(err);
-                return;
-            }
+        return new Promise( (resolve, reject) => {
+	        db[this.collection].find().toArray( (err, models) => {
+	        	if (err) {
+        			reject(err);
+        			return;
+        		}
 
-            async.each(models, (model, cb) => {
-                self.remove(model._id, cb);
-            }, callback);
-        });
+	            var removePromises = _.map(models, (model) => {
+					return this.remove(model._id);
+				});
+
+				Promise.all(removePromises).then(() => {
+					resolve();
+				}).catch(reject);
+	        });
+    	});
     }
 
-    static populate(docs,callback) {
+    static populate(docs) {
     	var db = this.getDb();
 
-    	async.each(docs, (doc, asyncb) => {
-    		// find populate ids
-            var ids = doc[this.reference.field]
 
-            // populate single element
-            if (!_.isArray(ids)) {
-            	db[this.reference.collection].findOne( { _id : ids }, (err, element) => {
-            		if (!err)
-            			doc[this.reference.field] = element;
-	            	asyncb(err)
-            	})
-            // populate list
-            } else {
-            	db[this.reference.collection].find( { _id : { $in: ids}} ).toArray( (err, elements) => {
-            		if (!err && !_.isUndefined(elements))
-            			doc[this.reference.field] = elements;
-            		asyncb(err)
-            	});
-            }
-        }, (err) => {
-        	if (err) {
-        		//console.log(err);
-                callback(err);
-            } else {
-           		callback(null,docs);
-            }
-        });
+    	var populatePromises = _.map(docs, (doc) => {
+    		return new Promise( (resolve, reject) => {
+    			var ids = doc[this.reference.field];
+
+
+    			// populate single element
+	            if (!_.isArray(ids)) {
+	            	db[this.reference.collection].findOne( { _id : ids }, (err, element) => {
+	            		if (err)
+	            			reject(err);
+	            		else {
+	            			doc[this.reference.field] = element;
+	            			resolve(doc);
+	            		}
+	            	})
+	            // populate list
+	            } else {
+	            	db[this.reference.collection].find( { _id : { $in: ids}} ).toArray( (err, elements) => {
+	            		if (err)
+	            			reject(err);
+	            		else {
+	            			if (!_.isUndefined(elements))
+	            				doc[this.reference.field] = elements;
+	            			resolve(doc);
+	            		}
+	            	});
+	            }
+    		});
+    	});
+
+    	return Promise.all(populatePromises);
     }
-
 }
 
 module.exports = BaseModel;

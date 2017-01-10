@@ -40,57 +40,73 @@ class Interview extends BaseModel {
     static remove(id, callback) {
         var db = this.getDb()
 
-        db[this.collection].remove({ _id : id}, function(err, result) {
-            if (err) {
-                callback(err);
-                return;
-            }
+        return new Promise( (resolve, reject) => {
+            db[this.collection].remove({ _id : id}, function(err, result) {
+                if (err) {
+                    reject(err);
+                    return;
+                }
 
-            //remove file directory
-            var dir = Config.fileDir + '/' + id + '/';
-            fs.remove(dir, (err) => {
-                callback(err,result);
+                //remove file directory
+                var dir = Config.fileDir + '/' + id + '/';
+                fs.remove(dir, (err) => {
+                    if (err)
+                        reject(err);
+                    else
+                        resolve(result);
+                });
             });
         });
+
+        
     }
 
-    attachImage(image, callback) {
-        if (!this.id)
-            throw new Error("Need to save model first");
-
+    attachImage(image) {
         var db = this.getDb()
 
-        var fileurl = Config.fileDir + this.data._id + '/' + image.originalFilename;
-
-        //copy image
-        fs.move(image.path, fileurl, (err) => {
-            if (err) {
-                callback(err);
+        return new Promise( (resolve, reject) => {
+            if (!this.id) {
+                reject(Error("Need to save model first"));
                 return;
             }
 
-            this.data.image = image;
-            this.data.image.url = fileurl;
-            this.data.image.name = image.originalFilename;
+            var fileurl = Config.fileDir + this.data._id + '/' + image.originalFilename;
 
-            // save interview
-            this.save(callback);
+            //copy image
+            fs.move(image.path, fileurl, (err) => {
+                if (err) {
+                    reject(err);
+                    return;
+                }
+
+                this.data.image = image;
+                this.data.image.url = fileurl;
+                this.data.image.name = image.originalFilename;
+
+                // save interview
+                this.save().then(resolve).catch(reject);
+            });
+
         });
+        
+
+
+        
     }
 
     // adds attachment reference
-    addAttachment(attachmentId, callback) {
+    addAttachment(attachmentId) {
         var db = this.getDb()
 
         //add ref to model
         this.data.attachments.push(attachmentId);
 
         // update model
-        this.save(callback);
+        return this.save();
     }
 
     // removes attachment reference
-    removeAttachment(attachmentId, callback) {
+    removeAttachment(attachmentId) {
         var db = this.getDb()
 
         // remove attachment ref from model
@@ -99,7 +115,7 @@ class Interview extends BaseModel {
         });
 
         //save model
-        self.save(callback)
+        return self.save()
     }
 }
 

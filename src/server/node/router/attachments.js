@@ -41,7 +41,10 @@ router.get('/',(req,res) => {
     // });
     Attachment.list((err, docs) => {
         if (Utils.handleError(err,res)) return;
-        res.send(docs);
+        Attachment.populate(docs, (err) => {
+            if (Utils.handleError(err,res)) return;
+            res.send(docs);
+        })
     })
 });
 
@@ -85,10 +88,12 @@ router.post('/', (req, res) => {
  * GET /api/attachments/:id
  */ 
 router.get('/:id',(req,res) => {
-    Attachment.findOne({ _id: req.params.id}).populate('interview').exec((err,model) => {
+    Attachment.get(req.params.id, (err,doc) => {
         if (Utils.handleError(err,res)) return;
-
-        res.send(model);
+        Attachment.populate([doc], (err) => {
+            if (Utils.handleError(err,res)) return;
+            res.send(doc);
+        })
     });
 });
 

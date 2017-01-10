@@ -2,6 +2,7 @@
 
 var _ = require('underscore')
 var uuid = require('node-uuid');
+var fsp = require('fs-promise');
 var fs = require('fs-extra');
 var async = require('async');
 
@@ -41,49 +42,51 @@ class Attachment extends BaseModel {
     static remove(id, callback) {
         var db = this.getDb();
 
-        this.get(id, (err,model) => {
-            if (err) {
-                callback(err);
-                return;
-            }
-
-            //remove file
-            if (model.file) {
-                fs.remove(model.file.url, (err) => {
+        return new Promise( (resolve, reject) => {
+            this.get(id).then( doc => {
+                if (doc.file) {
+                    //remove file
+                    return fsp.remove(doc.file.url);
+                } else {
+                    return Promise.resolve();
+                }
+            }).then( () => {
+                db[this.collection].remove({ _id : id}, function(err, result) {
                     if (err) {
-                        callback(err);
+                        reject(err);
                         return;
+                    } else {
+                        resolve(result)
                     }
-                    db[this.collection].remove({ _id : id}, callback);
                 });
-            } else {
-                db[this.collection].remove({ _id : id}, callback);
-            }
-
+            });
         });
     }
 
     attachFile(file, callback) {
-        if (!this.id)
-            throw new Error("Need to save model first");
-
-        var db = this.getDb();
-
-        var fileurl = Config.fileDir + this.data.interview + '/' + file.originalFilename;
-
-        //copy image
-        fs.move(file.path, fileurl, (err) => {
-            if (err) {
-                callback(err);
+        return new Promise( (resolve, reject) => {
+            if (!this.id) {
+                reject(Error("Need to save model first"));
                 return;
             }
 
-            this.data.file = file;
-            this.data.file.url = fileurl
-            this.data.file.name = file.originalFilename;
+            var fileurl = Config.fileDir + this.data.interview + '/' + file.originalFilename;
 
-            // save attachment
-            this.save(callback);
+            //copy image
+            fs.move(file.path, fileurl, (err) => {
+                if (err) {
+                    reject(err);
+                    return;
+                }
+
+                this.data.file = file;
+                this.data.file.url = fileurl
+                this.data.file.name = file.originalFilename;
+
+                // save interview
+                this.save().then(resolve).catch(reject);
+            });
+
         });
     }
 }

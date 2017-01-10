@@ -51,10 +51,9 @@ describe('Database Interview Test', function(){
   		var db = r_require('models/database');
 
   		// remove all interviews
-  		Interview.removeAll(function(err) {
-  			if (err) throw(err);
+  		Interview.removeAll().then( () => {
   			db.disconnect(done);
-  		});
+  		}).catch(done);
     });
 
 	it('should create a database file and add one interview', function(done){
@@ -65,10 +64,9 @@ describe('Database Interview Test', function(){
 			text : 'Test Nachricht',
 		});
 
-		interview.save( (err, model) => {
-			if (err) throw err;
+		interview.save().then( data => {
 			done();
-		});
+		}).catch(done);
 	})
 
 	it('should add a interview and return it', function(done){
@@ -80,17 +78,12 @@ describe('Database Interview Test', function(){
 			name: 'test'
 		});
 
-		interview.save( function(err, model) {
-			if (err) throw err;
-
-			// check if model exists
-			Interview.get(model._id, function(err, model) {
-				if (err) throw err;
-	        	assert.equal(message,model.text)
-	        	done();
-			});
-
-		});
+		interview.save().then( () => {
+			return Interview.get(interview.id);
+		}).then( (data) => {
+			assert.equal(message,data.text)
+	        done();
+		}).catch(done);
 	})
 
 	it('should add a interview and be able to fetch it', function(done){
@@ -102,18 +95,12 @@ describe('Database Interview Test', function(){
 			name: 'test'
 		});
 
-		interview.save( function(err, model) {
-			if (err) throw err;
-
-			// check if model exists
-			var fetchedInterview = new Interview({ _id : model._id});
-			fetchedInterview.fetch(function(err, model) {
-				if (err) throw err;
-	        	assert.equal(message,fetchedInterview.data.text)
-	        	done();
-			});
-
-		});
+		interview.save().then( () => {
+			return interview.fetch();
+		}).then( (data) => {
+			assert.equal(message,interview.data.text)
+	        done();
+		}).catch(done);
 	})
 
 	it('should add one interview and attach an image', function(done){
@@ -125,21 +112,17 @@ describe('Database Interview Test', function(){
 		});
 
 		// save interview
-		interview.save(function(err, model) {
-			if (err) throw err;
-
-			// attach image
-			interview.attachImage(TEST_IMAGE_FILE, (err,model) => {
+		interview.save().then( () => {
+			return interview.fetch();
+		}).then( () => {
+			return interview.attachImage(TEST_IMAGE_FILE)
+		}).then( () => {
+			//check if file exists
+			fs.access(interview.data.image.url, fs.F_OK, (err) => {
 				if (err) throw err;
-
-				//check if file exists
-				fs.access(interview.data.image.url, fs.F_OK, (err) => {
-					if (err) throw err;
-					done();
-				});
-
+				done();
 			});
-		});
+		}).catch(done);
 	});
 
 
@@ -148,22 +131,21 @@ describe('Database Interview Test', function(){
 		// insert some models
 		
 		var size = Math.floor(2 + Math.random() * 10)
-		var array = _.map(_.range(size), function(i) {
-			return {
+		
+		var createPromises = _.map(_.range(size), function(i) {
+			return Interview.create({
 				text: 'model'+i,
 				name: 'test'
-			}
+			})
 		});
 
-		async.each(array, function(element, cb) {
-			Interview.create(element, cb);
-		}, function(err) {
-			if (err) throw err;
-			Interview.count(function(err, count) {
-				assert.equal(count,size) // check correct size
-				done();
-			});
-		});
+		Promise.all(createPromises).then( () => {
+			return Interview.count();
+		}).then( count => {
+			assert.equal(count,size) // check correct size
+			done();
+		}).catch(done);
+
 	})
 
 	it('should be able to remove an item', function(done) {
@@ -176,16 +158,14 @@ describe('Database Interview Test', function(){
 			}
 		});
 
-		Interview.create(array, function(err,models) {
-
-			Interview.remove({ _id: models[0]._id} , function(err) {
-
-				Interview.count(function(err,count) {
-					assert.equal(count,size-1) // check if one item was removed
-					done();
-				});
-			});
-		});
+		Interview.create(array).then( (docs) => {
+			return Interview.remove(docs[0]._id);
+		}).then( () => {
+			return Interview.count();
+		}).then( count => {
+			assert.equal(count,size-1) // check if one item was removed
+			done();
+		}).catch(done);
 	})
 
 	it('should be able to delete an interview', function(done) {
@@ -198,18 +178,15 @@ describe('Database Interview Test', function(){
 			}
 		});
 
-		Interview.create(array, function(err,models) {
-
-			var interview = new Interview({ _id : models[0]._id})
-
-			interview.delete(function(err) {
-				
-				Interview.count(function(err,count) {
-					assert.equal(count,size-1) // check if one item was removed
-					done();
-				});
-			});
-		});
+		Interview.create(array).then( (docs) => {
+			var interview = new Interview({ _id : docs[0]._id})
+			return interview.delete();
+		}).then( () => {
+			return Interview.count();
+		}).then( count => {
+			assert.equal(count,size-1) // check if one item was removed
+			done();
+		}).catch(done);
 	})
 
 	it('should list all models', function(done) {
@@ -222,13 +199,12 @@ describe('Database Interview Test', function(){
 			}
 		});
 
-		Interview.create(array, function(err) {
-			Interview.list(function(err,models) {
-				assert.equal(models.length,size)
-				done();
-			})
-			
-		});
+		Interview.create(array).then( () => {
+			return Interview.list();
+		}).then( (docs) => {
+			assert.equal(docs.length,size)
+			done();
+		}).catch(done);
 	});
 });
 
@@ -245,141 +221,161 @@ describe('Database Attachment Test', function(){
 			text : 'Test Nachricht',
 		}
 
-		Interview.create(data, function(err, model) {
-			if (err) throw err;
+		Interview.create(data).then( () => {
 			
 			//copy test file
 			fs.copy(TEST_IMAGE_PATH, TEST_IMAGE_FILE.path, (err) => {
-				if (err) throw(err);
+				if (err) {
+					done(err);
+					return;
+				}
 				
 				var db = r_require('models/database');
 				db.disconnect(done);
 			});
-		});
+		}).catch(done);
   	});
 
   	afterEach(function(done) {
   		var db = r_require('models/database');
-  		async.parallel([
-			(callback) => { Interview.removeAll(callback) },
-			(callback) => { Attachment.removeAll(callback) },
-		],() => {
-        	db.disconnect(done);
-        }); 
+
+  		Interview.removeAll().then( () => {
+  			return Attachment.removeAll()
+  		}).then( () => {
+  			db.disconnect(done);
+  		}).catch(done);
     });
 
 
 
 	it('should create an attachment without file', function(done){
 
-		Interview.list((err, models) => {
-
+		Interview.list().then( docs => {
+			//create attachment
 			var attachment = new Attachment({
 				tags : [ "test1", "test2" ],
 				text : "lorem ipsum",
-				interview : models[0]._id
+				interview : docs[0]._id
 			});
-
-			attachment.save((err, attachment) => {
-				if (err) throw err;
-				done();
-			})
-		})
+			return attachment.save();
+		}).then( () => {
+			done();
+		}).catch(done);
 	});
 
 	it('should create an attachment without file and add it to an interview', function(done){
 
-		Interview.list((err, models) => {
+		var interview = null;
+		var attachment = null;
 
-			var attachment = new Attachment({
+		Interview.list().then( docs => {
+			interview = new Interview(docs[0]);
+
+			//create attachment
+			attachment = new Attachment({
 				tags : [ "test1", "test2" ],
 				text : "lorem ipsum",
-				interview : models[0]._id
+				interview : interview.id
 			});
+			return attachment.save();
+		}).then( () => {
+			// add attachment to interview
+			return interview.addAttachment(attachment.id);
+		}).then( () => {
+			// get interview from db
+			return Interview.get(interview.id);
+		}).then( (doc) => {
+			assert.equal(attachment.id, doc.attachments[0]);
+			done();
+		}).catch(done);
 
-			attachment.save((err) => {
-				if (err) throw err;
+				
 
-				var interview = new Interview(models[0]);
-
-				interview.addAttachment( attachment.id, (err, interview) => {
-					if (err) throw err;
-
-					Interview.get(models[0]._id, (err, model) => {
-						assert.equal(attachment.id, model.attachments[0]);
-						done();
-					});
-				});
-			})
-		})
 	});
 
 	it('should create an attachment and delete it', function(done){
 
-		Interview.list((err, models) => {
+		var interview = null;
+		var attachment = null;
 
-			var attachment = new Attachment({
+		Interview.list().then( docs => {
+			interview = new Interview(docs[0]);
+
+			//create attachment
+			attachment = new Attachment({
 				tags : [ "test1", "test2" ],
 				text : "lorem ipsum",
-				interview : models[0]._id
+				interview : interview.id
 			});
-
-			attachment.save((err) => {
-				if (err) throw err;
-
-				var interview = new Interview(models[0]);
-
-				interview.addAttachment( attachment._id, (err, interview) => {
-					if (err) throw err;
-					
-					attachment.delete((err) => {
-						if (err) throw err;
-
-						// check if attachment exists
-						Attachment.get(attachment.data._id, (err, model) => {
-							if (err) throw err;
-
-							assert.equal(null,model);
-
-							done();
-						})
-					});
-				});
-			})
-
-		})
+			return attachment.save();
+		}).then( () => {
+			// add attachment to interview
+			return interview.addAttachment(attachment.id);
+		}).then( () => {
+			// delete attachment
+			return attachment.delete();
+		}).then( () => {
+			Attachment.get(attachment.id)
+		}).then( (doc) => {
+			assert.equal(null, doc);
+			done();
+		}).catch(done);
 	});
 
 	it('should create an attachment with a file', function(done){
 
-		Interview.list((err, models) => {
+		var interview = null;
+		var attachment = null;
 
-			var attachment = new Attachment({
+		Interview.list().then( docs => {
+			interview = new Interview(docs[0]);
+
+			//create attachment
+			attachment = new Attachment({
 				tags : [ "test1", "test2" ],
 				text : "lorem ipsum",
-				interview : models[0]._id
+				interview : interview.id
 			});
-
-			attachment.save((err) => {
-				if (err) throw err;
-
-				var interview = new Interview(models[0]);
-
-				interview.addAttachment(attachment._id, (err, interview) => {
-					if (err) throw err;
-
-					attachment.attachFile(TEST_IMAGE_FILE, (err) => {
-						if (err) throw err;
-
-						// check if file exists
-						fs.access(attachment.data.file.url, fs.F_OK, (err) => {
-							if (err) throw err;
-							done();
-						});
-					})
-				});
+			return attachment.save();
+		}).then( () => {
+			// add attachment to interview
+			return interview.addAttachment(attachment.id);
+		}).then( () => {
+			// add attachment
+			return attachment.attachFile(TEST_IMAGE_FILE);
+		}).then( () => {
+			fs.access(attachment.data.file.url, fs.F_OK, (err) => {
+				done(err);
 			});
-		});
+		}).catch(done);
+	});
+
+	it('should create an attachment with a file and delete it', function(done){
+
+		var interview = null;
+		var attachment = null;
+
+		Interview.list().then( docs => {
+			interview = new Interview(docs[0]);
+
+			//create attachment
+			attachment = new Attachment({
+				tags : [ "test1", "test2" ],
+				text : "lorem ipsum",
+				interview : interview.id
+			});
+			return attachment.save();
+		}).then( () => {
+			// add attachment
+			return attachment.attachFile(TEST_IMAGE_FILE);
+		}).then( () => {
+			return attachment.delete();
+		}).then( () => {
+			fs.access(attachment.data.file.url, fs.F_OK, (err) => {
+				assert(err != null)
+				done();
+			});
+		}).catch(done);
 	});
 });
 
@@ -401,131 +397,122 @@ describe('Database Populate Test', function(){
 			}
 		]
 
-		Interview.create(data, function(err) {
-			if (err) throw err;
+		Interview.create(data).then( () => {
 			
 			//copy test file
 			fs.copy(TEST_IMAGE_PATH, TEST_IMAGE_FILE.path, (err) => {
-				if (err) throw(err);
+				if (err) {
+					done(err);
+					return;
+				}
 				
 				var db = r_require('models/database');
 				db.disconnect(done);
 			});
-		});
+		}).catch(done);
   	});
 
   	afterEach(function(done) {
   		var db = r_require('models/database');
-  		async.parallel([
-			(callback) => { Interview.removeAll(callback) },
-			(callback) => { Attachment.removeAll(callback) },
-		],() => {
-        	db.disconnect(done);
-        }); 
+
+  		Interview.removeAll().then( () => {
+  			return Attachment.removeAll()
+  		}).then( () => {
+  			db.disconnect(done);
+  		}).catch(done);
     });
 
 
 
 	it('should create an attachment and populate attachment (static)', function(done){
 
-		Interview.list((err, models) => {
+		var attachment = null;
+		var interviews = null;
 
-			var attachment = new Attachment({
+		Interview.list().then( (docs) => {
+			interviews = docs;
+			attachment = new Attachment({
 				tags : [ "test1", "test2" ],
 				text : "lorem ipsum",
-				interview : models[0]._id
+				interview : docs[0]._id
 			});
+			return attachment.save();
+		}).then( () => {
+			return Attachment.populate([attachment.data])
+		}).then( (populatedAttachments) => {
+			assert.equal(interviews[0].text,populatedAttachments[0].interview.text)
+			done();
+		}).catch(done);
 
-			attachment.save((err) => {
-				if (err) throw err;
-
-				Attachment.populate([attachment.data], (err) => {
-					if (err) throw err;
-					assert.equal(models[0].text,attachment.data.interview.text)
-					done();
-				})
-
-				
-			})
-		})
 	});
 
 	it('should create an attachment and populate attachment (non static)', function(done){
 
-		Interview.list((err, models) => {
+		var attachment = null;
+		var interviews = null;
 
-			var attachment = new Attachment({
+		Interview.list().then( (docs) => {
+			interviews = docs;
+			attachment = new Attachment({
 				tags : [ "test1", "test2" ],
 				text : "lorem ipsum",
-				interview : models[0]._id
+				interview : docs[0]._id
 			});
-
-			attachment.save((err) => {
-				if (err) throw err;
-
-				attachment.populate((err) => {
-					if (err) throw err;
-					assert.equal(models[0].text,attachment.data.interview.text)
-					done();
-				})
-
-				
-			})
-		})
+			return attachment.save();
+		}).then( () => {
+			return attachment.populate();
+		}).then( () => {
+			assert.equal(interviews[0].text,attachment.data.interview.text)
+			done();
+		}).catch(done);
 	});
 
 	it('should add several attachments to interview and populate interview ', function(done){
 
-		Interview.list((err, models) => {
+		var attachment = null;
+		var interview = null;
 
-			var attachment = new Attachment({
+		Interview.list().then( (docs) => {
+			interview = new Interview(docs[0]);
+			attachment = new Attachment({
 				tags : [ "test1", "test2" ],
 				text : "lorem ipsum",
-				interview : models[0]._id
+				interview : interview.id
 			});
-
-			attachment.save((err) => {
-				if (err) throw err;
-
-				var interview = new Interview(models[0]);
-
-				interview.addAttachment(attachment.id, (err) => {
-
-					interview.populate((err) => {
-						if (err) throw err;
-						assert.equal(interview.data.attachments[0]._id,attachment.id)
-						done();
-					})
-				});
-			})
-		})
+			return attachment.save();
+		}).then( () => {
+			return interview.addAttachment(attachment.id);
+		}).then( () => {
+			return interview.populate()
+		}).then( () => {
+			assert.equal(interview.data.attachments[0]._id,attachment.id)
+			done();
+		}).catch(done);
 	});
 
 	it('should add several attachments to several interviews and populate interviews ', function(done){
 
-		Interview.list((err, models) => {
+		var interviews = null;
 
-			async.each(models, (model,asyncCb) => {
+		Interview.list().then( (docs) => {
+			interviews = docs;
+			return Promise.all( _.map(docs, (doc) => {
 				var attachment = new Attachment({
 					tags : [ "test1", "test2" ],
 					text : "lorem ipsum",
-					interview : models[0]._id
+					interview : doc._id
 				});
-				attachment.save((err) => {
-					if (err) throw err;
-
-					var interview = new Interview(model);
-					interview.addAttachment(attachment.id, asyncCb);
-				});
-			}, (err) => {
-				if (err) throw err;
-
-				Interview.populate(models, (err, populatedModels) => {
-					assert.equal(typeof populatedModels[0].attachments[0],'object');
-					assert.equal(typeof populatedModels[1].attachments[0],'object');
-					done();
+				return attachment.save().then( () => {
+					var interview = new Interview(doc);
+				 	return interview.addAttachment(attachment.id);
 				})
-			})
-		})
+			}));
+		}).then( () => {
+			return Interview.populate(interviews);
+		}).then( (populatedInterviews) => {
+			assert.equal(typeof populatedInterviews[0].attachments[0],'object');
+			assert.equal(typeof populatedInterviews[1].attachments[0],'object');
+			done();
+		}).catch(done);
 	});
 });
