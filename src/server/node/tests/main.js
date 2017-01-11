@@ -24,10 +24,10 @@ Config.attachmentCollection = Config.testAttachmentCollection;
 Config.port = Config.testPort;
 
 require("./databaseTests.js");
-// require("./apiInterviewsTests.js");
-// require("./apiTagsTests.js");
-// require("./apiAttachmentTests.js");
-// require("./socketTests.js");
+require("./apiInterviewsTests.js");
+require("./apiTagsTests.js");
+require("./apiAttachmentTests.js");
+require("./socketTests.js");
 
 //add some test data
-// require("./createTestDatabase.js");
+require("./createTestDatabase.js");

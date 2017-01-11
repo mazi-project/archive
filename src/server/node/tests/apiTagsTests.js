@@ -79,9 +79,7 @@ describe('API Routes /tags/', function(){
 			if (err)
     			throw err;
 
-    		console.log(res.body);
-
-			assert.equal(res.body.docs.length,2);
+			assert.equal(res.body.length,2);
 			done()
         });
 	})

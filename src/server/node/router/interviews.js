@@ -13,13 +13,26 @@ var Auth = r_require('/router/_authentification');
 var router = express.Router();
 
 /*
- * GET /api/submissions/
+ * GET /api/interviews/
  */ 
 router.get('/',(req,res) => {
 
-    var interviews = null;
+    //get query options
+    var options = {}
+    if (_.has(req.query,'tag'))
+        options.tag = req.query.tag;
 
-    Interview.list(). then( (docs) => {
+    // pagination options
+    if (_.has(req.query,'limit'))
+        options.limit = parseInt(req.query.limit);
+    if (_.has(req.query,'skip'))
+        options.skip = parseInt(req.query.skip);
+
+    // start query
+    var interviews = null;
+    Interview.list().then( (docs) => {
+        return Interview.populate(docs);
+    }).then( docs => {
         interviews = docs;
         return Interview.count();
     }).then( count => {
@@ -31,43 +44,10 @@ router.get('/',(req,res) => {
         Utils.handleError(err,res);
     });
 
-    /*//get qury options
-    var options = {}
-    if (_.has(req.query,'tag'))
-        options.tags = req.query.tag;
-
-    // paginate options
-    var paginateOptions = {}
-    if (_.has(req.query,'limit'))
-        paginateOptions.limit = parseInt(req.query.limit);
-
-    if (_.has(req.query,'skip'))
-        paginateOptions.skip = parseInt(req.query.skip);
-
-    // build query
-    var query = Interview.find(options);
-    query.sort({'updatedAt': -1});
-    query.limit(paginateOptions.limit);
-    query.skip(paginateOptions.skip);
-    query.populate('attachments');
-
-    // execute
-    query.exec((err,models) => {
-        if (Utils.handleError(err,res)) return;
-
-        Interview.count(options, (err, count) => {
-            if (Utils.handleError(err,res)) return;
-
-            res.send({
-                docs : models,
-                total_records : count
-            });
-        });
-    });*/
 });
 
 /*
- * GET /api/submissions/:id
+ * GET /api/interviews/:id
  */ 
 router.get('/:id',(req,res) => {
     //TODO: add populate
@@ -79,7 +59,7 @@ router.get('/:id',(req,res) => {
 });
 
 /*
- * POST /api/submissions/
+ * POST /api/interviews/
  */ 
 router.post('/', (req, res) => {
 
@@ -97,7 +77,7 @@ router.post('/', (req, res) => {
 });
 
 /*
- * PUT /api/submissions/:id with AUTH
+ * PUT /api/interviews/:id with AUTH
  */
 router.put('/:id', Auth.authentificate, (req, res) => {
  

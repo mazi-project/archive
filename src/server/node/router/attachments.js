@@ -25,6 +25,9 @@ var router = express.Router();
  */ 
 router.get('/',(req,res) => {
 
+    var options = {}
+    if (_.has(req.query,'tag'))
+        options.tags = req.query.tag;
 
     Attachment.list(options).then( (docs) => {
         if (_.isEmpty(docs))
