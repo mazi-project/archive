@@ -378,6 +378,43 @@ describe('Database Attachment Test', function(){
 			});
 		}).catch(done);
 	});
+
+	it('should create several attachments and list only the ones with <hybrid> tag', function(done){
+
+		var TAGS = ['test','hybrid','letterbox'];
+
+		var interview = null;
+
+		Interview.list().then( docs => {
+			interview = new Interview(docs[0]);
+
+			//create attachments
+			return Promise.all([
+				new Attachment({
+					tags: [TAGS[0]],
+					name: 'Test Peter',
+					interview: interview.id
+				}).save(),
+				new Attachment({
+					tags: TAGS,
+					name: 'Test Peter',
+					interview: interview.id
+				}).save(),
+				new Attachment({
+					tags: TAGS,
+					name: 'Test Peter',
+					interview: interview.id
+				}).save()
+			]);
+		}).then( () => {
+			// list attachments
+
+			return Attachment.list({ tag : 'hybrid' })
+		}).then( (docs) => {
+			assert.equal(docs.length,2);
+			done();
+		}).catch(done);
+	});
 });
 
 describe('Database Populate Test', function(){
@@ -515,5 +552,88 @@ describe('Database Populate Test', function(){
 			assert.equal(typeof populatedInterviews[1].attachments[0],'object');
 			done();
 		}).catch(done);
+	});
+});
+
+describe('Database Pagination Tests', function(){
+
+
+  	beforeEach(function(done) {
+			
+		// Add some Models
+		var size = Math.floor(10 + Math.random() * 10)
+		var array = _.map(_.range(size), function(i) {
+			return {
+				text: 'model'+i,
+				name: 'Test Peter'
+			}
+		});
+
+		Interview.create(array).then( () => {
+			//copy test file
+			fs.copy(TEST_IMAGE_PATH, TEST_IMAGE_FILE.path, (err) => {
+				if (err) {
+					done(err);
+					return;
+				}
+				
+				var db = r_require('models/database');
+				db.disconnect(done);
+			});
+		}).catch(done);
+  	});
+
+  	afterEach(function(done) {
+
+  		var db = r_require('models/database');
+
+  		Interview.removeAll()
+  		.then( () => {
+  			db.disconnect(done);
+  		}).catch(done);
+  		
+    });
+
+	it('should be able to limit results to 5', function(done){
+
+		var interviews = null;
+
+		Interview.list().then( (docs) => {
+			interviews = docs;
+			return Interview.list({ limit : 5 });
+		}).then( (docs) => {
+			assert.equal(docs.length,5);
+			done();
+		}).catch(done);
+
+	});
+
+	it('should be able to skip 5 docs', function(done){
+
+		var interviews = null;
+
+		Interview.list().then( (docs) => {
+			interviews = docs;
+			return Interview.list({ skip : 5 });
+		}).then( (docs) => {
+			assert.equal(docs[0]._id,interviews[5]._id);
+			done();
+		}).catch(done);
+
+	});
+
+	it('should be able to skip 5 docs and limit to 2', function(done){
+
+		var interviews = null;
+
+		Interview.list().then( (docs) => {
+			interviews = docs;
+			return Interview.list({ skip : 5, limit : 2 });
+		}).then( (docs) => {
+			assert.equal(docs[0]._id,interviews[5]._id);
+			assert.equal(docs[1]._id,interviews[6]._id);
+			done();
+		}).catch(done);
+
 	});
 });

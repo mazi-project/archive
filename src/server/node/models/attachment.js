@@ -26,7 +26,7 @@ class Attachment extends BaseModel {
     static validate(data) {
         //dont allow false or null tags
         if (data.tags == null || data.tags == false)
-            data.tags = [];
+            data.tags = "";
 
         data.interview = _.has(data,'interview') ? data.interview : false ;
         data.text = _.has(data,'text') ? data.text : "" ;
@@ -61,6 +61,27 @@ class Attachment extends BaseModel {
                 });
             });
         });
+    }
+
+    static list(options) {
+        var db = this.getDb()
+
+        // handle tag option
+        if (_.has(options,'tag')) {
+            var tag = options.tag;
+            delete options['tag'];
+            
+            // filter out results that contain tag
+            return super.list(options).then( (docs) => {
+                docs = _.reject(docs, (doc) => {
+                    return !_.contains(doc.tags,tag);
+                })
+                return Promise.resolve(docs);
+            });
+        } else {
+            return super.list(options)
+        }
+
     }
 
     attachFile(file, callback) {

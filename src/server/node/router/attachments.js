@@ -25,22 +25,8 @@ var router = express.Router();
  */ 
 router.get('/',(req,res) => {
 
-    // //get qury options
-    // var options = {}
-    // if (_.has(req.query,'tag'))
-    //     options.tags = req.query.tag;
 
-    // // build query
-    // var query = Attachment.find(options);
-    // query.sort({'updatedAt': -1});
-    // query.populate('interview');
-
-    // // execute
-    // query.exec((err,models) => {
-    //     res.send(models);
-    // });
-
-    Attachment.list().then( (docs) => {
+    Attachment.list(options).then( (docs) => {
         if (_.isEmpty(docs))
             return Promise.resolve(docs);
         else

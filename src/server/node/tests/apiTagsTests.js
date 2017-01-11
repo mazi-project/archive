@@ -16,7 +16,7 @@ describe('API Routes /tags/', function(){
 			
 		Promise.all([
 			new Attachment({
-				tags: TAGS[0],
+				tags: [TAGS[0]],
 				name: 'Test Peter'
 			}).save(),
 			new Attachment({
@@ -67,7 +67,7 @@ describe('API Routes /tags/', function(){
         });
 	})
 
-	it.skip('should GET two models on api/interviews/?tag='+TAGS[1], function(done){
+	it('should GET two models on api/attachments/?tag='+TAGS[1], function(done){
 
 		var request = require('supertest');
 
@@ -75,7 +75,7 @@ describe('API Routes /tags/', function(){
 			text: "unittest_" + require('node-uuid').v4()
 		}
 
-		request(BASE_URL).get('api/interviews/?tag='+TAGS[1]).end(function(err, res) {
+		request(BASE_URL).get('api/attachments/?tag='+TAGS[1]).end(function(err, res) {
 			if (err)
     			throw err;
 

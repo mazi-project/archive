@@ -148,11 +148,26 @@ class BaseModel {
         });
     }
 
-	static list() {
+	static list(options) {
         var db = this.getDb()
 
+        if (_.isUndefined(options))
+        	options = {};
+
+        // build pagination options
+        var paginateOptions = { skip : 0, limit : 0 };
+        if (_.has(options,'limit')) {
+        	paginateOptions.limit = options.limit;
+        	delete options['limit'];
+        }
+        if (_.has(options,'skip')) {
+        	paginateOptions.skip = options.skip;
+        	delete options['skip'];
+        }
+
+        // make query
         return new Promise( (resolve, reject) => {
-        	db[this.collection].find().toArray( (err, docs) => {
+        	db[this.collection].find(options).skip(paginateOptions.skip).limit(paginateOptions.limit).toArray( (err, docs) => {
         		if (err) {
         			reject(err);
         		} else {

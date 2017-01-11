@@ -96,7 +96,7 @@ describe('Socket Tests', function(){
             });
             socket.on('disconnect', () => { done(null) });
 
-            // delete submission
+            // delete interview
             request(BASE_URL).delete('api/interviews/'+interviewId).auth(Config.authName, Config.authPassword).end(function(err, res) {
                if (err) throw err;
             });
@@ -108,7 +108,7 @@ describe('Socket Tests', function(){
         var socketIoClient = require('socket.io-client')
         var request = require('supertest');
 
-        //create submission
+        // create interview
         request(BASE_URL).get('api/interviews/').end(function(err, res) {
             if (err) throw err;
 
