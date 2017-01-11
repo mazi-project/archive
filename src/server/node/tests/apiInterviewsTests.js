@@ -119,7 +119,7 @@ describe('API Routes /interviews/', function(){
         });
 	})
 
-	it('should GET on api/submissions/:id', function(done){
+	it('should GET on api/interviews/:id', function(done){
 
 		//add interview
 		addInterview( (model) => {

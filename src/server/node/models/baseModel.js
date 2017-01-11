@@ -215,15 +215,20 @@ class BaseModel {
     static populate(docs) {
     	var db = this.getDb();
 
-
     	var populatePromises = _.map(docs, (doc) => {
     		return new Promise( (resolve, reject) => {
-    			var ids = doc[this.reference.field];
 
+    			if (!_.has(doc,this.reference.field)) {
+    				resolve(doc);
+    				return;
+    			}
+
+    			var ids = doc[this.reference.field];
 
     			// populate single element
 	            if (!_.isArray(ids)) {
 	            	db[this.reference.collection].findOne( { _id : ids }, (err, element) => {
+
 	            		if (err)
 	            			reject(err);
 	            		else {

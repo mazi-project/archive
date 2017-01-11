@@ -30,7 +30,7 @@ router.get('/',(req,res) => {
 
     // start query
     var interviews = null;
-    Interview.list().then( (docs) => {
+    Interview.list(options).then( docs => {
         return Interview.populate(docs);
     }).then( docs => {
         interviews = docs;
@@ -51,8 +51,10 @@ router.get('/',(req,res) => {
  */ 
 router.get('/:id',(req,res) => {
     //TODO: add populate
-    Interview.get(req.params.id).then( (doc) => {
-        res.send(doc);
+    Interview.get(req.params.id).then( doc => {
+        return Interview.populate([doc]);
+    }).then( docs => {
+        res.send(docs[0]);
     }).catch( (err) => {
         Utils.handleError(err,res);
     });
@@ -108,6 +110,7 @@ router.delete('/:id', Auth.authentificate, (req, res) => {
         }
         res.send( {removed: result} );
     }).catch( (err) => {
+        console.log(err);
         Utils.handleError(err,res);
     });
 });
