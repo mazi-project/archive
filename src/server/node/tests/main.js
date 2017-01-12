@@ -23,10 +23,20 @@ Config.interviewCollection = Config.testInterviewCollection;
 Config.attachmentCollection = Config.testAttachmentCollection;
 Config.port = Config.testPort;
 
-require("./databaseTests.js");
+// database tests
+require("./databaseConnectionTests.js");
+require("./databaseInterviewTests.js");
+require("./databaseAttachmentTests.js");
+require("./databasePaginationTests.js");
+require("./databasePopulateTests.js");
+
+// api tests
 require("./apiInterviewsTests.js");
-require("./apiTagsTests.js");
 require("./apiAttachmentTests.js");
+require("./apiTagsTests.js");
+require("./apiQuestionsTests.js");
+
+// socket tests
 require("./socketTests.js");
 
 //add some test data

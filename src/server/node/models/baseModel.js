@@ -117,6 +117,15 @@ class BaseModel {
         // validate fields
 	    data = this.validate(data);
 
+		//unpopulate if populated
+		if (this.reference) {
+			if (_.isArray(data[this.reference.field]) && typeof data[this.reference.field][0] != 'string') {
+				data[this.reference.field] = _.pluck(data[this.reference.field],'_id');
+			} else if (!_.isArray(data[this.reference.field]) && typeof data[this.reference.field] != 'string') {
+				data[this.reference.field] = data[this.reference.field]._id;
+			}
+		}
+
 	    return new Promise( (resolve, reject) => {
         	db[this.collection].update({ _id : data._id}, data, (err) => {
         		if (err) {

@@ -33,8 +33,7 @@ describe('API Routes /attachments/', function() {
   	after(function(done) {
   		var db = r_require('models/database');
 
-  		Interview.removeAll()
-  		.then( () => {
+  		Interview.removeAll().then( () => {
   			return Attachment.removeAll()
   		}).then( () => {
   			db.disconnect(done);
