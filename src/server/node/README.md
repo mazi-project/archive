@@ -10,16 +10,7 @@ Node Server for saving the submissions thrown into the letterbox
 
 ## Testing
 
-* start your mongodb server with `mongod --dbpath <path_to_your_db>`
-
-  * create two alias within your .bash_profile:
-
-  ```shell
-  alias stop-mongodb='mongo admin --eval "db.shutdownServer()"'
-  alias start-mongodb='mongod --fork --logpath <your_db_dir>/mongodb.log  --dbpath <your_db_dir>'
-  ```
-
-
+* start test server with `npm run test-server`
 * run `npm test`
 
 ## Deploying
