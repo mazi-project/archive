@@ -65,6 +65,27 @@ describe('API Routes /questions/', function(){
         });
 	})
 
+	it('should GET 2 questions on api/questions with correct counts', function(done){
+
+		var request = require('supertest');
+
+		var data = {
+			text: "unittest_" + require('node-uuid').v4()
+		}
+
+		request(BASE_URL).get('api/questions').end(function(err, res) {
+			if (err)
+    			throw err;
+			
+    		var questions = res.body;
+
+    		assert.equal(questions[0].count,2);
+    		assert.equal(questions[1].count,1);
+
+			done();
+        });
+	})
+
 	it('should GET 2 attachments on api/attachments/?text='+QUESTIONS[0], function(done){
 
 		var request = require('supertest');

@@ -17,10 +17,12 @@ router.get('/',function(req,res){
     
 	Attachment.list().then( docs => {
         // extract all questions, remove duplicates
-        var questions = _.unique(_.flatten(_.pluck(docs,'text')));
+        var questions = _.flatten(_.pluck(docs,'text'));
+
+        var counts = _.countBy(questions);
         
-        questions = _.map(questions, function(name) {
-        	return { name: name }
+        questions = _.map(counts, function(value,key) {
+        	return { name: key, count: value }
         });
 
         res.send(questions);

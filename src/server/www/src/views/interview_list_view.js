@@ -47,9 +47,6 @@ class SubmissionListView extends Marionette.CompositeView {
 
 		if (options.tag != null)
 			this.fetchParams.tag = options.tag
-
-        if (options.dataset != null)
-            this.fetchParams.dataset = options.dataset
 		
 		this.collection = new InterviewCollection();
 

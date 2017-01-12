@@ -35,7 +35,13 @@ class TagListView extends Marionette.CompositeView {
 
     get templateHelpers() {
         return {
-            tag : this.options.tag
+            searchString : () => {
+                if (_.has(this.options,'tag')) 
+                    return '#'+this.options.tag;
+                else if (_.has(this.options,'question'))
+                    return this.options.question;
+                else return "nothing"
+            }
         }
     }
 
@@ -54,7 +60,12 @@ class TagListView extends Marionette.CompositeView {
         this.options = options
 
         this.collection = new AttachmentCollection();
-        this.collection.fetch({ data: $.param({ tag : options.tag}) });
+
+        if (_.has(options,'tag'))
+            this.collection.fetch({ data: $.param({ tag : options.tag}) });
+
+        if (_.has(options,'question'))
+            this.collection.fetch({ data: $.param({ text : options.question}) });
 
         // setup collection events
         this.listenTo(this.collection,'sync',this.onCollectionLoaded)

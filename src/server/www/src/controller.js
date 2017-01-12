@@ -18,6 +18,7 @@ import InterviewView from 'views/interview_view';
 import MenuView from 'views/menu_view'
 import AudioPlayerView from 'views/audioplayer_view';
 import TagListView from 'views/tag_list_view';
+import QuestionListView from 'views/question_list_view';
 import TrackListView from 'views/track_list_view';
 
 import headerTemplate from 'text!templates/header_tmpl.html';
@@ -83,12 +84,28 @@ class Controller extends Marionette.Controller {
 			this.mainView.contentRegion.show(new TagListView());
 		}
 
-		showTrackList(tag = null) {
+		showQuestionList() {
 			this.mainView.headerRegion.show(new Marionette.ItemView({
 				template: _.template(headerTemplate)
 			}));
-			this.mainView.menuRegion.show(new MenuView({ highlight: '#link3' }))
+			this.mainView.menuRegion.show(new MenuView({ highlight: '#link2' }))
+			this.mainView.contentRegion.show(new QuestionListView());
+		}
+
+		showTagTrackList(tag = null) {
+			this.mainView.headerRegion.show(new Marionette.ItemView({
+				template: _.template(headerTemplate)
+			}));
+			this.mainView.menuRegion.show(new MenuView())
 			this.mainView.contentRegion.show(new TrackListView({ tag: tag }));
+		}
+
+		showQuestionTrackList(question = null) {
+			this.mainView.headerRegion.show(new Marionette.ItemView({
+				template: _.template(headerTemplate)
+			}));
+			this.mainView.menuRegion.show(new MenuView())
+			this.mainView.contentRegion.show(new TrackListView({ question: question }));
 		}
 
 		/* AUDIO PLAYER */

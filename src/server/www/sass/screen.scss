@@ -26,6 +26,7 @@
 @import "menu";
 @import "singleview";
 @import "tagslist";
+@import "questionslist";
 @import "tracklist";
 @import "attachment";
 
@@ -176,7 +177,7 @@ ul {
 }
 
 #content {
-	min-height: 500px;
+	//min-height: 500px;
 	margin-bottom: 120px;
 }
 

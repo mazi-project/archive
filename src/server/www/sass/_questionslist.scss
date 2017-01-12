@@ -1,0 +1,31 @@
+.question-page {
+	//min-height: 500px;
+
+	h2 {
+		font-size: 180%;
+		margin: 0 0 $text-margin 0;
+		font-weight: normal;
+		padding: 0 $paragraph-padding;
+	}
+
+	.item {
+		border-top: $border-style;
+		padding: $text-margin $paragraph-padding;
+
+		.name {
+			font-size: 120%;
+			font-weight: bold;
+			display: block;
+			
+		}
+
+		.count {
+			font-size: 90%;
+			display: block;
+		}
+	}
+
+	
+
+
+}

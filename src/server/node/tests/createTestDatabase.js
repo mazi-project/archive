@@ -199,11 +199,37 @@ describe('Create Test Database', function(){
 		}).catch(done);
 	});
 
+	it('should add an attachment to second model with special characters in question', function(done){
+
+		var interview = null;
+		var attachment = null;
+		Interview.list().then( docs => {
+			interview = new Interview(docs[1]);
+			attachment = new Attachment({
+				tags : [ "test1", "test2" ],
+				text : "389798u&dfdf=?;yth\"'",
+				interview : interview.id
+			});
+
+			return attachment.save();
+		}).then( () => {
+			return interview.addAttachment(attachment.id);
+		}).then( () => {
+			var file = TEST_AUDIO_FILE;
+			file.originalFilename = 'test4.wav';
+			return attachment.attachFile(file);
+		}).then( () => {
+			fs.access(attachment.data.file.url, fs.F_OK, (err) => {
+				if (err) throw err;
+				done();
+			});
+		}).catch(done);
+	});
+
 	it('should add another interview and attach an image', function(done){
 
 		var interview = new Interview({
 			name : "Peter",
-			tags : [ 'tag_1', 'tag_2'],
 			text : 'Lorem ipsum',
 		})
 
@@ -215,6 +241,22 @@ describe('Create Test Database', function(){
 				if (err) throw err;
 				done();
 			});
+		}).catch(done);
+	});
+
+	it('should add several more interviews', function(done){
+
+		var array = _.map(_.range(10), function(i) {
+			return {
+				name : "Test Entry "+i,
+				role : "testing pagination",
+				text : 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sit amet convallis arcu. Mauris feugiat diam sit amet nunc ullamcorper, in malesuada ligula porta. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Suspendisse sit amet neque convallis urna malesuada consectetur.',
+		
+			}
+		});
+
+		Interview.create(array).then( () => {
+			done();
 		}).catch(done);
 	});
 });

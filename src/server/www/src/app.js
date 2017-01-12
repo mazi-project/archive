@@ -36,7 +36,9 @@ class App extends Backbone.Marionette.Application {
 			appRoutes: {
 				'interview/:id' : 'showInterview',
 				'tags' : 'showTagList',
-				'tags/:tag' : 'showTrackList',
+				'tags/:tag' : 'showTagTrackList',
+				'questions' : 'showQuestionList',
+				'question/:question' : 'showQuestionTrackList',
 				'*actions': 'showInterviewList'
 			}
 		});

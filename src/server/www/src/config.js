@@ -16,7 +16,7 @@ export default {
 
 	dataset: null,
 
-	recordsPerPage: 12,
+	recordsPerPage: 10,
 
 	tags: ['tag1','tag2','tag3','tag4']
 }
