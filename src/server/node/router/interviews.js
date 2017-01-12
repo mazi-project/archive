@@ -19,8 +19,6 @@ router.get('/',(req,res) => {
 
     //get query options
     var options = {}
-    if (_.has(req.query,'tag'))
-        options.tag = req.query.tag;
 
     // pagination options
     if (_.has(req.query,'limit'))

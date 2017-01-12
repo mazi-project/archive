@@ -152,7 +152,7 @@ describe('Create Test Database', function(){
 			interview = new Interview(docs[0]);
 			attachment = new Attachment({
 				tags : [ "test1", "test2" ],
-				text : "Audio File 3",
+				text : "Question for audio file 3",
 				interview : interview.id
 			});
 
@@ -180,7 +180,7 @@ describe('Create Test Database', function(){
 			interview = new Interview(docs[1]);
 			attachment = new Attachment({
 				tags : [ "test1", "test2" ],
-				text : "Audio File 3",
+				text : "Question for audio file 3",
 				interview : interview.id
 			});
 

@@ -15,19 +15,19 @@ var router = express.Router();
  */ 
 router.get('/',function(req,res){
     
-	Attachment.list( (err, models) => {
-		if (Utils.handleError(err,res))
-            return;
-
-        // extract all tags, remove duplicates
-        var questions = _.unique(_.flatten(_.pluck(models,'text')));
+	Attachment.list().then( docs => {
+        // extract all questions, remove duplicates
+        var questions = _.unique(_.flatten(_.pluck(docs,'text')));
         
         questions = _.map(questions, function(name) {
         	return { name: name }
-        })
+        });
 
         res.send(questions);
-	});
+	}).catch( (err) => {
+        Utils.handleError(err,res);
+    });
+
 
 });
 
