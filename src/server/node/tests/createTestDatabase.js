@@ -24,37 +24,31 @@ describe('Create Test Database', function(){
 
   	beforeEach(function(done) {
 
-  		r_require('database/database').connect(() => {
-
-			//copy test img file
-			fs.copy(TEST_IMAGE_PATH, TEST_IMAGE_FILE.path, (err) => {
+		//copy test img file
+		fs.copy(TEST_IMAGE_PATH, TEST_IMAGE_FILE.path, (err) => {
+			if (err) throw(err);
+			// copy test audio file
+			fs.copy(TEST_AUDIO_PATH, TEST_AUDIO_FILE.path, (err) => {
 				if (err) throw(err);
-				// copy test audio file
-				fs.copy(TEST_AUDIO_PATH, TEST_AUDIO_FILE.path, (err) => {
-					if (err) throw(err);
-					done();
-				});
+				done();
 			});
-  		});
+		});
   	});
 
   	afterEach(function(done) {
-    	r_require('database/database').disconnect();
-    	done();
+    	var db = r_require('models/database');
+		db.disconnect(done);
     });
 
 	it('should add one interview', function(done){
 
-		var interview = new Interview({
+		new Interview({
 			name : "Ludwig Mayer",
 			role : "Urban Designer",
 			text : 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sit amet convallis arcu. Mauris feugiat diam sit amet nunc ullamcorper, in malesuada ligula porta. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Suspendisse sit amet neque convallis urna malesuada consectetur.',
-		})
-
-		interview.save(function(err, model) {
-			if (err) throw err;
-			done();
-		});
+		}).save().then( () => {
+			done()
+		}).catch(done);
 	})
 
 	it('should add one interview and attach an image', function(done){
@@ -65,149 +59,144 @@ describe('Create Test Database', function(){
 			text : 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum sit amet convallis arcu. Mauris feugiat diam sit amet nunc ullamcorper, in malesuada ligula porta. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Suspendisse sit amet neque convallis urna malesuada consectetur.',
 		})
 
-		// save interview
-		interview.save(function(err, model) {
-			if (err) throw err;
-
-			// attach image
-			model.attach('image', { path: TEST_IMAGE_FILE.path, dir: model._id }, (err) => {
+		interview.save().then( () => {
+			return interview.attachImage(TEST_IMAGE_FILE)
+		}).then( () => {
+			//check if file exists
+			fs.access(interview.data.image.url, fs.F_OK, (err) => {
 				if (err) throw err;
-
-				// save interview
-				model.save(function(err, model) {
-					if (err) throw err;
-
-					//check if file exists
-					fs.access(model.image.url, fs.F_OK, (err) => {
-						if (err) throw err;
-						done();
-					});
-				});
-
+				done();
 			});
-		});
+		}).catch(done);
 	});
 
 	it('should create an attachment without file', function(done){
 
-		Interview.find({}, (err, models) => {
-
-			var attachment = new Attachment({
+		var interview = null;
+		var attachment = null;
+		Interview.list().then( docs => {
+			interview = new Interview(docs[0]);
+			attachment = new Attachment({
 				tags : [ "gentrification", "urban_gardening" ],
-				text : "Was läuft gut in der Stadt?"
+				text : "Was läuft gut in der Stadt?",
+				interview : interview.id
 			});
 
-			models[0].addAttachment(attachment, (err, model) => {
-				if (err) throw err;
-				assert.equal(models[0]._id,model.interview);
-				done();
-			});
-
-		})
+			return attachment.save();
+		}).then( () => {
+			return interview.addAttachment(attachment.id);
+		}).then( () => {
+			assert.equal(interview.id,attachment.data.interview);
+			done();
+		}).catch(done);
 	});
 
 	it('should create an attachment with a file', function(done){
 
-		Interview.find({}, (err, models) => {
-
-			var attachment = new Attachment({
-				tags : [ "recht_auf_stadt", "bullshit" ],
-				text : "Wo willst du mitbestimmen?"
+		var interview = null;
+		var attachment = null;
+		Interview.list().then( docs => {
+			interview = new Interview(docs[0]);
+			attachment = new Attachment({
+				tags : [ "test1", "test2" ],
+				text : "Describe a recent conversionation you had with someone that you found inspiring and unexpected?",
+				interview : interview.id
 			});
 
-			models[0].addAttachment(attachment, (err, model) => {
+			return attachment.save();
+		}).then( () => {
+			return interview.addAttachment(attachment.id);
+		}).then( () => {
+			return attachment.attachFile(TEST_AUDIO_FILE);
+		}).then( () => {
+			fs.access(attachment.data.file.url, fs.F_OK, (err) => {
 				if (err) throw err;
-
-				model.attach('file', { path: TEST_AUDIO_FILE.path, dir: model.interview }, (err) => {
-					
-					model.save((err, model) => {
-						//check if file exists
-						fs.access(model.file.url, fs.F_OK, (err) => {
-							if (err) throw err;
-							done();
-						});
-					});
-				});
+				done();
 			});
-		});
+		}).catch(done);
+
 	});
 
 	it('should add a second attachment', function(done){
 
-		Interview.find({}, (err, models) => {
-
-			var attachment = new Attachment({
-				tags : [ "test1", "test2" ],
-				text : "Describe a recent conversionation you had with someone that you found inspiring and unexpected?"
+		var interview = null;
+		var attachment = null;
+		Interview.list().then( docs => {
+			interview = new Interview(docs[0]);
+			attachment = new Attachment({
+				tags : [ "gentrification", "urban_gardening" ],
+				text : "Was läuft gut in der Stadt?",
+				interview : interview.id
 			});
 
-			models[0].addAttachment(attachment, (err, model) => {
+			return attachment.save();
+		}).then( () => {
+			return interview.addAttachment(attachment.id);
+		}).then( () => {
+			var file = TEST_AUDIO_FILE;
+			file.originalFilename = 'test2.wav';
+			return attachment.attachFile(file);
+		}).then( () => {
+			fs.access(attachment.data.file.url, fs.F_OK, (err) => {
 				if (err) throw err;
-
-				model.attach('file', { path: TEST_AUDIO_FILE.path, dir: model.interview }, (err) => {
-					
-					model.save((err, model) => {
-						//check if file exists
-						fs.access(model.file.url, fs.F_OK, (err) => {
-							if (err) throw err;
-							done();
-						});
-					});
-				});
+				done();
 			});
-		});
+		}).catch(done);
 	});
 
 	it('should add a third attachment', function(done){
 
-		Interview.find({}, (err, models) => {
-
-			var attachment = new Attachment({
+		var interview = null;
+		var attachment = null;
+		Interview.list().then( docs => {
+			interview = new Interview(docs[0]);
+			attachment = new Attachment({
 				tags : [ "test1", "test2" ],
-				text : "Audio File 3"
+				text : "Audio File 3",
+				interview : interview.id
 			});
 
-			models[0].addAttachment(attachment, (err, model) => {
+			return attachment.save();
+		}).then( () => {
+			return interview.addAttachment(attachment.id);
+		}).then( () => {
+			var file = TEST_AUDIO_FILE;
+			file.originalFilename = 'test3.wav';
+			return attachment.attachFile(file);
+		}).then( () => {
+			fs.access(attachment.data.file.url, fs.F_OK, (err) => {
 				if (err) throw err;
-
-				model.attach('file', { path: TEST_AUDIO_FILE.path, dir: model.interview }, (err) => {
-					
-					model.save((err, model) => {
-						//check if file exists
-						fs.access(model.file.url, fs.F_OK, (err) => {
-							if (err) throw err;
-							done();
-						});
-					});
-				});
+				done();
 			});
-		});
+		}).catch(done);
+
 	});
 
 	it('should add an attachment to second model', function(done){
 
-		Interview.find({}, (err, models) => {
-
-			var attachment = new Attachment({
+		var interview = null;
+		var attachment = null;
+		Interview.list().then( docs => {
+			interview = new Interview(docs[1]);
+			attachment = new Attachment({
 				tags : [ "test1", "test2" ],
-				text : "Audio File 3"
+				text : "Audio File 3",
+				interview : interview.id
 			});
 
-			models[1].addAttachment(attachment, (err, model) => {
+			return attachment.save();
+		}).then( () => {
+			return interview.addAttachment(attachment.id);
+		}).then( () => {
+			var file = TEST_AUDIO_FILE;
+			file.originalFilename = 'test3.wav';
+			return attachment.attachFile(file);
+		}).then( () => {
+			fs.access(attachment.data.file.url, fs.F_OK, (err) => {
 				if (err) throw err;
-
-				model.attach('file', { path: TEST_AUDIO_FILE.path, dir: model.interview }, (err) => {
-					
-					model.save((err, model) => {
-						//check if file exists
-						fs.access(model.file.url, fs.F_OK, (err) => {
-							if (err) throw err;
-							done();
-						});
-					});
-				});
+				done();
 			});
-		});
+		}).catch(done);
 	});
 
 	it('should add another interview and attach an image', function(done){
@@ -218,26 +207,14 @@ describe('Create Test Database', function(){
 			text : 'Lorem ipsum',
 		})
 
-		// save interview
-		interview.save(function(err, model) {
-			if (err) throw err;
-
-			// attach image
-			model.attach('image', { path: TEST_IMAGE_FILE.path, dir: model._id }, (err) => {
+		interview.save().then( () => {
+			return interview.attachImage(TEST_IMAGE_FILE)
+		}).then( () => {
+			//check if file exists
+			fs.access(interview.data.image.url, fs.F_OK, (err) => {
 				if (err) throw err;
-
-				// save interview
-				model.save(function(err, model) {
-					if (err) throw err;
-
-					//check if file exists
-					fs.access(model.image.url, fs.F_OK, (err) => {
-						if (err) throw err;
-						done();
-					});
-				});
-
+				done();
 			});
-		});
+		}).catch(done);
 	});
 });

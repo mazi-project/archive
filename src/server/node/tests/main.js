@@ -19,14 +19,15 @@ global.print = function(string) {
 global.Config = r_require('/config.js');
 
 // change to test database
-Config.database = Config.testDatabase;
+Config.interviewCollection = Config.testInterviewCollection;
+Config.attachmentCollection = Config.testAttachmentCollection;
 Config.port = Config.testPort;
 
 require("./databaseTests.js");
 require("./apiInterviewsTests.js");
-require("./apiAttachmentTests.js");
 require("./apiTagsTests.js");
+require("./apiAttachmentTests.js");
 require("./socketTests.js");
 
-//add test database
+//add some test data
 require("./createTestDatabase.js");

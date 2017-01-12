@@ -2,8 +2,8 @@
 
 var assert = require('assert');
 var _ = require('underscore');
-var fs = require('fs-extra')
-var async = require('async')
+var fs = require('fs-extra');
+var async = require('async');
 var request = require('supertest');
 
 var Interview = r_require('models/interview');
@@ -16,37 +16,42 @@ var TEST_IMAGE_FILE = {
 		type: "image/jpeg"
 }
 
-describe('API Routes /submissions/', function(){
+describe('API Routes /interviews/', function(){
 
   	beforeEach(function(done) {
-
-  		r_require('database/database').connect((err) => {
 			
-			// Add some Models
-			var size = Math.floor(5 + Math.random() * 10)
-			var array = _.map(_.range(size), function(i) {
-				return {
-					text: 'model'+i,
-					name: 'Test Peter'
+		// Add some Models
+		var size = Math.floor(5 + Math.random() * 10)
+		var array = _.map(_.range(size), function(i) {
+			return {
+				text: 'model'+i,
+				name: 'Test Peter'
+			}
+		});
+
+		Interview.create(array).then( () => {
+			//copy test file
+			fs.copy(TEST_IMAGE_PATH, TEST_IMAGE_FILE.path, (err) => {
+				if (err) {
+					done(err);
+					return;
 				}
+				
+				var db = r_require('models/database');
+				db.disconnect(done);
 			});
-			Interview.create(array, function(err,models) {
-				//copy test file
-				fs.copy(TEST_IMAGE_PATH, TEST_IMAGE_FILE.path, (err) => {
-					if (err) throw(err);
-					done();
-				});
-			});
-  		});
+		}).catch(done);
   	});
 
   	afterEach(function(done) {
-  		async.parallel([
-			(callback) => { Interview.removeAll(callback) }
-		],() => {
-        	r_require('database/database').disconnect();
-        	done();
-        }); 
+
+  		var db = r_require('models/database');
+
+  		Interview.removeAll()
+  		.then( () => {
+  			db.disconnect(done);
+  		}).catch(done);
+  		
     });
 
     var addInterview = function(callback) {
@@ -114,7 +119,7 @@ describe('API Routes /submissions/', function(){
         });
 	})
 
-	it('should GET on api/submissions/:id', function(done){
+	it('should GET on api/interviews/:id', function(done){
 
 		//add interview
 		addInterview( (model) => {

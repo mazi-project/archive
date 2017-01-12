@@ -1,5 +1,8 @@
 node_modules/*
 files/*
+!files/.keep
 _tmp/
 !_tmp/.keep
-!files/.keep
+data/
+!data/.keep
+tests/files/test.jpg

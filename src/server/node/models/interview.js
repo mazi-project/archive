@@ -1,145 +1,118 @@
 'use strict';
 
 var _ = require('underscore')
-var mongoose = require('mongoose');
 var uuid = require('node-uuid');
-var fse = require('fs-extra');
+var fs = require('fs-extra');
 var async = require('async');
-var crate = require('mongoose-crate');
-var LocalFS = require('mongoose-crate-localfs');
-var path = require('path');
 
-var Utils = r_require('/utils/utils');
-var Attachment = r_require('/models/attachment');
+var BaseModel = r_require('/models/baseModel');
+var Database = r_require('/models/database');
 
-// Define Model Schema
-var interviewSchema = mongoose.Schema({
 
-	_id: { type: String, default: uuid.v4 }, //use uuid
+class Interview extends BaseModel {
 
-    text : { type: String, required: true, maxlength: '1500' },
-    name: { type: String, required: true, maxlength: 60 },
-    role: { type: String, maxlength: 100 },
-    attachments: [ { type: String, ref: 'Attachment'} ],
-    location : { type: String } // [ longitude, latitude ]
-
-}, { timestamps: true });
-
-interviewSchema.plugin(crate, {
-    storage: new LocalFS({
-        directory: Config.fileDir,
-        path: (attachment) => {
-            var dir = "";
-            if (_.has(attachment,'dir'))
-                dir = attachment.dir + '/'
-            return '/' + dir + path.basename(attachment.path);
-        }
-    }),
-    fields: {
-        image: {}
+    static get collection() {
+        return 'interviews';
     }
-})
 
-interviewSchema.pre('remove', function(next) {
+    static get reference() {
+        return { field : 'attachments', collection: 'attachments' };
+    }
 
-    // also remove all the assigned attachments
-    Attachment.remove({ interview: this._id }, (err) => {
-        if (err)
-            next(err);
+    static validate(data) {
 
-        //remove file directory
-        var dir = Config.fileDir + '/' + this._id + '/';
-        fse.remove(dir, (err) => {
-            next(err);
+        data.attachments = _.has(data,'attachments') ? data.attachments : [];
+        data.text = _.has(data,'text') ? data.text : "";
+        data.name = _.has(data,'name') ? data.name : "";
+        data.role = _.has(data,'role') ? data.role : "";
+
+        // create new date
+        data.createdAt = _.has(data,'createdAt') ? data.createdAt : new Date();
+
+        // escape html chars
+        data.text = _.escape(data.text);
+        data.name = _.escape(data.name);
+        data.role = _.escape(data.role);
+
+        return data;
+    }
+
+    static remove(id, callback) {
+        var db = this.getDb()
+
+        return new Promise( (resolve, reject) => {
+            db[this.collection].remove({ _id : id}, function(err, result) {
+                if (err) {
+                    reject(err);
+                    return;
+                }
+
+                //remove file directory
+                var dir = Config.fileDir + '/' + id + '/';
+                fs.remove(dir, (err) => {
+                    if (err)
+                        reject(err);
+                    else
+                        resolve(result);
+                });
+            });
         });
-    });
-});
 
-interviewSchema.pre('save', function(next) {
+        
+    }
 
-    //Utils.escapePath(this,'text');
-    //Utils.escapePath(this,'name');
-    //Utils.escapePath(this,'role');
+    attachImage(image) {
+        var db = this.getDb()
 
-    //dont allow false or null tags
-    if (this.get('tags') == null || this.get('tags') == false)
-        this.set('tags',[]);
+        return new Promise( (resolve, reject) => {
+            if (!this.id) {
+                reject(Error("Need to save model first"));
+                return;
+            }
 
-    //create attachment dir, if it doesnt exist
-    var dir = Config.fileDir + this._id + '/'
-    fse.ensureDir(dir, (err) => {
-        if (err) {
-            next(err)
-            return;
-        }
+            var fileurl = Config.fileDir + this.data._id + '/' + image.originalFilename;
 
-        return next();
-    });
+            //copy image
+            fs.move(image.path, fileurl, (err) => {
+                if (err) {
+                    reject(err);
+                    return;
+                }
 
-});
+                this.data.image = image;
+                this.data.image.url = fileurl;
+                this.data.image.name = image.originalFilename;
 
-// Remove All entries
-interviewSchema.statics.removeAll = function(callback) {
-    this.remove({},callback);
-};
+                // save interview
+                this.save().then(resolve).catch(reject);
+            });
 
-interviewSchema.statics.remove = function(query,callback) {
-	this.find(query, function(err,models) {
-        if (err) {
-            callback(err);
-            return;
-        }
-
-        async.each(models, (model,done) => {
-            model.remove(done);
-        }, (err) => {
-            callback(err,{ result: {n: models.length }});
         });
-    });
-};
+    }
 
-interviewSchema.methods.addAttachment = function(attachment, callback) {
-
-    attachment.interview = this._id;
-
-    //save attachment
-    attachment.save((err,attachment) => {
-        if (err) {
-            callback(err)
-            return;
-        }
+    // adds attachment reference
+    addAttachment(attachmentId) {
+        var db = this.getDb()
 
         //add ref to model
-        this.attachments.push(attachment._id);
-        
-        this.save((err) => {
-            if (err) {
-                callback(err)
-                return;
-            } 
-            callback(null,attachment);
-        });
-    });
-}
+        this.data.attachments.push(attachmentId);
 
-interviewSchema.methods.removeAttachment = function(attachment_id,callback) {
-    var self = this;
+        // update model
+        return this.save();
+    }
 
-    // first remove comment from database
-    Attachment.remove({ _id : attachment_id}, function(err) {
-        if (err) {
-            callback(err)
-            return;
-        }
+    // removes attachment reference
+    removeAttachment(attachmentId) {
+        var db = this.getDb()
 
         // remove attachment ref from model
-        self.attachments = _.reject(self.attachments, function(attachment) {
-            return attachment == attachment_id;
+        this.data.attachments = _.reject(this.data.attachments, function(attachment) {
+            return attachment == attachmentId;
         });
 
         //save model
-        self.save(callback)
-    });
+        return self.save()
+    }
 }
 
-module.exports = mongoose.model('Interview', interviewSchema, Config.interviewCollection);
+module.exports = Interview;

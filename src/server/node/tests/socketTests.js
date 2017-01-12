@@ -21,31 +21,32 @@ describe('Socket Tests', function(){
 
     before(function(done) {
 
-        r_require('database/database').connect((err) => {
-            if (err) throw err;
-
-            // Add some Models
-            var size = Math.floor(5 + Math.random() * 10)
-            var array = _.map(_.range(size), function(i) {
-                return {
-                  text: 'model'+i,
-                  name: 'Test Peter'
-                }
-            });
-            Interview.create(array, function(err,models) {
-                if (err) throw err;
-                done();
-            });
+        // Add some Models
+        var size = Math.floor(5 + Math.random() * 10)
+        var array = _.map(_.range(size), function(i) {
+            return {
+                text: 'model'+i,
+                name: 'Test Peter'
+            }
         });
+
+        Interview.create(array).then( () => {
+            var db = r_require('models/database');
+            db.disconnect(done);
+        }).catch(done);
     });
 
     after(function(done) {
-        async.parallel([
-            (callback) => { Interview.removeAll(callback) }
-        ],() => {
-            r_require('database/database').disconnect();
-            done();
-        }); 
+
+        var db = r_require('models/database');
+        
+        Interview.removeAll()
+        .then( () => {
+            return Attachment.removeAll()
+        }).then( () => {
+            db.disconnect(done);
+        }).catch(done);
+        
     });
 
     it("should connect to socket server", function(done) {
@@ -95,7 +96,7 @@ describe('Socket Tests', function(){
             });
             socket.on('disconnect', () => { done(null) });
 
-            // delete submission
+            // delete interview
             request(BASE_URL).delete('api/interviews/'+interviewId).auth(Config.authName, Config.authPassword).end(function(err, res) {
                if (err) throw err;
             });
@@ -107,7 +108,7 @@ describe('Socket Tests', function(){
         var socketIoClient = require('socket.io-client')
         var request = require('supertest');
 
-        //create submission
+        // create interview
         request(BASE_URL).get('api/interviews/').end(function(err, res) {
             if (err) throw err;
 

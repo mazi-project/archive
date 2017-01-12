@@ -28,7 +28,8 @@ module.exports = {
 
 		/* if startet as test server, change to test database */
 		if (process.argv[2] == 'test') { 
-			Config.database = Config.testDatabase
+			Config.interviewCollection = Config.testInterviewCollection;
+			Config.attachmentCollection = Config.testAttachmentCollection;
 			Config.port = Config.testPort
 			//print = function() {}; //turn of printing
 		}

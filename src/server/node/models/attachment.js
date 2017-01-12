@@ -1,59 +1,115 @@
 'use strict';
 
 var _ = require('underscore')
-var mongoose = require('mongoose');
 var uuid = require('node-uuid');
-var fse = require('fs-extra');
-var crate = require('mongoose-crate');
-var LocalFS = require('mongoose-crate-localfs');
-var path = require('path');
+var fsp = require('fs-promise');
+var fs = require('fs-extra');
+var async = require('async');
 
 var Utils = r_require('/utils/utils');
-var Interview = r_require('/models/interview');
+
+var Database = r_require('/models/database');
+var Interview = r_require('/models/interview')
+var BaseModel = r_require('/models/baseModel');
 
 // Define Model Schema
-var attachmentSchema = mongoose.Schema({
+class Attachment extends BaseModel {
 
-	_id: { type: String, default: uuid.v4 }, //use uuid
-	interview: { type: String, ref: 'Interview', required: true },
-    text : { type: String, required: true, maxlength: '800' },
-    tags : [ { type: String, match: /^\w+$/ } ] //only allow numbers and chars and _ without spaces
-}, { timestamps: true });
-
-attachmentSchema.plugin(crate, {
-    storage: new LocalFS({
-        directory: Config.fileDir,
-        path: (attachment) => {
-            var dir = "";
-            if (_.has(attachment,'dir'))
-                dir = attachment.dir + '/'
-            return '/' + dir + path.basename(attachment.path);
-        }
-    }),
-    fields: {
-        file: {}
+    static get collection() {
+        return 'attachments';
     }
-})
 
-attachmentSchema.pre('save', function(next) {
+    static get reference() {
+        return { field : 'interview', collection: 'interviews' };
+    }
 
-    //Utils.escapePath(this,'text');
-    return next();
+    static validate(data) {
+        //dont allow false or null tags
+        if (data.tags == null || data.tags == false)
+            data.tags = "";
 
-});
+        data.interview = _.has(data,'interview') ? data.interview : false ;
+        data.text = _.has(data,'text') ? data.text : "" ;
+        data.file = _.has(data,'file') ? data.file : false ;
+        data.interview = _.has(data,'interview') ? data.interview : false ;
 
-attachmentSchema.pre('remove', function(next) {
+        // create new date
+        data.createdAt = _.has(data,'createdAt') ? data.createdAt : new Date();
 
-    //remove file
-    if (this.file)
-	    fse.remove(this.file, (err) => {
-	        next(err);
-	    });
-});
+        return data;
+    }
 
-// Remove All entries
-attachmentSchema.statics.removeAll = function(callback) {
-	this.remove({}, callback);
-};
+    static remove(id, callback) {
+        var db = this.getDb();
 
-module.exports = mongoose.model('Attachment', attachmentSchema, Config.attachmentCollection);
+        return new Promise( (resolve, reject) => {
+            this.get(id).then( doc => {
+                if (doc.file) {
+                    //remove file
+                    return fsp.remove(doc.file.url);
+                } else {
+                    return Promise.resolve();
+                }
+            }).then( () => {
+                db[this.collection].remove({ _id : id}, function(err, result) {
+                    if (err) {
+                        reject(err);
+                        return;
+                    } else {
+                        resolve(result)
+                    }
+                });
+            });
+        });
+    }
+
+    static list(options) {
+        var db = this.getDb()
+
+        // handle tag option
+        if (_.has(options,'tag')) {
+            var tag = options.tag;
+            delete options['tag'];
+            
+            // filter out results that contain tag
+            return super.list(options).then( (docs) => {
+                docs = _.reject(docs, (doc) => {
+                    return !_.contains(doc.tags,tag);
+                })
+                return Promise.resolve(docs);
+            });
+        } else {
+            return super.list(options)
+        }
+
+    }
+
+    attachFile(file, callback) {
+        return new Promise( (resolve, reject) => {
+            if (!this.id) {
+                reject(Error("Need to save model first"));
+                return;
+            }
+
+            var fileurl = Config.fileDir + this.data.interview + '/' + file.originalFilename;
+
+            //copy image
+            fs.move(file.path, fileurl, (err) => {
+                if (err) {
+                    reject(err);
+                    return;
+                }
+
+                this.data.file = file;
+                this.data.file.url = fileurl
+                this.data.file.name = file.originalFilename;
+
+                // save interview
+                this.save().then(resolve).catch(reject);
+            });
+
+        });
+    }
+}
+
+module.exports = Attachment;

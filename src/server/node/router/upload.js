@@ -23,104 +23,78 @@ var fileUploader = multipart({
  */ 
 router.post('/attachment/:attachmentId', fileUploader, function(req,res){
 
+    var attachment = new Attachment({ _id: req.params.attachmentId });
 
-	Attachment.findOne({ _id: req.params.attachmentId }, (err, attachment) => {
-        if (Utils.handleError(err,res)) return;
+    var file = false;
+    if (_.has(req,'files') && _.has(req.files,'file'))
+        file = req.files.file;
 
-        if (!attachment) {
-            Utils.handleError({ message: 'Id not found.' },res);
-        	return;
-        }
-
-        var file = false;
-
-        if (_.has(req,'files') && _.has(req.files,'file'))
-            file = req.files.file;
-
+	attachment.fetch().then( () => {
         if (!file) {
-            Utils.handleError({ message: 'No file submitted.' },res);
-            return;
+            return Promise.reject(new Error('No file submitted.'));
         }
         
         //check file size
         if (file.size > Config.maxFileSize) {
-            Utils.handleError({ message: 'File is too big. Only '+Config.maxFileSize/1024+'KB allowed.' },res);
             fse.remove(file.path);
-            return;
+            return Promise.reject(new Error('File is too big. Only '+Config.maxFileSize/1024+'KB allowed.'));
+            
         }
 
         //check extension
         if (!(_.contains(Config.allowedAudioFileTypes,file.type))) {
-            Utils.handleError({ message: 'Only wav and mp3 files are allowed for upload. File is '+file.type },res);
             fse.remove(file.path);
-            return;
+            return Promise.reject(new Error('Only wav and mp3 are allowed for upload. File is '+file.type));
         }
 
-        // save file to submission folder
-        attachment.attach('file', {path: file.path, dir: attachment.interview }, (err) => {
-            if (Utils.handleError(err,res)) return;
-            print('Uploaded file'+file.originalFilename+' for Attachment: '+req.params.attachmentId);
-                    
-            // save changes
-            attachment.save((err, model) => {
-                if (Utils.handleError(err,res)) return;
-
-                appEvents.emit('interview:changed',{ _id: attachment.interview });
-                res.send(model);
-            });
-        });
-	});
+        return attachment.attachFile(file);
+    }).then( () => {
+        print('Uploaded file'+file.originalFilename+' for Attachment: '+req.params.attachmentId);
+        appEvents.emit('interview:changed',{ _id: attachment.data.interview });
+        res.send(attachment.data);
+    }).catch( err => {
+        Utils.handleError(err,res);
+    });
 });
 
 /*
  * POST /api/upload/image/:interviewId
  */ 
 router.post('/image/:interviewId', fileUploader, function(req,res){
-    Interview.findOne({ _id: req.params.interviewId }, (err, interview) => {
-        if (Utils.handleError(err,res)) return;
 
-        if (!interview) {
-            Utils.handleError({ message: 'Id not found.' },res);
-            return;
-        }
+    var interview = new Interview({ _id: req.params.interviewId });
 
-        var file = false;
+    var file = false;
+    if (_.has(req,'files') && _.has(req.files,'file'))
+        file = req.files.file;
 
-        if (_.has(req,'files') && _.has(req.files,'file'))
-            file = req.files.file;
+    interview.fetch().then( () => {
 
         if (!file) {
-            Utils.handleError({ message: 'No file submitted.' },res);
-            return;
+            return Promise.reject(new Error('No file submitted.'));
         }
         
         //check file size
         if (file.size > Config.maxFileSize) {
-            Utils.handleError({ message: 'File is too big. Only '+Config.maxFileSize/1024+'KB allowed.' },res);
             fse.remove(file.path);
-            return;
+            return Promise.reject(new Error('File is too big. Only '+Config.maxFileSize/1024+'KB allowed.'));
+            
         }
 
         //check extension
         if (!(_.contains(Config.allowedImageFileTypes,file.type))) {
-            Utils.handleError({ message: 'Only jpg,gif and png images are allowed for upload. File is '+file.type },res);
             fse.remove(file.path);
-            return;
+            return Promise.reject(new Error('Only jpg,gif and png images are allowed for upload. File is '+file.type));
         }
 
         // save file to interview folder
-        interview.attach('image', {path: file.path, dir: interview._id }, (err) => {
-            if (Utils.handleError(err,res)) return;
-            print('Uploaded file'+file.originalFilename+' for Interview: '+req.params.interviewId);
-                    
-            // save changes
-            interview.save( (err, model) => {
-                if (Utils.handleError(err,res)) return;
-
-                appEvents.emit('interview:changed',{ _id: interview._id });
-                res.send(model);
-            });
-        });
+        return interview.attachImage(file);
+    }).then( () => {
+        print('Uploaded file'+file.originalFilename+' for Interview: '+req.params.interviewId);
+        appEvents.emit('interview:changed',{ _id: interview.id });
+        res.send(interview.data);
+    }).catch( err => {
+        Utils.handleError(err,res);
     });
 });
 
