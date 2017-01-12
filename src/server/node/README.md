@@ -5,7 +5,6 @@ Node Server for saving the submissions thrown into the letterbox
 ## Setup
 
 * run `npm install`
-* install pm2 globally : `npm install pm2 -g
 * `cp config.default.js config.js` and change database credentials and username and password in auth section
 
 ## Testing
@@ -15,6 +14,6 @@ Node Server for saving the submissions thrown into the letterbox
 
 ## Deploying
 
-*  create startup script for mongodb
-*  `pm2 start app.js` and `pm2 save`
+* install pm2 globally : `npm install pm2 -g
+* `pm2 start app.js` and `pm2 save`
 
