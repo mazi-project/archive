@@ -11,12 +11,5 @@ export default {
 	web_service_url : '/api/',
 	web_socket_url : ':'+window.location.port,
 	files_url : '/files/',
-	stringTruncateShort: 36,
-	stringTruncateLong: 220,
-
-	dataset: null,
-
 	recordsPerPage: 10,
-
-	tags: ['tag1','tag2','tag3','tag4']
 }

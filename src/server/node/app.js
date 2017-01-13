@@ -19,9 +19,23 @@ module.exports = {
 		/* register config as global var */
 		global.Config = r_require('/config.js');
 
+		/* setup logging */
+		var winston = require('winston')
+		winston.level = 'info'
+		winston.remove(winston.transports.Console);
+		winston.add(winston.transports.Console);
+		winston.add(winston.transports.File, {'timestamp':true, filename: 'log/console.log'})
+		global.log = function(level,string,object) {
+
+			if (typeof(object) !== 'undefined')
+				winston.log(level,string,object)
+			else
+				winston.log(level,string)
+		}
+
 		/* alias for printing */
 		global.print = function(string,namespace) {
-			var namespace = (typeof namespace !== 'undefined') ?  namespace : 'INFO';
+			var namespace = (typeof namespace !== 'undefined') ?  namespace : 'info';
 			
 			console.log(namespace+':'+string);
 		}

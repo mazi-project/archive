@@ -63,4 +63,7 @@ module.exports = function (app) {
     // file routes
     app.use(Config.baseUrl+'api/upload', bodyParser.json());
     app.use(Config.baseUrl+'api/upload', require('./upload'));
+
+    // login routes
+    app.use(Config.baseUrl+'api/login', require('./login'));
 };
