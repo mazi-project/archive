@@ -67,7 +67,7 @@ router.post('/', (req, res) => {
 
     //insert data
     interview.save().then( () => {
-        print('Interview added to database with id: '+interview.id);
+        log('Interview added to database with id: '+interview.id);
         // trigger socket event and send message to web app
         appEvents.emit('interview:new',interview.data)
         res.send(interview.data);
@@ -86,7 +86,7 @@ router.put('/:id', Auth.authentificate, (req, res) => {
     //insert data
     Interview.update(data).then( doc => {
 
-        print('Interview changed in database');
+        log('Interview changed in database');
 
         // trigger socket event and send message to web app
         appEvents.emit('interview:changed',doc)
@@ -103,7 +103,7 @@ router.delete('/:id', Auth.authentificate, (req, res) => {
 
     Interview.remove({ _id: req.params.id }).then( result => {
         if (result > 0) {
-            print("Interview "+req.params.id+" deleted from database");
+            log("Interview "+req.params.id+" deleted from database");
             appEvents.emit('interview:removed',{ _id : req.params.id } )
         }
         res.send( {removed: result} );

@@ -10,10 +10,10 @@ module.exports = function (http) {
 
 	sio.on('connection', function(socket){
 
-	    print('Client connected','SOCKET');
+	    log('Socket client connected');
 
 		socket.on('error', function(err) {
-	    	print(err);
+	    	log(err);
 		});
 
 	    // Server event handlers
@@ -21,7 +21,6 @@ module.exports = function (http) {
 	    /* ALL NAMESPACES */
 
 	    function interviewAddedHandler(data) {
-	    	print("socket:new");
 		    sio.emit('interview:new', data, socket.id); // this will send a signal to the interface and central webserver
 	    }
 		appEvents.on('interview:new', interviewAddedHandler);
@@ -38,7 +37,7 @@ module.exports = function (http) {
 
 	    // Clean up after disconnect
 	    socket.on('disconnect', function(){
-	        print('Client disconnected','SOCKET');
+	        log('Socket client disconnected');
 
 	        //remove server events
 	        appEvents.removeListener('interview:new',interviewAddedHandler);

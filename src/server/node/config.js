@@ -17,6 +17,7 @@ var Config = {
 	/* SERVER CONFIG */
 	baseUrl : '/', // with trailing /
 	publicDir : '../www/',
+	adminDir : '../admin/',
 	hostname : false, // 127.0.0.1 = private, false = public
 	port : '8081',
 

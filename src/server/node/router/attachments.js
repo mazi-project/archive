@@ -67,7 +67,7 @@ router.post('/', (req, res) => {
         // add attachment to interview
         return interview.addAttachment(attachment.id);
     }).then( () => {
-        print('Attachment added to database width id: '+attachment.id);
+        log('Attachment added to database width id: '+attachment.id);
         // trigger socket event and send message to web app
         appEvents.emit('interview:changed',{ _id: interview.id })
         res.send(attachment.data);

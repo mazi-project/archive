@@ -25,19 +25,15 @@ module.exports = {
 		winston.remove(winston.transports.Console);
 		winston.add(winston.transports.Console);
 		winston.add(winston.transports.File, {'timestamp':true, filename: 'log/console.log'})
-		global.log = function(level,string,object) {
+		// alias for logging
+		global.log = function(string, level, object) {
+
+			var level = (typeof level !== 'undefined') ?  level : 'info';
 
 			if (typeof(object) !== 'undefined')
 				winston.log(level,string,object)
 			else
 				winston.log(level,string)
-		}
-
-		/* alias for printing */
-		global.print = function(string,namespace) {
-			var namespace = (typeof namespace !== 'undefined') ?  namespace : 'info';
-			
-			console.log(namespace+':'+string);
 		}
 
 		/* if startet as test server, change to test database */
@@ -65,7 +61,7 @@ module.exports = {
 		/* Run the server */
 
 		http.listen(Config.port,Config.hostname,function(){
-		    print("Node Server listening on "+Config.hostname+":"+Config.port);
+		    log("Node Server listening on "+Config.hostname+":"+Config.port);
 		});
 
 	}

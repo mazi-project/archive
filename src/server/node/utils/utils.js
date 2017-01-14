@@ -8,9 +8,9 @@ module.exports = {
 	handleError : function(err,res) {
 		if(err) {
 			if (_.has(err,'message'))
-				print(err.message,'ERROR');
+				log(err.message,'error');
 			else
-	        	print(err,'ERROR');
+	        	log(err,'error');
 
 	        // if res defined, also give server answer
 	        if (res) {

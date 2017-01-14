@@ -49,7 +49,7 @@ router.post('/attachment/:attachmentId', fileUploader, function(req,res){
 
         return attachment.attachFile(file);
     }).then( () => {
-        print('Uploaded file'+file.originalFilename+' for Attachment: '+req.params.attachmentId);
+        log('Uploaded file'+file.originalFilename+' for Attachment: '+req.params.attachmentId);
         appEvents.emit('interview:changed',{ _id: attachment.data.interview });
         res.send(attachment.data);
     }).catch( err => {
@@ -90,7 +90,7 @@ router.post('/image/:interviewId', fileUploader, function(req,res){
         // save file to interview folder
         return interview.attachImage(file);
     }).then( () => {
-        print('Uploaded file'+file.originalFilename+' for Interview: '+req.params.interviewId);
+        log('Uploaded file'+file.originalFilename+' for Interview: '+req.params.interviewId);
         appEvents.emit('interview:changed',{ _id: interview.id });
         res.send(interview.data);
     }).catch( err => {

@@ -37,6 +37,8 @@ module.exports = function (app) {
     if (Config.publicDir) {
         // serve backbone app
         app.use(Config.baseUrl,express.static(Config.publicDir,publicOptions));
+        // serve backend
+        app.use(Config.baseUrl+'admin/',express.static(Config.adminDir,publicOptions));
         // serve files
         app.use(Config.baseUrl+'files/',express.static(Config.fileDir,publicOptions));
     }

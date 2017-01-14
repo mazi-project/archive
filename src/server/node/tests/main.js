@@ -12,10 +12,6 @@ global.r_require = function(name) {
     return require(__dirname + "/../" + name);
 }
 
-global.print = function(string) {
-	console.log(string);
-}
-
 global.Config = r_require('/config.js');
 
 // change to test database
