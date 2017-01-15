@@ -15,13 +15,8 @@ class Interview extends BaseModel {
         return 'interviews';
     }
 
-    static get reference() {
-        return { field : 'attachments', collection: 'attachments' };
-    }
-
     static validate(data) {
 
-        data.attachments = _.has(data,'attachments') ? data.attachments : [];
         data.text = _.has(data,'text') ? data.text : "";
         data.name = _.has(data,'name') ? data.name : "";
         data.role = _.has(data,'role') ? data.role : "";
@@ -88,30 +83,6 @@ class Interview extends BaseModel {
             });
 
         });
-    }
-
-    // adds attachment reference
-    addAttachment(attachmentId) {
-        var db = this.getDb()
-
-        //add ref to model
-        this.data.attachments.push(attachmentId);
-
-        // update model
-        return this.save();
-    }
-
-    // removes attachment reference
-    removeAttachment(attachmentId) {
-        var db = this.getDb()
-
-        // remove attachment ref from model
-        this.data.attachments = _.reject(this.data.attachments, function(attachment) {
-            return attachment == attachmentId;
-        });
-
-        //save model
-        return self.save()
     }
 }
 

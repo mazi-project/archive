@@ -7,7 +7,6 @@
 * @Last Modified time: 2016-05-04 17:41:19
 */
 
-
 var Tingodb = require('tingodb')({searchInArray:true});
 
 module.exports = {

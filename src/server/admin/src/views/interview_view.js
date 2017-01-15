@@ -25,20 +25,13 @@ class InterviewView extends Marionette.LayoutView {
 
     get templateHelpers() {
 		  return {
-		    filesUrl : Config.files_url + this.model.get('_id') + '/',
-        formatDate : function(date) {
-          return Moment(date).format("D.M.YYYY");
-        },
-        truncate : function(string) {
-          return _str.truncate(string,Config.stringTruncateShort)
-        }
+		    filesUrl : Config.files_url + this.model.get('_id') + '/'
       }
     }
 
     events() {
       return {
-        'click .attachment' : 'onAttachmentClicked',
-        'click .play-button' : 'onPlayButtonClicked'
+        'click #saveButton' : 'onSaveButtonClicked'
       }
     }
 
@@ -51,15 +44,12 @@ class InterviewView extends Marionette.LayoutView {
         this.listenTo(this.model,'change',this.render);
     }
 
-    onAttachmentClicked(event) {
-      $(event.target).toggleClass("expand");
-    }
+    onSaveButtonClicked() {
+      this.model.set('name', $("#input-name").val());
 
-    onPlayButtonClicked(e) {
-        var attachmentId = e.target.attributes['data-id'].value
-        Backbone.trigger('show:audioplayer',attachmentId);
+      console.log(this.model);
+      this.model.save();
     }
-
     
 }
 

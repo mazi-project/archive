@@ -7,6 +7,7 @@ var async = require('async');
 var request = require('supertest');
 
 var Interview = r_require('models/interview');
+var Attachment = r_require('models/attachment');
 
 var BASE_URL = "http://localhost:"+Config.port+Config.baseUrl;
 var TEST_IMAGE_PATH = "tests/files/img1.jpg"
@@ -47,8 +48,9 @@ describe('API Routes /interviews/', function(){
 
   		var db = r_require('models/database');
 
-  		Interview.removeAll()
-  		.then( () => {
+  		Interview.removeAll().then( () => {
+  			return Attachment.removeAll()
+  		}).then( () => {
   			db.disconnect(done);
   		}).catch(done);
   		
@@ -119,6 +121,30 @@ describe('API Routes /interviews/', function(){
         });
 	})
 
+	it('should GET on api/interviews with attachments', function(done){
+
+		var interviewId = null;
+		Interview.list().then( docs => {
+			interviewId = docs[0]._id;
+			var attachment = new Attachment({
+				tags : [ "test1", "test2" ],
+				text : "lorem ipsum",
+				interview : interviewId
+			});
+			return attachment.save();
+		}).then( () => {
+			request(BASE_URL).get('api/interviews').expect(200).end(function(err, res) {
+				if (err)
+	    			throw err;
+	    		var docs = res.body.docs;
+	    		assert.equal(docs[0].attachments[0].interview, interviewId);
+				done();
+	        });
+		}).catch(done);
+
+		
+	})
+
 	it('should GET on api/interviews/:id', function(done){
 
 		//add interview
@@ -126,7 +152,8 @@ describe('API Routes /interviews/', function(){
 			request(BASE_URL).get('api/interviews/'+model._id).expect(200).end(function(err, res) {
 				if (err)
 	    			throw err;
-				assert.equal(res.body._id,model._id)
+	    		var interview = res.body.interview;
+				assert.equal(interview._id,model._id)
 				done();
 	        });
 		});
@@ -154,7 +181,7 @@ describe('API Routes /interviews/', function(){
 				request(BASE_URL).get('api/interviews/'+model._id).expect(200).end(function(err, res) {
 					if (err)
 	    				throw err;
-					assert(_.isEmpty(res.body));
+					assert(_.isEmpty(res.body.interview));
 					done();
 		        });
 		    });

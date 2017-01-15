@@ -64,9 +64,6 @@ router.post('/', (req, res) => {
         // save attachment
         return attachment.save();
     }).then( () => {
-        // add attachment to interview
-        return interview.addAttachment(attachment.id);
-    }).then( () => {
         log('Attachment added to database width id: '+attachment.id);
         // trigger socket event and send message to web app
         appEvents.emit('interview:changed',{ _id: interview.id })

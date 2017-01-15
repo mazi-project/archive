@@ -85,8 +85,8 @@ describe('Socket Tests', function(){
 
         request(BASE_URL).get('api/interviews/').end(function(err, res) {
             if (err) throw err;
-
-            var interviewId = res.body.docs[0]._id;
+            
+            var interviewId = res.body.docs[0].interview._id;
 
             var socket = socketIoClient.connect(SOCKET_SERVER_URL)
             socket.on('interview:removed', function (data) {
@@ -112,7 +112,7 @@ describe('Socket Tests', function(){
         request(BASE_URL).get('api/interviews/').end(function(err, res) {
             if (err) throw err;
 
-            var InterviewId = res.body.docs[0]._id;
+            var InterviewId = res.body.docs[0].interview._id;
 
             var socket = socketIoClient.connect(SOCKET_SERVER_URL)
             socket.on('interview:changed', function (data) {

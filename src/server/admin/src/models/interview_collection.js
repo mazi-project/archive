@@ -8,6 +8,7 @@
 */
 
 import Backbone from 'backbone';
+import _ from 'underscore';
 import InterviewModel from 'models/interview_model';
 import Config from 'config';
 import Utils from 'utils';

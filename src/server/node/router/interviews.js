@@ -7,6 +7,7 @@ var appEvents = r_require('/utils/appEvents.js');
 var Utils = r_require('/utils/utils');
 
 var Interview = r_require('/models/interview');
+var Attachment = r_require('/models/attachment');
 
 var Auth = r_require('/router/_authentification');
 
@@ -28,14 +29,23 @@ router.get('/',(req,res) => {
 
     // start query
     var interviews = null;
+    var attachments = null;
+    // get interview
     Interview.list(options).then( docs => {
-        return Interview.populate(docs);
-    }).then( docs => {
         interviews = docs;
+        // get attachments for each interview
+        return Promise.all(_.map(docs, (doc) => {
+            return Attachment.list({ interview : doc._id });
+        }));
+    }).then( docs => {
+        attachments = docs;
         return Interview.count();
     }).then( count => {
+        var docs = _.map(interviews, (element, i) => {
+            return { interview: element, attachments : attachments[i] }
+        });
         res.send({
-            docs : interviews,
+            docs : docs,
             total_records : count
         });
     }).catch( (err) => {
@@ -48,11 +58,18 @@ router.get('/',(req,res) => {
  * GET /api/interviews/:id
  */ 
 router.get('/:id',(req,res) => {
-    //TODO: add populate
+    var interview = null;
     Interview.get(req.params.id).then( doc => {
-        return Interview.populate([doc]);
-    }).then( docs => {
-        res.send(docs[0]);
+        interview = doc;
+        if (_.has(interview,'_id'))
+            return Attachment.list({ interview : interview._id});
+        else
+            return Promise.resolve([]);
+    }).then( attachments => {
+        res.send({
+            interview : interview,
+            attachments : attachments
+        });
     }).catch( (err) => {
         Utils.handleError(err,res);
     });

@@ -5,7 +5,6 @@ var fs = require('fs-extra')
 var _ = require('underscore')
 var async = require('async')
 var Interview = r_require('models/interview');
-var Attachment = r_require('models/attachment');
 
 var TEST_IMAGE_PATH = "tests/files/img1.jpg"
 var TEST_IMAGE_FILE = {

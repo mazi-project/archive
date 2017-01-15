@@ -26,6 +26,17 @@ class InterviewModel extends Backbone.Model {
 	    	createdAt: 0
 		}
 	}
+
+	parse(response) {
+		if (_.has(response,'attachments'))
+			this.set('attachments',response.attachments);
+        return response.interview;
+	}
+
+    save(attrs, options) {
+        attrs = _.omit(attrs,'attachments');
+        return Backbone.Model.prototype.save.call(this, attrs, options);
+    }
 }
 
 export default InterviewModel

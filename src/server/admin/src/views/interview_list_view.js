@@ -31,12 +31,16 @@ class InterviewListView extends Marionette.CompositeView {
             template: _.template(itemTemplate),
             className : 'attachment',
             events : {
-                'click #deleteButton' : 'onDeleteButtonClicked'
+                'click #deleteButton' : 'onDeleteButtonClicked',
+                'click #editButton' : 'onEditButtonClicked'
             },
             onDeleteButtonClicked : function() {
                 if (confirm("Are you sure you want to delete the interview?")) {
                     this.model.destroy();
                 }
+            },
+            onEditButtonClicked : function() {
+                window.location.href = "#interview/"+this.model.id;
             }
         }); 
     }

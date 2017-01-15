@@ -68,6 +68,7 @@ class Attachment extends BaseModel {
 
         // handle tag option
         if (_.has(options,'tag')) {
+            console.log("has tags");
             var tag = options.tag;
             delete options['tag'];
             

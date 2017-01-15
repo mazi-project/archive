@@ -84,8 +84,6 @@ describe('Create Test Database', function(){
 
 			return attachment.save();
 		}).then( () => {
-			return interview.addAttachment(attachment.id);
-		}).then( () => {
 			assert.equal(interview.id,attachment.data.interview);
 			done();
 		}).catch(done);
@@ -104,8 +102,6 @@ describe('Create Test Database', function(){
 			});
 
 			return attachment.save();
-		}).then( () => {
-			return interview.addAttachment(attachment.id);
 		}).then( () => {
 			return attachment.attachFile(TEST_AUDIO_FILE);
 		}).then( () => {
@@ -131,8 +127,6 @@ describe('Create Test Database', function(){
 
 			return attachment.save();
 		}).then( () => {
-			return interview.addAttachment(attachment.id);
-		}).then( () => {
 			var file = TEST_AUDIO_FILE;
 			file.originalFilename = 'test2.wav';
 			return attachment.attachFile(file);
@@ -157,8 +151,6 @@ describe('Create Test Database', function(){
 			});
 
 			return attachment.save();
-		}).then( () => {
-			return interview.addAttachment(attachment.id);
 		}).then( () => {
 			var file = TEST_AUDIO_FILE;
 			file.originalFilename = 'test3.wav';
@@ -186,8 +178,6 @@ describe('Create Test Database', function(){
 
 			return attachment.save();
 		}).then( () => {
-			return interview.addAttachment(attachment.id);
-		}).then( () => {
 			var file = TEST_AUDIO_FILE;
 			file.originalFilename = 'test3.wav';
 			return attachment.attachFile(file);
@@ -212,8 +202,6 @@ describe('Create Test Database', function(){
 			});
 
 			return attachment.save();
-		}).then( () => {
-			return interview.addAttachment(attachment.id);
 		}).then( () => {
 			var file = TEST_AUDIO_FILE;
 			file.originalFilename = 'test4.wav';

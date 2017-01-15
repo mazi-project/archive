@@ -14,6 +14,7 @@ import Config from 'config';
 import MainView from 'views/main_view';
 import MenuView from 'views/menu_view';
 import InterviewListView from 'views/interview_list_view';
+import InterviewView from "views/interview_view";
 
 class Controller extends Marionette.Controller {
 		
@@ -42,12 +43,9 @@ class Controller extends Marionette.Controller {
 			this.mainView.contentRegion.show(new InterviewListView());
 		}
 
-		showInterview(id) {
-			// this.mainView.headerRegion.show(new Marionette.ItemView({
-			//  	template: _.template(headerTemplate)
-			// }));
-			// this.mainView.menuRegion.show(new MenuView())
-			// this.mainView.contentRegion.show(new InterviewView({ id: id }));
+		editInterview(id) {
+			this.mainView.menuRegion.show(new MenuView({ highlight: '#link1' }))
+			this.mainView.contentRegion.show(new InterviewView({ id: id }));
 		}
 		
 };

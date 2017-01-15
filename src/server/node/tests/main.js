@@ -35,5 +35,5 @@ require("./apiQuestionsTests.js");
 // socket tests
 require("./socketTests.js");
 
-//add some test data
+// add some test data
 require("./createTestDatabase.js");

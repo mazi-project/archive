@@ -19,11 +19,17 @@ describe('Database Attachment Test', function(){
 
   	beforeEach(function(done) {
 
-  		var data = {
-			name : "Letterbox",
+  		var data = [
+  		{
+			name : "Test Name",
 			tags : [ 'tag_1', 'tag_2'],
 			text : 'Test Nachricht',
-		}
+		},
+		{
+			name : "Tet Name 2",
+			tags : [ 'fdsfs', 'ja'],
+			text : 'orem ipsum',
+		}]
 
 		Interview.create(data).then( () => {
 			
@@ -84,13 +90,10 @@ describe('Database Attachment Test', function(){
 			});
 			return attachment.save();
 		}).then( () => {
-			// add attachment to interview
-			return interview.addAttachment(attachment.id);
-		}).then( () => {
 			// get interview from db
 			return Interview.get(interview.id);
 		}).then( (doc) => {
-			assert.equal(attachment.id, doc.attachments[0]);
+			assert.equal(attachment.data.interview, doc._id);
 			done();
 		}).catch(done);
 
@@ -113,9 +116,6 @@ describe('Database Attachment Test', function(){
 				interview : interview.id
 			});
 			return attachment.save();
-		}).then( () => {
-			// add attachment to interview
-			return interview.addAttachment(attachment.id);
 		}).then( () => {
 			// delete attachment
 			return attachment.delete();
@@ -142,9 +142,6 @@ describe('Database Attachment Test', function(){
 				interview : interview.id
 			});
 			return attachment.save();
-		}).then( () => {
-			// add attachment to interview
-			return interview.addAttachment(attachment.id);
 		}).then( () => {
 			// add attachment
 			return attachment.attachFile(TEST_IMAGE_FILE);
@@ -214,6 +211,43 @@ describe('Database Attachment Test', function(){
 			// list attachments
 
 			return Attachment.list({ tag : 'hybrid' })
+		}).then( (docs) => {
+			assert.equal(docs.length,2);
+			done();
+		}).catch(done);
+	});
+
+	it('should create three attachments and list two by interview id', function(done){
+
+		var TAGS = ['test','hybrid','letterbox'];
+
+		var interview = null;
+
+		Interview.list().then( docs => {
+			interview = new Interview(docs[0]);
+
+			//create attachments
+			return Promise.all([
+				new Attachment({
+					tags: [TAGS[0]],
+					name: 'Test Peter',
+					interview: docs[0]._id
+				}).save(),
+				new Attachment({
+					tags: TAGS,
+					name: 'Test Peter',
+					interview: docs[0]._id
+				}).save(),
+				new Attachment({
+					tags: TAGS,
+					name: 'Test Peter',
+					interview: docs[1]._id
+				}).save()
+			]);
+		}).then( () => {
+			// list attachments
+
+			return Attachment.list({ interview : interview.id })
 		}).then( (docs) => {
 			assert.equal(docs.length,2);
 			done();

@@ -34,6 +34,7 @@ class App extends Backbone.Marionette.Application {
 		this.Router = new Marionette.AppRouter({
 			controller: new Controller(this),
 			appRoutes: {
+				'interview/:id' : 'editInterview',
 				'*actions': 'showInterviewList'
 			}
 		});

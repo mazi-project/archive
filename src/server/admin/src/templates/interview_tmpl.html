@@ -1,42 +1,45 @@
-<div class="interview-image">
+
+<h2>Edit Interview</h2>
+
+<p><b>ID:</b> <%= _id %><p>
+
+<div class="input-element">
+	<label>Name</label>
+	<input type="text" id="input-name" value="<%= name %>"/>
+</div>
+<div class="input-element">
+	<label>Role</label>
+	<input type="text" id="input-role" value="<%= role %>"/>
+</div>
+<div class="input-element">
+	<label>Text</label>
+	<textarea id="input-text"><%= text %></textarea>
+</div>
+
+<div class="input-element">
+	<label>Image</label>	
 	<% if (image) { %>
 	<img src="<%= filesUrl+image.name %>">
+	<% } else { %>
+	<p class="no-image">No Image</p>
 	<% } %>
+	<button>Change Image</button>
 </div>
 
-<div class="interview-content" >
-	<p class="date"><%= formatDate(createdAt) %></p>
-	<h2><%= name %></h2>
-	<p class="role"><%= role %></p>
-	<div class="line-horizontal"></div>
-	<p class="text"><%= text %>
-</div>
+<button id="saveButton">Save Interview</button>
 
-<div class="attachment-list">
-	<!--<div class="attachment-header">
-		<h3><%= name %></h3>
-		<p><%= role %></p>
-	</div>-->
+<h3>Attachments</h3>
+<button>Add Attachment</button>
+<ul class="attachment-list">
 	<% _.each(attachments, function(attachment, index) { %>
-	<div class="attachment">
-		<div class="expand-button">
-		</div>
-		<div class="text">
-			<h3><%= name %> (<%= index+1 %>/<%= attachments.length %>)</h3>
-			<p><%= attachment.text %></p>
-		</div>
-		<div class="play-button" data-id="<%= attachment._id %>">
-		</div>
-		
-		<div class="more">
-			<% if (attachment.tags.length > 0) { %>
-			<ul class="tag-list">
-				<% _.each(attachment.tags, function(tag) { %>
-				<li><span class="badge with-hash"><%= tag %></span></li>
-				<% }) %>
-			</ul>
-			<% } %>
-		</div>
-	</div>
+	<li class="attachment">
+		<p><b>Text:</b> <%= attachment.text %></p>
+		<p><b>Tags:</b>  <%= attachment.tags.join(" ") %></p>
+		<% if (attachment.file) { %>
+		<p><b>File:</b> <a href="<%= filesUrl+attachment.file.name %>"><%= attachment.file.name %></a></p>
+		<% } %>
+		<button>Edit</button>
+		<button>Delete</button>
+	</li>
 	<% }) %>
-</div>
+</ul>
