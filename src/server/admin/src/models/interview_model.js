@@ -28,9 +28,10 @@ class InterviewModel extends Backbone.Model {
 	}
 
 	parse(response) {
+		var data = response.interview;
 		if (_.has(response,'attachments'))
-			this.set('attachments',response.attachments);
-        return response.interview;
+			data.attachments = response.attachments;
+        return data;
 	}
 
     save(attrs, options) {

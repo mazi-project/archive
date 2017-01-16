@@ -65,7 +65,7 @@ describe('API Routes /interviews/', function(){
 		request(BASE_URL).post('api/interviews').send(data).end(function(err, res) {
 			if (err)
     			throw err;
-    		callback(res.body);
+    		callback(res.body.interview);
     	});
     }
 
@@ -79,7 +79,7 @@ describe('API Routes /interviews/', function(){
 		request(BASE_URL).post('api/interviews').send(data).end(function(err, res) {
 			if (err)
     			throw err;
-			assert.equal(res.body.text, data.text);
+			assert.equal(res.body.interview.text, data.text);
 			done()
         });
 	})
@@ -95,7 +95,7 @@ describe('API Routes /interviews/', function(){
 			if (err)
     			throw err;
 
-    		var interview = res.body;
+    		var interview = res.body.interview;
 			
     		request(BASE_URL).post('api/upload/image/'+interview._id).attach('file', TEST_IMAGE_FILE.path).expect(200).end(function(err, res) {
 				if (err) throw err;
@@ -209,14 +209,14 @@ describe('API Routes /interviews/', function(){
 
     		var submissionId = res.body._id;
 
-			assert.equal(res.body.text, data1.text);
+			assert.equal(res.body.interview.text, data1.text);
 
 			//update submission
 			request(BASE_URL).put('api/interviews/'+submissionId).auth(Config.authName, Config.authPassword).send(data2).expect(200).end(function(err, res) {
 				if (err)
 	    			throw err;
 	    		
-				assert.equal(res.body.text, data2.text);
+				assert.equal(res.body.interview.text, data2.text);
 				done()
 	        });
         });

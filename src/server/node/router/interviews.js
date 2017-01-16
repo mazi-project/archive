@@ -87,7 +87,7 @@ router.post('/', (req, res) => {
         log('Interview added to database with id: '+interview.id);
         // trigger socket event and send message to web app
         appEvents.emit('interview:new',interview.data)
-        res.send(interview.data);
+        res.send({ interview: interview.data });
     }).catch( (err) => {
         Utils.handleError(err,res);
     });
@@ -107,7 +107,7 @@ router.put('/:id', Auth.authentificate, (req, res) => {
 
         // trigger socket event and send message to web app
         appEvents.emit('interview:changed',doc)
-        res.send(doc);
+        res.send({ interview: doc });
     }).catch( (err) => {
         Utils.handleError(err,res);
     });

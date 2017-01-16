@@ -60,7 +60,7 @@ describe('API Routes /attachments/', function() {
 		//create interview
 		request(BASE_URL).post('api/interviews').send(data).expect(200).end(function(err, res) {
 			if (err) throw err;
-			callback(res.body);
+			callback(res.body.interview);
 		});
 	}
 

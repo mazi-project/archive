@@ -28,6 +28,11 @@ class AttachmentModel extends Backbone.Model {
 	    	}
 		}
 	}
+
+	save(attrs, options) {
+        attrs = _.omit(attrs,'interview');
+        return Backbone.Model.prototype.save.call(this, attrs, options);
+    }
 }
 
 export default AttachmentModel
