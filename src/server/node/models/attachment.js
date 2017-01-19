@@ -26,17 +26,24 @@ class Attachment extends BaseModel {
     static validate(data) {
         //dont allow false or null tags
         if (data.tags == null || data.tags == false)
-            data.tags = "";
+            data.tags = [];
 
-        data.interview = _.has(data,'interview') ? data.interview : false ;
-        data.text = _.has(data,'text') ? data.text : "" ;
-        data.file = _.has(data,'file') ? data.file : false ;
-        data.interview = _.has(data,'interview') ? data.interview : false ;
+        // set attributes
+        var attributes = {}
+        attributes._id = data._id;
+        attributes.text = _.has(data,'text') ? data.text : "" ;
+        attributes.file = _.has(data,'file') ? data.file : false ;
+        attributes.interview = _.has(data,'interview') ? data.interview : false ;
+        attributes.tags = _.has(data,'tags') ? data.tags : [] ;
 
         // create new date
-        data.createdAt = _.has(data,'createdAt') ? data.createdAt : new Date();
+        attributes.createdAt = _.has(data,'createdAt') ? data.createdAt : new Date();
 
-        return data;
+        // escape html chars
+        attributes.text = _.escape(attributes.text);
+        attributes.tags = _.map(attributes.tags,_.escape);
+
+        return attributes;
     }
 
     static remove(id, callback) {
@@ -44,6 +51,11 @@ class Attachment extends BaseModel {
 
         return new Promise( (resolve, reject) => {
             this.get(id).then( doc => {
+                if (!doc) {
+                    reject(new Error('Did not find document id to delete'));
+                    return;
+                }
+
                 if (doc.file) {
                     //remove file
                     return fsp.remove(doc.file.url);
@@ -68,7 +80,6 @@ class Attachment extends BaseModel {
 
         // handle tag option
         if (_.has(options,'tag')) {
-            console.log("has tags");
             var tag = options.tag;
             delete options['tag'];
             

@@ -49,9 +49,6 @@ describe('API Routes /questions/', function(){
 
 		var request = require('supertest');
 
-		var data = {
-			text: "unittest_" + require('node-uuid').v4()
-		}
 
 		request(BASE_URL).get('api/questions').end(function(err, res) {
 			if (err)
@@ -68,10 +65,6 @@ describe('API Routes /questions/', function(){
 	it('should GET 2 questions on api/questions with correct counts', function(done){
 
 		var request = require('supertest');
-
-		var data = {
-			text: "unittest_" + require('node-uuid').v4()
-		}
 
 		request(BASE_URL).get('api/questions').end(function(err, res) {
 			if (err)
@@ -90,9 +83,6 @@ describe('API Routes /questions/', function(){
 
 		var request = require('supertest');
 
-		var data = {
-			text: "unittest_" + require('node-uuid').v4()
-		}
 
 		request(BASE_URL).get('api/attachments/?text='+encodeURIComponent(QUESTIONS[0])).end(function(err, res) {
 			if (err)
@@ -106,24 +96,29 @@ describe('API Routes /questions/', function(){
         });
 	})
 
-	it('should handle special characters on api/attachments/?text='+encodeURIComponent(QUESTIONS[1]), function(done){
+	it('should handle special characters on api/attachments/?text=', function(done){
 
 		var request = require('supertest');
 
-		var data = {
-			text: "unittest_" + require('node-uuid').v4()
-		}
-
-		request(BASE_URL).get('api/attachments/?text='+encodeURIComponent(QUESTIONS[1])).end(function(err, res) {
+		request(BASE_URL).get('api/questions').end(function(err, res) {
 			if (err)
     			throw err;
 			
     		var questions = res.body;
 
-    		assert.equal(questions.length,1);
+    		request(BASE_URL).get('api/attachments/?text='+encodeURIComponent(questions[1].name)).end(function(err, res) {
+				if (err)
+	    			throw err;
+				
+	    		var questions = res.body;
 
-			done();
+	    		assert.equal(questions.length,1);
+
+				done();
+	        });
         });
+
+		
 	})
 	
 });

@@ -97,6 +97,12 @@ describe('Database Interview Test', function(){
 		}).then( () => {
 			return interview.attachImage(TEST_IMAGE_FILE)
 		}).then( () => {
+			// fetch interview
+			return interview.fetch()
+		}).then( (doc) => {
+			//check if image property is set
+			assert.equal(interview.data.image.originalFilename,TEST_IMAGE_FILE.originalFilename)
+		}).then( () => {
 			//check if file exists
 			fs.access(interview.data.image.url, fs.F_OK, (err) => {
 				if (err) throw err;

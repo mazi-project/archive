@@ -37,14 +37,26 @@ class BaseModel {
 		return this.data._id;
 	}
 
-	save(callback) {
+	save() {
 		var db = this.getDb();
 
-		if (_.has(this.data,'_id')) {
-			return this.constructor.update(this.data)
-		} else {
-			return this.constructor.create(this.data);
-		}
+		return new Promise( (resolve, reject) => {
+			if (_.has(this.data,'_id')) {
+				this.constructor.update(this.data).then( doc => {
+					this.data = doc
+					resolve(doc);
+				}).catch( error => {	
+					reject(err);
+				});
+			} else {
+				this.constructor.create(this.data).then( doc => {
+					this.data = doc[0]
+					resolve(doc[0]);
+				}).catch( error => {	
+					reject(err);
+				});
+			}
+		});	
 	}
 
 	fetch() {
@@ -90,14 +102,12 @@ class BaseModel {
 	    	data = [ data ];
 	    }
 
-    	_.each(data, (element) => {
-
+    	data = _.map(data, (element) => {
 	        // validate fields
-	        element = self.validate(element);
-
+	        let attributes = self.validate(element);
 	        // create new id
-	        element._id = uuid.v4();
-
+	        attributes._id = uuid.v4();
+	    	return attributes;
 	    });
 
 	    return new Promise( (resolve, reject) => {
@@ -140,7 +150,15 @@ class BaseModel {
 	static remove(id, callback) {
 		var db = this.getDb()
 
-		db[this.collection].remove({ _id : id}, callback);
+		return new Promise( (resolve, reject) => {
+        	db[this.collection].remove({ _id : id}, (err, result) => {
+        		if (err) {
+        			reject(err);
+        		} else {
+        			resolve(result);
+        		}
+        	});
+        });
 	}
 
 	static get(id) {

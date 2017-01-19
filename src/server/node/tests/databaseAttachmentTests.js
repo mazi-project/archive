@@ -120,7 +120,7 @@ describe('Database Attachment Test', function(){
 			// delete attachment
 			return attachment.delete();
 		}).then( () => {
-			Attachment.get(attachment.id)
+			return Attachment.get(attachment.id)
 		}).then( (doc) => {
 			assert.equal(null, doc);
 			done();

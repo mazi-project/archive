@@ -30,7 +30,7 @@ router.get('/',(req,res) => {
         options.tags = req.query.tag;
 
     if (_.has(req.query,'text'))
-        options.text = req.query.text;
+        options.text = decodeURIComponent(req.query.text);
 
     Attachment.list(options).then( (docs) => {
         if (_.isEmpty(docs))

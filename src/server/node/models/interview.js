@@ -17,19 +17,24 @@ class Interview extends BaseModel {
 
     static validate(data) {
 
-        data.text = _.has(data,'text') ? data.text : "";
-        data.name = _.has(data,'name') ? data.name : "";
-        data.role = _.has(data,'role') ? data.role : "";
+        var attributes = {}
+
+        // set attributes
+        attributes._id = data._id
+        attributes.text = _.has(data,'text') ? data.text : "";
+        attributes.name = _.has(data,'name') ? data.name : "";
+        attributes.role = _.has(data,'role') ? data.role : "";
+        attributes.image = _.has(data,'image') ? data.image : false;
 
         // create new date
-        data.createdAt = _.has(data,'createdAt') ? data.createdAt : new Date();
+        attributes.createdAt = _.has(data,'createdAt') ? data.createdAt : new Date();
 
         // escape html chars
-        data.text = _.escape(data.text);
-        data.name = _.escape(data.name);
-        data.role = _.escape(data.role);
+        attributes.text = _.escape(attributes.text);
+        attributes.name = _.escape(attributes.name);
+        attributes.role = _.escape(attributes.role);
 
-        return data;
+        return attributes;
     }
 
     static remove(id, callback) {
@@ -78,10 +83,11 @@ class Interview extends BaseModel {
                 this.data.image.url = fileurl;
                 this.data.image.name = image.originalFilename;
 
-                // save interview
-                this.save().then(resolve).catch(reject);
-            });
-
+                resolve(this.data);
+            })
+        }).then( (data) => {
+            // save interview
+            return this.save()
         });
     }
 }
