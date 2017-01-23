@@ -125,7 +125,6 @@ router.delete('/:id', Auth.authentificate, (req, res) => {
         }
         res.send( {removed: result} );
     }).catch( (err) => {
-        console.log(err);
         Utils.handleError(err,res);
     });
 });

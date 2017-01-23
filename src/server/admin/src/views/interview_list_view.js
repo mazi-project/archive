@@ -12,7 +12,6 @@ import _ from 'underscore';
 import $ from 'jquery';
 import Config from 'config';
 import InterviewCollection from 'models/interview_collection';
-import InterviewModel from 'models/interview_model';
 
 import template from 'text!templates/interview_list_tmpl.html';
 import itemTemplate from 'text!templates/interview_item_tmpl.html';
@@ -30,6 +29,7 @@ class InterviewListView extends Marionette.CompositeView {
         return Marionette.ItemView.extend({
             template: _.template(itemTemplate),
             className : 'attachment',
+            tagName : 'li',
             events : {
                 'click #deleteButton' : 'onDeleteButtonClicked',
                 'click #editButton' : 'onEditButtonClicked'
@@ -47,7 +47,8 @@ class InterviewListView extends Marionette.CompositeView {
 
     events() {
         return {
-            'click #load-more-button' : 'onLoadMoreButtonClick'
+            'click #load-more-button' : 'onLoadMoreButtonClick',
+            'click #add-interview-button' : 'onAddInterviewButtonClick'
         }
     }
 
@@ -61,39 +62,16 @@ class InterviewListView extends Marionette.CompositeView {
 		
 		this.collection = new InterviewCollection();
 
-        this.listenTo(this.collection,'sync',this.hideSpinner);
-        this.listenTo(this.collection,'fetching',this.showSpinner);
-
-        this.listenTo(Backbone,'interview:changed', this.onInterviewChanged);
-        this.listenTo(Backbone,'interview:new', this.onInterviewAdded);
-        this.listenTo(Backbone,'interview:removed', this.OnInterviewRemoved);
-
         this.collection.getFirstPage(this.fetchParams);
 	}
-
-	// update model on data change
-    onInterviewChanged(data) {
-    	var model = this.collection.get(data._id);
-    	if (model)
-    		model.fetch();
-    }
-
-    onInterviewAdded(data) {
-        //console.log(data);
-    	var interview = new InterviewModel(data);
-    	interview.fetch();
-    	 // add to front of collection
-		this.collection.add(interview, { at: 0});
-    }
-
-    onInterviewRemoved(data) {
-        //console.log(data);
-        this.collection.remove(data);
-    }
 
     onLoadMoreButtonClick(event) {
         event.preventDefault();
         this.collection.getNextPage(this.fetchParams);
+    }
+
+    onAddInterviewButtonClick() {
+        window.location.href = '#interview/new';
     }
 
 

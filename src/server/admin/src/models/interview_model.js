@@ -29,6 +29,8 @@ class InterviewModel extends Backbone.Model {
 
 	parse(response) {
 		var data = response.interview;
+		if (_.isEmpty(data))
+			return data;
 		if (_.has(response,'attachments'))
 			data.attachments = response.attachments;
         return data;

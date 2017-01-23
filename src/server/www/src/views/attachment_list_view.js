@@ -10,23 +10,20 @@
 import Marionette from 'marionette';
 import _ from 'underscore';
 import AttachmentCollection from 'models/attachment_collection';
+import AttachmentItemView from 'views/attachment_item_view';
 
-import template from 'text!templates/track_list_tmpl.html';
-import itemTemplate from 'text!templates/track_item_tmpl.html';
+import template from 'text!templates/attachment_list_tmpl.html';
 
 class TagListView extends Marionette.CompositeView {
 
 	/* properties */
 
-    get className() { return 'track-list' }
+    //get className() { return 'track-list' }
 
     get tagName() { return 'div' }
 
     get childView() { 
-        return Marionette.ItemView.extend({
-            template: _.template(itemTemplate),
-            className : 'attachment'
-        }); 
+        return AttachmentItemView;
     }
 
     get template() {
@@ -52,7 +49,7 @@ class TagListView extends Marionette.CompositeView {
       }
     }
 
-    get childViewContainer() { return '#track-list' }
+    get childViewContainer() { return '#attachment-list' }
 
     /* methods */
     initialize(options) {

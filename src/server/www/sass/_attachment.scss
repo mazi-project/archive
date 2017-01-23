@@ -1,4 +1,4 @@
-.attachment-list {
+#attachment-list {
 
 		border-top: $border-style;
 		border-bottom: $border-style;
@@ -37,6 +37,10 @@
 				top:0;
 				right:0;
 				padding: $card-padding;
+			}
+
+			.file {
+				margin-left: 30px;
 			}
 
 			.more {

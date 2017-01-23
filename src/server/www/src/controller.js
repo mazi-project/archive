@@ -19,7 +19,7 @@ import MenuView from 'views/menu_view'
 import AudioPlayerView from 'views/audioplayer_view';
 import TagListView from 'views/tag_list_view';
 import QuestionListView from 'views/question_list_view';
-import TrackListView from 'views/track_list_view';
+import AttachmentListView from 'views/attachment_list_view';
 
 import headerTemplate from 'text!templates/header_tmpl.html';
 
@@ -97,7 +97,7 @@ class Controller extends Marionette.Controller {
 				template: _.template(headerTemplate)
 			}));
 			this.mainView.menuRegion.show(new MenuView())
-			this.mainView.contentRegion.show(new TrackListView({ tag: tag }));
+			this.mainView.contentRegion.show(new AttachmentListView({ tag: tag }));
 		}
 
 		showQuestionTrackList(question = null) {
@@ -105,7 +105,7 @@ class Controller extends Marionette.Controller {
 				template: _.template(headerTemplate)
 			}));
 			this.mainView.menuRegion.show(new MenuView())
-			this.mainView.contentRegion.show(new TrackListView({ question: question }));
+			this.mainView.contentRegion.show(new AttachmentListView({ question: question }));
 		}
 
 		/* AUDIO PLAYER */

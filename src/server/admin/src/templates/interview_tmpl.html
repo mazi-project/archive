@@ -1,8 +1,6 @@
 
 <h2>Edit Interview</h2>
 
-<p><b>ID:</b> <%= _id %><p>
-
 <div class="input-element">
 	<label>Name</label>
 	<input type="text" id="input-name" value="<%= name %>"/>
@@ -27,19 +25,7 @@
 </div>
 
 <button id="saveButton">Save Interview</button>
+<button id="deleteButton">Delete</button>
 
-<h3>Attachments</h3>
-<button>Add Attachment</button>
-<ul class="attachment-list">
-	<% _.each(attachments, function(attachment, index) { %>
-	<li class="attachment">
-		<p><b>Text:</b> <%= attachment.text %></p>
-		<p><b>Tags:</b>  <%= attachment.tags.join(" ") %></p>
-		<% if (attachment.file) { %>
-		<p><b>File:</b> <a href="<%= filesUrl+attachment.file.name %>"><%= attachment.file.name %></a></p>
-		<% } %>
-		<button>Edit</button>
-		<button>Delete</button>
-	</li>
-	<% }) %>
-</ul>
+<div id="interview-attachments"></div>
+<button id="add-attachment-button">Add Attachment</button>

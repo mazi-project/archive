@@ -12,7 +12,7 @@ import Marionette from 'marionette';
 import _ from 'underscore';
 import Config from 'config';
 import InterviewModel from 'models/interview_model';
-import _str from 'underscoreString';
+import AttachmentListView from 'views/attachment_list_view';
 
 import template from 'text!templates/interview_tmpl.html';
 
@@ -29,26 +29,58 @@ class InterviewView extends Marionette.LayoutView {
       }
     }
 
+   regions() { 
+      return {
+        attachments : '#interview-attachments'
+      }
+    }
+
     events() {
       return {
-        'click #saveButton' : 'onSaveButtonClicked'
+        'click #saveButton' : 'onSaveButtonClicked',
+        'click #deleteButton' : 'onDeleteButtonClicked',
+        'click #add-attachment-button' : 'onAddAttachmentButtonClicked'
       }
     }
 
     /* methods */
     initialize(options) {
-        this.model = new InterviewModel({ _id: options.id });
-        this.model.fetch();
+
+        if (_.has(options, 'new')) {
+            this.model = new InterviewModel();
+            this.options.id = false;
+        }  else {
+            this.model = new InterviewModel({ _id: options.id });
+            this.model.fetch();
+        }
         
         //listen to model events
         this.listenTo(this.model,'change',this.render);
     }
 
-    onSaveButtonClicked() {
-      this.model.set('name', $("#input-name").val());
+    onRender() {
+        this.getRegion('attachments').show( new AttachmentListView({ interview : this.options.id }) );
+    }
 
-      console.log(this.model);
+    onSaveButtonClicked() {
+      this.model.set({ 
+        name : this.$("#input-name").val(),
+        role : this.$("#input-role").val(),
+        text : this.$("#input-text").val()
+      });
+
       this.model.save();
+    }
+
+    onDeleteButtonClicked() {
+        if (confirm("Are you sure you want to delete the interview?")) {
+            this.model.destroy();
+            window.location.href="#";
+        }
+    }
+
+    onAddAttachmentButtonClicked() {
+        window.location.href = '#attachment/add/' + this.options.id;
     }
     
 }

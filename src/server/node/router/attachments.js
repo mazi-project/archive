@@ -32,6 +32,9 @@ router.get('/',(req,res) => {
     if (_.has(req.query,'text'))
         options.text = decodeURIComponent(req.query.text);
 
+    if (_.has(req.query,'interview'))
+        options.interview = decodeURIComponent(req.query.interview);
+
     Attachment.list(options).then( (docs) => {
         if (_.isEmpty(docs))
             return Promise.resolve(docs);
@@ -39,6 +42,22 @@ router.get('/',(req,res) => {
             return Attachment.populate(docs);
     }).then( (docs) => {
         res.send(docs);
+    }).catch( (err) => {
+        Utils.handleError(err,res);
+    })
+});
+
+/*
+ * GET /api/attachments/:id
+ */ 
+router.get('/:id',(req,res) => {
+    Attachment.get(req.params.id).then( (doc) => {
+        if (_.isEmpty(doc))
+            return Promise.resolve([doc]);
+        else
+            return Attachment.populate([doc]);
+    }).then( (doc) => {
+        res.send(doc[0]);
     }).catch( (err) => {
         Utils.handleError(err,res);
     })
@@ -65,8 +84,9 @@ router.post('/', (req, res) => {
         return attachment.save();
     }).then( () => {
         log('Attachment added to database width id: '+attachment.id);
-        // trigger socket event and send message to web app
         appEvents.emit('interview:changed',{ _id: interview.id })
+        return attachment.populate();
+    }).then( () => {
         res.send(attachment.data);
     }).catch( (err) => {
         Utils.handleError(err,res);
@@ -74,19 +94,41 @@ router.post('/', (req, res) => {
 });
 
 /*
- * GET /api/attachments/:id
- */ 
-router.get('/:id',(req,res) => {
-    Attachment.get(req.params.id).then( (doc) => {
-        if (_.isEmpty(doc))
-            return Promise.resolve(doc);
-        else
-            return Attachment.populate([doc]);
-    }).then( (doc) => {
-        res.send(doc[0]);
+ * PUT /api/attachments/:id with AUTH
+ */
+router.put('/:id', Auth.authentificate, (req, res) => {
+ 
+    var data = req.body;
+
+    var attachment = new Attachment(data);
+
+    //insert data
+    attachment.save().then( doc => {
+        log('Attachment changed in database');
+        appEvents.emit('interview:changed',{ _id: attachment.data.interview.id })
+    }).then( () => {
+        return attachment.populate();
+    }).then( () => {
+        res.send(attachment.data);
     }).catch( (err) => {
         Utils.handleError(err,res);
-    })
+    });
+});
+
+
+/*
+ * DELETE /api/attachments/:id with AUTH
+ */
+router.delete('/:id', Auth.authentificate, (req, res) => {
+
+    Attachment.remove({ _id: req.params.id }).then( result => {
+        if (result > 0) {
+            log("Attachment "+req.params.id+" deleted from database");
+        }
+        res.send( {removed: result} );
+    }).catch( (err) => {
+        Utils.handleError(err,res);
+    });
 });
 
 module.exports = router;

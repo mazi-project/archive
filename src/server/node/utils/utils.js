@@ -7,15 +7,18 @@ module.exports = {
 	// handle errors in express routers
 	handleError : function(err,res) {
 		if(err) {
+
+			var message = ""
 			if (_.has(err,'message'))
-				log(err.message,'error');
+				message = err.message
 			else
-	        	log(err,'error');
+				message = err
+	        log(message,'error');
 
 	        // if res defined, also give server answer
 	        if (res) {
 	        	res.setHeader('Content-Type','application/json');
-	        	res.status(500).send({ error: err });
+	        	res.status(500).send({ error: message });
 	        }
 
 	        return true;

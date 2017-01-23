@@ -14,11 +14,14 @@ import Moment from 'moment';
 import 'moment_en_gb';
 import Config from 'config';
 import InterviewModel from 'models/interview_model';
+import AttachmentCollection from 'models/attachment_collection';
 import _str from 'underscoreString';
+
+import AttachmentItemView from 'views/attachment_item_view';
 
 import template from 'text!templates/interview_tmpl.html';
 
-class InterviewView extends Marionette.LayoutView {
+class InterviewView extends Marionette.CompositeView {
 
 	/* properties */
    	get template() { return _.template(template) }
@@ -44,13 +47,31 @@ class InterviewView extends Marionette.LayoutView {
       }
     }
 
+    get childViewContainer() { return '#attachment-list' }
+
+    get childView() { return AttachmentItemView }
+
+    get childViewOptions() {
+        return {
+            interviewName : this.model.get('name')
+        }
+    } 
+
     /* methods */
     initialize(options) {
         this.model = new InterviewModel({ _id: options.id });
         this.model.fetch();
+
+        this.collection = new AttachmentCollection();
         
         //listen to model events
-        this.listenTo(this.model,'change',this.render);
+        this.listenTo(this.model,'change', this.onModelChanged);
+    }
+
+
+    onModelChanged() {
+        this.collection.reset(this.model.get('attachments'));
+        this.render();
     }
 
     onAttachmentClicked(event) {

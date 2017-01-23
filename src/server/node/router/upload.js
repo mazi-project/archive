@@ -29,6 +29,8 @@ router.post('/attachment/:attachmentId', fileUploader, function(req,res){
     if (_.has(req,'files') && _.has(req.files,'file'))
         file = req.files.file;
 
+    console.log(req.files);
+
 	attachment.fetch().then( () => {
         if (!file) {
             return Promise.reject(new Error('No file submitted.'));
@@ -42,9 +44,9 @@ router.post('/attachment/:attachmentId', fileUploader, function(req,res){
         }
 
         //check extension
-        if (!(_.contains(Config.allowedAudioFileTypes,file.type))) {
+        if (!(_.contains(Config.allowedAttachmentFileTypes,file.type))) {
             fse.remove(file.path);
-            return Promise.reject(new Error('Only wav and mp3 are allowed for upload. File is '+file.type));
+            return Promise.reject(new Error('Only wav,mp3,jpg and pdf files are allowed for upload. File is '+file.type));
         }
 
         return attachment.attachFile(file);

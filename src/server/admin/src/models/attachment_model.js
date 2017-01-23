@@ -18,14 +18,10 @@ class AttachmentModel extends Backbone.Model {
 
 	get defaults() { 
 		return {
-	    	_id: false,
 	    	file: false,
 	    	text: '',
 	    	tags: [],
-	    	interview : {
-	    		_id: null,
-	    		name: ""
-	    	}
+	    	interview : false
 		}
 	}
 

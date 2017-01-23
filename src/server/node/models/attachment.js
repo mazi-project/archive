@@ -24,9 +24,14 @@ class Attachment extends BaseModel {
     }
 
     static validate(data) {
-        //dont allow false or null tags
+        // dont allow false or null tags
         if (data.tags == null || data.tags == false)
             data.tags = [];
+
+        // tags must be array
+        if (!_.isArray(data.tags)) {
+            data.tags = data.tags.split(' ');
+        }
 
         // set attributes
         var attributes = {}
@@ -104,6 +109,12 @@ class Attachment extends BaseModel {
             }
 
             var fileurl = Config.fileDir + this.data.interview + '/' + file.originalFilename;
+
+            // var fileType = file.type;
+            // if (_.contains(fileType, ['audio/wav','audio/x-wav','audio/mpeg3','audio/x-mpeg3','audio/wave']))
+            //     fileType = "audio"
+            // else if (_.contains(fileType, ['audio/wav','audio/x-wav','audio/mpeg3','audio/x-mpeg3','audio/wave']))
+                
 
             //copy image
             fs.move(file.path, fileurl, (err) => {

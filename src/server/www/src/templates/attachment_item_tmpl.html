@@ -1,11 +1,18 @@
 <div class="expand-button">
 </div>
 <div class="text">
-	<h3><%= interview.name %></h3>
+
+	<h3><%= getInterviewName() %></h3>
 	<p><%= text %></p>
 </div>
+<% if (getFileType() == "audio") { %>
 <div class="play-button" data-id="<%= _id %>">
 </div>
+<% } else if (file) { %>
+<div class="file">
+	Download: <a href="<%= fileDir+file.originalFilename %>"><%= file.originalFilename %></a>
+</div>
+<% } %>
 
 <div class="more">
 	<% if (tags.length > 0) { %>

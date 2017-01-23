@@ -34,7 +34,12 @@ class App extends Backbone.Marionette.Application {
 		this.Router = new Marionette.AppRouter({
 			controller: new Controller(this),
 			appRoutes: {
+				'interview/new' : 'newInterview',
 				'interview/:id' : 'editInterview',
+				'attachments' : 'showAttachmentList',
+				'attachment/add/:interviewId' : 'addAttachment',
+				'attachments/:interviewId' : 'showAttachmentList',
+				'attachment/:id' : 'editAttachment',
 				'*actions': 'showInterviewList'
 			}
 		});

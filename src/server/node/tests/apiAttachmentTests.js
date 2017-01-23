@@ -168,5 +168,37 @@ describe('API Routes /attachments/', function() {
     	});
 	});
 
+	it('should DELETE on api/attachments/:id with auth', function(done){
+
+		postInterview( (interview) => {
+    		var data = {
+				text: "attachment text",
+				tags: ['test1' , 'test2'],
+				interview: interview._id
+			}
+			//create attachment
+			request(BASE_URL).post('api/attachments/').send(data).expect(200).end( (err, res) => {
+				if (err) throw err;
+
+				var attachment = res.body;
+				
+				// delete attachment
+				request(BASE_URL).delete('api/attachments/'+attachment._id).auth(Config.authName, Config.authPassword).expect(200).end(function(err, res) {
+					if (err)
+		    			throw err;
+					assert.equal(res.body.removed, 1);
+					
+					//check if model is really deleted
+					request(BASE_URL).get('api/attachments/'+attachment._id).expect(200).end(function(err, res) {
+						if (err)
+		    				throw err;
+						assert(_.isEmpty(res.body));
+						done();
+			        });
+			    });
+		    });
+		});
+	});
+
 
 });

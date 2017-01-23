@@ -15,6 +15,8 @@ import MainView from 'views/main_view';
 import MenuView from 'views/menu_view';
 import InterviewListView from 'views/interview_list_view';
 import InterviewView from "views/interview_view";
+import AttachmentListView from 'views/attachment_list_view';
+import AttachmentView from "views/attachment_view";
 
 class Controller extends Marionette.Controller {
 		
@@ -46,6 +48,26 @@ class Controller extends Marionette.Controller {
 		editInterview(id) {
 			this.mainView.menuRegion.show(new MenuView({ highlight: '#link1' }))
 			this.mainView.contentRegion.show(new InterviewView({ id: id }));
+		}
+
+		newInterview(id) {
+			this.mainView.menuRegion.show(new MenuView({ highlight: '#link1' }))
+			this.mainView.contentRegion.show(new InterviewView({ new: true }));
+		}
+
+		showAttachmentList(forInterview = null) {	
+			this.mainView.menuRegion.show(new MenuView({ highlight: '#link2' }))
+			this.mainView.contentRegion.show(new AttachmentListView({ interview : forInterview}));
+		}
+
+		editAttachment(id) {
+			this.mainView.menuRegion.show(new MenuView({ highlight: '#link2' }))
+			this.mainView.contentRegion.show(new AttachmentView({ id: id }));
+		}
+
+		addAttachment(forInterview) {
+			this.mainView.menuRegion.show(new MenuView({ highlight: '#link2' }))
+			this.mainView.contentRegion.show(new AttachmentView({ interview: forInterview, new : true }));
 		}
 		
 };

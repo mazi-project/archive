@@ -1,0 +1,16 @@
+
+<h3><% if (interview) { %><%= interview.name %><% } else { %>*not defined<% } %></h3>
+<p class="id">ID: <%= _id %></p>
+<p>TEXT: <%= text %></p>
+<p>TAGS: <%= tags.join(' ') %></p>
+<p>FILE:
+	<% if (file && interview) { %>
+		<a href="<%= fileDir + interview._id + '/' + file.originalFilename %>"><%= file.originalFilename %></a>
+	<% } else { %>
+		No File
+	<% } %>
+</p>
+<p>
+	<button id="editButton">Edit</button>
+	<button id="deleteButton">Delete</button>
+</p>

@@ -7,11 +7,35 @@
 
 'use strict';
 
+import 'jquery';
+import 'iframeTransport';
+
 export default {
-	encodeQueryParameters: function(data) {
+	
+    encodeQueryParameters: function(data) {
 	   var ret = [];
 	   for (var d in data)
 	      ret.push(encodeURIComponent(d) + "=" + encodeURIComponent(data[d]));
 	   return ret.join("&");
-	}
+	},
+
+	uploadFile: function(file, url, callback) {
+
+        $.ajax({
+            method: 'POST',
+            url: url,
+            iframe: true,
+            files: file,
+            dataType: 'json',
+            error: (res) => {
+                callback(res.responseJSON.error);
+            },
+            success: (res) => {
+                if (_.has(res,'error'))
+                    callback(res.error);
+                else
+                    callback();
+            }
+        });
+    }
 }

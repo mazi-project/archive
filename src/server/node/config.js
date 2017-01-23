@@ -12,7 +12,7 @@ var Config = {
 	fileDir: __dirname + '/files/',
 	maxFileSize: 1024*1024*200, //allowed file size for attached files
 	allowedImageFileTypes: ['image/jpeg','image/jpg','image/png','image/gif'],
-	allowedAudioFileTypes: ['audio/wav','audio/x-wav','audio/mpeg3','audio/x-mpeg3','audio/wave'],
+	allowedAttachmentFileTypes: ['audio/wav','audio/x-wav','audio/mpeg3','audio/x-mpeg3','audio/wave','image/jpeg','image/jpg','application/pdf'],
 
 	/* SERVER CONFIG */
 	baseUrl : '/', // with trailing /
