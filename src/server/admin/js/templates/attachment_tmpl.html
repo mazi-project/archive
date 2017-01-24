@@ -22,7 +22,7 @@
 <div class="input-element">
 	<label>File</label>
 	<% if (file && interview) { %>
-		<a href="<%= fileDir + interview._id + '/' + file.originalFilename %>"><%= file.originalFilename %></a>
+		<a href="<%= fileDir + interview._id + '/' + file.name %>"><%= file.name %></a>
 	<% } else { %>
 		No File
 	<% } %>

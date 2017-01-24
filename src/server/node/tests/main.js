@@ -37,3 +37,6 @@ require("./socketTests.js");
 
 // add some test data
 require("./createTestDatabase.js");
+
+// import data
+// require("./importData.js");

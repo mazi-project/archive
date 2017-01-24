@@ -34,7 +34,7 @@ class AttachmentItemView extends Marionette.ItemView {
             },
             getFileType : () => {
                 if (this.model.get("file")) {
-                    var extension = this.model.get("file").originalFilename.split('.').pop();
+                    var extension = this.model.get("file").name.split('.').pop();
                     if (_.contains(['wav','mp3'],extension))
                         return 'audio'
                     else

@@ -3,5 +3,6 @@ files/*
 _tmp/
 data/
 tests/files/test.jpg
+tests/import/*
 log/*
 !.keep

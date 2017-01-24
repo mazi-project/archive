@@ -4,7 +4,7 @@
 <p><span class="label">Tags</span> <%= tags.join(' ') %></p>
 <p><span class="label">File</span>
 	<% if (file && interview) { %>
-		<a href="<%= fileDir + interview._id + '/' + file.originalFilename %>"><%= file.originalFilename %></a>
+		<a href="<%= fileDir + interview._id + '/' + file.name %>"><%= file.name %></a>
 	<% } else { %>
 		No File
 	<% } %>

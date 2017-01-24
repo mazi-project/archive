@@ -92,7 +92,7 @@ class BaseModel {
 		return this.constructor.getDb();
 	}
 
-	static create(data) {
+	static create(data, importData=false) {
 	    var db = this.getDb()
 
 	    var self = this;
@@ -105,8 +105,11 @@ class BaseModel {
     	data = _.map(data, (element) => {
 	        // validate fields
 	        let attributes = self.validate(element);
+	        
 	        // create new id
-	        attributes._id = uuid.v4();
+	        if (!importData)
+	        	attributes._id = uuid.v4();
+	    	
 	    	return attributes;
 	    });
 
