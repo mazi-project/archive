@@ -25,7 +25,8 @@ class AttachmentView extends Marionette.ItemView {
 
     get templateHelpers() {
 		  return {
-		    fileDir : Config.files_url
+		    fileDir : Config.files_url,
+            isNew : this.model.isNew()
       }
     }
 
@@ -33,7 +34,7 @@ class AttachmentView extends Marionette.ItemView {
       return {
         'click #saveButton' : 'onSaveButtonClicked',
         'click #deleteButton' : 'onDeleteButtonClicked',
-        'change #input-upload-file' : 'onFileInputChanged',
+        'change #input-upload-file' : 'onFileInputChanged'
       }
     }
 
@@ -52,19 +53,11 @@ class AttachmentView extends Marionette.ItemView {
     }
 
     onSaveButtonClicked() {
-        this.model.set({ 
-            tags : this.$("#input-tags").val().split(" "),
-            text : this.$("#input-text").val()
+       
+        this.saveModel( (error) => {
+            if (error)
+                alert(error);
         });
-
-        this.model.save(null, {
-            success: () => {
-                if (_.has(this.options, 'interview'))
-                    window.location.href="#/interview/" + this.options.interview;
-            }
-        });
-
-
     }
 
     onDeleteButtonClicked() {
@@ -77,19 +70,29 @@ class AttachmentView extends Marionette.ItemView {
     onFileInputChanged() {
 
         var uploadUrl = Config.web_service_url + 'upload/attachment/' + this.model.id;
-
-        utils.uploadFile(this.$('#input-upload-file'), uploadUrl, (error) => {
+        utils.uploadFile(self.$('#input-upload-file'), uploadUrl, (error) => {
             if (error)
                 alert("ERROR: " + error);
             else
                 alert("File was successfully uploaded");
-        });
+                this.model.fetch();
+        });   
     }
 
-    submitFile() {
+    saveModel(callback) {
+         this.model.set({ 
+            tags : this.$("#input-tags").val().split(" "),
+            text : this.$("#input-text").val()
+        });
 
-        Utils.uploadFile()
-
+        this.model.save(null, {
+            success: () => {
+                callback()
+            },
+            error: (error) => {
+                callback(error)
+            }
+        });
     }
     
 }

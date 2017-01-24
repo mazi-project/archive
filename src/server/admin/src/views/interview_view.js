@@ -13,6 +13,7 @@ import _ from 'underscore';
 import Config from 'config';
 import InterviewModel from 'models/interview_model';
 import AttachmentListView from 'views/attachment_list_view';
+import utils from 'utils';
 
 import template from 'text!templates/interview_tmpl.html';
 
@@ -25,7 +26,8 @@ class InterviewView extends Marionette.LayoutView {
 
     get templateHelpers() {
 		  return {
-		    filesUrl : Config.files_url + this.model.get('_id') + '/'
+		    filesUrl : Config.files_url + this.model.get('_id') + '/',
+            isNew : this.model.isNew()
       }
     }
 
@@ -39,7 +41,8 @@ class InterviewView extends Marionette.LayoutView {
       return {
         'click #saveButton' : 'onSaveButtonClicked',
         'click #deleteButton' : 'onDeleteButtonClicked',
-        'click #add-attachment-button' : 'onAddAttachmentButtonClicked'
+        'click #add-attachment-button' : 'onAddAttachmentButtonClicked',
+        'change #input-upload-file' : 'onFileInputChanged'
       }
     }
 
@@ -63,13 +66,13 @@ class InterviewView extends Marionette.LayoutView {
     }
 
     onSaveButtonClicked() {
-      this.model.set({ 
-        name : this.$("#input-name").val(),
-        role : this.$("#input-role").val(),
-        text : this.$("#input-text").val()
-      });
+        this.saveModel( (error) => {
+            if (error)
+                alert(error);
+            else 
+                window.location.href = "#interview/"+this.model.id;
 
-      this.model.save();
+        });
     }
 
     onDeleteButtonClicked() {
@@ -81,6 +84,35 @@ class InterviewView extends Marionette.LayoutView {
 
     onAddAttachmentButtonClicked() {
         window.location.href = '#attachment/add/' + this.options.id;
+    }
+
+    onFileInputChanged() {
+
+        var uploadUrl = Config.web_service_url + 'upload/image/' + this.model.id;
+        utils.uploadFile(self.$('#input-upload-file'), uploadUrl, (error) => {
+            if (error)
+                alert("ERROR: " + error);
+            else
+                alert("File was successfully uploaded");
+                this.model.fetch();
+        });   
+    }
+
+    saveModel(callback) {
+        this.model.set({ 
+            name : this.$("#input-name").val(),
+            role : this.$("#input-role").val(),
+            text : this.$("#input-text").val()
+        });
+
+        this.model.save(null, {
+            success: () => {
+                callback()
+            },
+            error: (error) => {
+                callback(error)
+            }
+        });
     }
     
 }

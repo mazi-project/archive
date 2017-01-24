@@ -110,12 +110,6 @@ class Attachment extends BaseModel {
 
             var fileurl = Config.fileDir + this.data.interview + '/' + file.originalFilename;
 
-            // var fileType = file.type;
-            // if (_.contains(fileType, ['audio/wav','audio/x-wav','audio/mpeg3','audio/x-mpeg3','audio/wave']))
-            //     fileType = "audio"
-            // else if (_.contains(fileType, ['audio/wav','audio/x-wav','audio/mpeg3','audio/x-mpeg3','audio/wave']))
-                
-
             //copy image
             fs.move(file.path, fileurl, (err) => {
                 if (err) {
@@ -128,9 +122,31 @@ class Attachment extends BaseModel {
                 this.data.file.name = file.originalFilename;
 
                 // save interview
-                this.save().then(resolve).catch(reject);
+                resolve();
             });
+        }).then( () => {
+            // save interview
+            return this.save()
+        });
+    }
 
+    deleteFile() {
+        if (!this.data.file) {
+            return Promise.resolve();
+        }
+
+        return new Promise( (resolve, reject) => {
+            fs.remove(this.data.file.url, (err) => {
+                if (err)
+                    reject(err);
+                else {
+                    this.data.file = false;
+                    resolve();
+                }
+            });
+        }).then( () => {
+            // save interview
+            return this.save()
         });
     }
 }

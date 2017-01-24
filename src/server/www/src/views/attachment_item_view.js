@@ -25,7 +25,13 @@ class AttachmentItemView extends Marionette.ItemView {
 
     get templateHelpers() {
         return {
-            fileDir : Config.files_url + this.model.get('interview') + '/',
+            getfileDir : () => {
+                var interview = this.model.get('interview');
+                if (_.has(interview,'_id'))
+                    return Config.files_url + interview._id + '/';
+                else
+                    return Config.files_url + interview + '/';
+            },
             getFileType : () => {
                 if (this.model.get("file")) {
                     var extension = this.model.get("file").originalFilename.split('.').pop();

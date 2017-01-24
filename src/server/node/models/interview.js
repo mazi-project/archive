@@ -83,9 +83,29 @@ class Interview extends BaseModel {
                 this.data.image.url = fileurl;
                 this.data.image.name = image.originalFilename;
 
-                resolve(this.data);
+                resolve();
             })
-        }).then( (data) => {
+        }).then( () => {
+            // save interview
+            return this.save()
+        });
+    }
+
+    deleteImage() {
+        if (!this.data.image) {
+            return Promise.resolve();
+        }
+
+        return new Promise( (resolve, reject) => {
+            fs.remove(this.data.image.url, (err) => {
+                if (err)
+                    reject(err);
+                else {
+                    this.data.image = false;
+                    resolve();
+                }
+            });
+        }).then( () => {
             // save interview
             return this.save()
         });

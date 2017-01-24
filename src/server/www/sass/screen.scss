@@ -27,7 +27,6 @@
 @import "singleview";
 @import "tagslist";
 @import "questionslist";
-@import "tracklist";
 @import "attachment";
 
 /* FONTS */
@@ -48,12 +47,15 @@ body {
 }
 
 h4 {
-	margin: 0;
+	font-size: 100%;
+	margin: $text-margin 0 0 0;
+	font-weight: bold;
 }
 
 h3 {
 	font-size: 120%;
 	margin: 0 0 $text-margin 0;
+	padding: 0 $paragraph-padding;
 }
 
 h2 {
@@ -142,6 +144,11 @@ ul {
 
 	&.selected {
 		background-color: #FF7043 !important; 
+	}
+
+	&.download {
+		font-weight: bold;
+		background-color: #00d9ff;
 	}
 }
 

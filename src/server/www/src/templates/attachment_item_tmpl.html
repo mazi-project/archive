@@ -2,15 +2,15 @@
 </div>
 <div class="text">
 
-	<h3><%= getInterviewName() %></h3>
+	<h4><%= getInterviewName() %></h4>
 	<p><%= text %></p>
 </div>
 <% if (getFileType() == "audio") { %>
 <div class="play-button" data-id="<%= _id %>">
 </div>
 <% } else if (file) { %>
-<div class="file">
-	Download: <a href="<%= fileDir+file.originalFilename %>"><%= file.originalFilename %></a>
+<div class="file badge download">
+	<a href="<%= getfileDir()+file.originalFilename %>">Download <%= file.originalFilename %></a>
 </div>
 <% } %>
 

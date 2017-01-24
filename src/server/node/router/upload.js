@@ -29,8 +29,6 @@ router.post('/attachment/:attachmentId', fileUploader, function(req,res){
     if (_.has(req,'files') && _.has(req.files,'file'))
         file = req.files.file;
 
-    console.log(req.files);
-
 	attachment.fetch().then( () => {
         if (!file) {
             return Promise.reject(new Error('No file submitted.'));
@@ -49,6 +47,9 @@ router.post('/attachment/:attachmentId', fileUploader, function(req,res){
             return Promise.reject(new Error('Only wav,mp3,jpg and pdf files are allowed for upload. File is '+file.type));
         }
 
+        // delete old file
+        return attachment.deleteFile();
+    }).then( () => {
         return attachment.attachFile(file);
     }).then( () => {
         log('Uploaded file'+file.originalFilename+' for Attachment: '+req.params.attachmentId);
@@ -89,6 +90,9 @@ router.post('/image/:interviewId', fileUploader, function(req,res){
             return Promise.reject(new Error('Only jpg,gif and png images are allowed for upload. File is '+file.type));
         }
 
+        // delete old image
+        return interview.deleteImage();
+    }).then( () => {
         // save file to interview folder
         return interview.attachImage(file);
     }).then( () => {

@@ -72,7 +72,7 @@ class Controller extends Marionette.Controller {
 			this.mainView.headerRegion.show(new Marionette.ItemView({
 			 	template: _.template(headerTemplate)
 			}));
-			this.mainView.menuRegion.show(new MenuView())
+			this.mainView.menuRegion.show(new MenuView({ highlight: '#link1' }))
 			this.mainView.contentRegion.show(new InterviewView({ id: id }));
 		}
 
@@ -96,7 +96,7 @@ class Controller extends Marionette.Controller {
 			this.mainView.headerRegion.show(new Marionette.ItemView({
 				template: _.template(headerTemplate)
 			}));
-			this.mainView.menuRegion.show(new MenuView())
+			this.mainView.menuRegion.show(new MenuView({ highlight: '#link3' }))
 			this.mainView.contentRegion.show(new AttachmentListView({ tag: tag }));
 		}
 
@@ -104,7 +104,7 @@ class Controller extends Marionette.Controller {
 			this.mainView.headerRegion.show(new Marionette.ItemView({
 				template: _.template(headerTemplate)
 			}));
-			this.mainView.menuRegion.show(new MenuView())
+			this.mainView.menuRegion.show(new MenuView({ highlight: '#link2' }))
 			this.mainView.contentRegion.show(new AttachmentListView({ question: question }));
 		}
 

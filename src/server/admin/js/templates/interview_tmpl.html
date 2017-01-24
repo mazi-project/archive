@@ -14,6 +14,7 @@
 	<textarea id="input-text"><%= text %></textarea>
 </div>
 
+<% if (!isNew) { %>
 <div class="input-element">
 	<label>Image</label>	
 	<% if (image) { %>
@@ -21,8 +22,10 @@
 	<% } else { %>
 	<p class="no-image">No Image</p>
 	<% } %>
-	<button>Change Image</button>
+	<label for="input-upload-file"><span class="button">Upload File</span></label>
+	<input type="file" name="file" id="input-upload-file" style="display:none">
 </div>
+<% } %>
 
 <button id="saveButton">Save Interview</button>
 <button id="deleteButton">Delete</button>

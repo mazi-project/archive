@@ -36,6 +36,10 @@ class Controller extends Marionette.Controller {
             this.app.containerRegion.show(this.mainView);
 			
 		}
+
+		checkLogin() {
+
+		}
 			
 		/* ROUTES */
 
