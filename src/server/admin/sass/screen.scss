@@ -1,15 +1,181 @@
-$spacing : 10px;
+@import "compass/css3/box-sizing";
 
-#container {
+$spacing : 10px;
+$small-spacing : 6px;
+
+$text-color: #333;
+$header-color: #000000;
+$header-text-color: #DDDDDD;
+$link-color: #000;
+
+$button-bg-color: #eee;
+$button-border: 1px solid #ddd;
+
+body {
+	font-family: serif;
+	font-size: 11pt;
+	margin: 0;
+	color: $text-color;
+	letter-spacing: 0.03em;
+}
+
+/* HEADER */
+
+.header {
+	margin:0;
+	padding: 0;
+	color: $text-color;
+	width: 100%;
+	border-bottom: 1px solid #000;
+
+	#menu {
+		float: right;
+		margin-right: $spacing;
+
+		ul {
+			padding: 0;
+			margin: 0;
+			list-style-type: none;
+		}
+
+		li { 
+			padding: $spacing;
+			float: right;
+		}
+	}
+}
+
+/* CONTENT */
+
+#content {
 	max-width: 500px;
 	margin-left: auto;
 	margin-right: auto;
+	padding: $spacing;
 }
 
+/* ATTACHMENTS */
+
+#attachment-list {
+	list-style-type: none;
+	margin:0;
+	padding: 0;
+}
+
+/* INTERVIEW */
+
+#interview-list {
+	list-style-type: none;
+	margin:0;
+	padding: 0;
+
+	h3 {
+		margin-top: $spacing*2;
+		text-align: center;
+		border: 0;
+	}
+}
+
+
+/* TEXT */
+	
+h1 {
+	display: inline-block;
+	font-size: 100%;
+	font-weight: bold;
+	margin: $spacing;
+}
+
+h2 {
+	font-size: 140%;
+	letter-spacing: 0.05em;
+	font-weight: normal;
+	text-align: center;
+}
+
+h3 {
+	font-size: 100%;
+	letter-spacing: 0.05em;
+	font-weight: bold;
+	border-bottom: 1px solid #666;
+	width: 100%;
+	margin:0
+}
+
+a {
+	color: $link-color;
+	text-decoration: underline;
+	font-style: italic;
+	letter-spacing: 0;
+}
+
+p {
+	margin: $spacing 0;
+}
+
+label {
+	margin-top: $spacing;
+	font-size: 100%;
+	font-weight: bold;
+}
+
+.label {
+	font-size: 100%;
+	font-weight: bold;
+}
+
+/* ELEMENTS */
+
+
+button {
+	font-size: 80%;
+	padding: $small-spacing $spacing;
+	font-family: serif;
+	background-color: $button-bg-color;
+	border: $button-border;
+	border-radius: 3px;
+	color: #000;
+	letter-spacing: 0.05em;
+}
+
+.button {
+	font-size: 80%;
+	padding: $small-spacing $spacing;
+	font-family: serif;
+	background-color: $button-bg-color;
+	border: 1px solid $button-border;
+	border-radius: 3px;
+	color: #000;
+	letter-spacing: 0.05em;
+	font-weight: normal;
+}	
+
+.button-bar {
+	text-align: center;
+	margin: $spacing;
+}
+
+.bold {
+	font-weight: bold;
+} 
+
+
+.line {
+	border-bottom: 1px solid #DDD;
+	width: 100%;
+}
+
+.center {
+	text-align: center;
+}
+
+/* INPUT ELEMENTS */
+
+
 .input-element {
+
 	img {
-		height:200px;
-		display:block;
+		width:100%;
 		border:1px solid #ddd;
 	}
 
@@ -20,12 +186,22 @@ $spacing : 10px;
 		text-align: center;
 		line-height: 200px;
   		vertical-align: middle;
+  		margin: 0 auto;
 	}
 }
 
 input,textarea {
+	font-family: serif;
 	width:100%;
-	border: 1px solid #ddd;
+	border: none;
+	font-size: 90%;
+	letter-spacing: 0.05em;
+	background: $button-bg-color;
+	border: $button-border;
+	border-radius: 3px;
+	outline: none;
+	padding: $small-spacing;
+	@include box-sizing(border-box);
 }
 
 textarea {
@@ -37,3 +213,4 @@ label {
 	display: block;
 	font-weight: bold;
 }
+

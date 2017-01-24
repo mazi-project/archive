@@ -62,13 +62,8 @@ class InterviewListView extends Marionette.CompositeView {
 		
 		this.collection = new InterviewCollection();
 
-        this.collection.getFirstPage(this.fetchParams);
+        this.collection.fetch();
 	}
-
-    onLoadMoreButtonClick(event) {
-        event.preventDefault();
-        this.collection.getNextPage(this.fetchParams);
-    }
 
     onAddInterviewButtonClick() {
         window.location.href = '#interview/new';

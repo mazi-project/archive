@@ -15,20 +15,29 @@
 </div>
 
 <% if (!isNew) { %>
-<div class="input-element">
+<div class="input-element center">
 	<label>Image</label>	
 	<% if (image) { %>
 	<img src="<%= filesUrl+image.name %>">
 	<% } else { %>
-	<p class="no-image">No Image</p>
+	<div class="no-image">No Image</div>
 	<% } %>
-	<label for="input-upload-file"><span class="button">Upload File</span></label>
+	<label for="input-upload-file" style="margin-bottom: 20px;"><span class="button">UPLOAD IMAGE</span></label>
 	<input type="file" name="file" id="input-upload-file" style="display:none">
 </div>
 <% } %>
 
-<button id="saveButton">Save Interview</button>
-<button id="deleteButton">Delete</button>
+<div class="line"></div>
+
+<p class="button-bar">
+	<button id="saveButton" class="bold">SAVE INTERVIEW</button>
+	<button id="deleteButton" class="bold">DELETE</button>
+</p>
 
 <div id="interview-attachments"></div>
-<button id="add-attachment-button">Add Attachment</button>
+
+<div class="line"></div>
+
+<p class="button-bar">
+	<button id="add-attachment-button" class="bold">ADD ATTACHMENT</button>
+</p>
