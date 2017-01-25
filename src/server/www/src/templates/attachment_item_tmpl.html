@@ -10,7 +10,7 @@
 </div>
 <% } else if (file) { %>
 <div class="file badge download">
-	<a href="<%= getfileDir()+file.name %>">Download <%= file.name %></a>
+	<a href="<%= getfileDir()+file.name %>">Show <%= file.name %></a>
 </div>
 <% } %>
 
@@ -18,7 +18,7 @@
 	<% if (tags.length > 0) { %>
 	<ul class="tag-list">
 		<% _.each(tags, function(tag) { %>
-		<li><span class="badge with-hash"><%= tag %></span></li>
+		<li><a href="#tags/<%= tag %>"><span class="badge with-hash"><%= tag %></span></a></li>
 		<% }) %>
 	</ul>
 	<% } %>

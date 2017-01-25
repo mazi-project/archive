@@ -5,4 +5,5 @@ data/
 tests/files/test.jpg
 tests/import/*
 log/*
+config.js
 !.keep

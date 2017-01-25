@@ -1,6 +1,6 @@
 
 <h3><% if (interview) { %><%= interview.name %><% } else { %>*not defined<% } %></h3>
-<p><span class="label">Text</span> <%= text %></p>
+<p><span class="label">Question</span> <%= text %></p>
 <p><span class="label">Tags</span> <%= tags.join(' ') %></p>
 <p><span class="label">File</span>
 	<% if (file && interview) { %>
