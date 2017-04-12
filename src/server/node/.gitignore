@@ -1,7 +1,7 @@
 node_modules/*
 files/*
-_tmp/
-data/
+_tmp/*
+data/*
 tests/files/test.jpg
 tests/import/*
 log/*
