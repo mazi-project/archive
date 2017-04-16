@@ -9,6 +9,8 @@ module.exports = function (app) {
 
     var handleDbConnection = function(req, res, next) {
 
+        console.log(req.originalUrl);
+
         // action after response
         var afterResponse = function() {
             var db = r_require('/models/database')

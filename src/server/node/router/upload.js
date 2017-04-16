@@ -98,7 +98,7 @@ router.post('/image/:interviewId', fileUploader, function(req,res){
     }).then( () => {
         log('Uploaded file'+file.originalFilename+' for Interview: '+req.params.interviewId);
         appEvents.emit('interview:changed',{ _id: interview.id });
-        res.send(interview.data);
+        res.send({ interview: interview.data });
     }).catch( err => {
         Utils.handleError(err,res);
     });
