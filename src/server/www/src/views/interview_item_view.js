@@ -50,7 +50,7 @@ class SubmissionItemView extends Marionette.ItemView {
 
     /* methods */
     initialize(options) {
-        //console.log(this.model);
+        console.log(this.model);
     }
 
     getBackgroundImageString() {
